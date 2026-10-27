@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}The Newsren — News intelligence{% endblock %}</title>
+  <meta name="description" content="{% block description %}The Newsren researches, verifies, connects, and explains technology, education, industry, and finance news — with sources for every claim.{% endblock %}">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <link rel="stylesheet" href="/static/css/newsren.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23142a4a'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' text-anchor='middle' fill='%23f6f3ec'%3EN%3C/text%3E%3C/svg%3E">
+  <script src="/static/js/htmx.min.js" defer></script>
+  <script src="/static/js/newsren.js" defer></script>
+  {% block head %}{% endblock %}
+</head>
+<body class="vertical-{{ active_vertical or 'none' }}" hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="container masthead-top">
+    <div class="masthead-date">{{ now_label if now_label is defined else '' }}</div>
+    <a class="wordmark" href="/" aria-label="The Newsren home">The Newsren</a>
+    <div class="masthead-account">
+      {% if current_user %}
+        <a href="/me">My Newsren</a>
+        {% if current_user.is_editor %}<a href="/editor">Editor desk</a>{% endif %}
+        <form method="post" action="/logout" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="link-button" type="submit">Sign out</button>
+        </form>
+      {% else %}
+        <a href="/login">Sign in</a>
+        <a class="button button-small" href="/register">Create account</a>
+      {% endif %}
+    </div>
+  </div>
+  <p class="container tagline">Research, explain, connect — and follow a question until you understand it.</p>
+  <nav class="primary-nav" aria-label="Sections">
+    <div class="container primary-nav-inner">
+      <ul class="nav-sections">
+        {% for v in VERTICALS %}
+          <li><a href="{{ '/finance' if v.slug == 'finance' else '/v/' ~ v.slug }}" class="nav-{{ v.slug }}{% if active_vertical == v.slug %} is-active{% endif %}"{% if active_vertical == v.slug %} aria-current="page"{% endif %}>{{ v.label }}</a></li>
+        {% endfor %}
+        <li class="nav-divider" aria-hidden="true"></li>
+        <li><a href="/ask" class="nav-ask{% if active_vertical == 'ask' %} is-active{% endif %}">Ask Newsren</a></li>
+        <li><a href="/me" class="{% if active_vertical == 'me' %}is-active{% endif %}">My Newsren</a></li>
+      </ul>
+      <form class="audience-switch" method="post" action="/audience" aria-label="Explain for">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="next" value="{{ request.url.path }}{% if request.url.query %}?{{ request.url.query }}{% endif %}">
+        <span class="audience-label">Explain for</span>
+        {% for a in AUDIENCES %}
+          <button type="submit" name="audience" value="{{ a.slug }}" class="audience-option{% if audience == a.slug %} is-active{% endif %}" aria-pressed="{{ 'true' if audience == a.slug else 'false' }}">{{ a.label }}</button>
+        {% endfor %}
+      </form>
+    </div>
+  </nav>
+</header>
+
+{% if flash %}
+<div class="container"><div class="flash flash-{{ flash.kind }}" role="status">{{ flash.message }}</div></div>
+{% endif %}
+
+<main id="main" class="container main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="wordmark wordmark-small">The Newsren</p>
+      <p class="muted">An agentic news intelligence and learning platform. AI agents research and draft; editors review before publication. Every claim links to its sources.</p>
+    </div>
+    <div>
+      <h2 class="footer-heading">Sections</h2>
+      <ul class="plain-list">
+        {% for v in VERTICALS %}<li><a href="{{ '/finance' if v.slug == 'finance' else '/v/' ~ v.slug }}">{{ v.label }}</a></li>{% endfor %}
+      </ul>
+    </div>
+    <div>
+      <h2 class="footer-heading">Standards</h2>
+      <ul class="plain-list">
+        <li><a href="/about">How The Newsren works</a></li>
+        <li><a href="/sources">Approved sources</a></li>
+        <li><a href="/finance/concepts">Finance concepts</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-note muted">Finance coverage is news and education only — not investment advice.</div>
+</footer>
+{% block scripts %}{% endblock %}
+</body>
+</html>

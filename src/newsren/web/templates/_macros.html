@@ -1,0 +1,96 @@
+{# Shared presentation macros. Import with: {% import "_macros.html" as m %} #}
+
+{% macro finance_notice(text) -%}
+<aside class="finance-notice" role="note">
+  <strong>Not investment advice.</strong> {{ text }}
+</aside>
+{%- endmacro %}
+
+{% macro demo_badge(is_demo) -%}
+{% if is_demo %}<span class="badge badge-demo" title="Fictional demo content for exploring the product">Demo content</span>{% endif %}
+{%- endmacro %}
+
+{% macro vertical_tag(vertical) -%}
+<a class="vertical-tag vertical-tag-{{ vertical }}" href="{{ '/finance' if vertical == 'finance' else '/v/' ~ vertical }}">{{ VERTICAL_LABELS.get(vertical, vertical) }}</a>
+{%- endmacro %}
+
+{# citations: list of CitationRef dicts #}
+{% macro citation_refs(ids, citations) -%}
+{%- for cid in ids or [] -%}
+  {%- set c = (citations | selectattr('id', 'equalto', cid) | first) if citations else None -%}
+  {%- if c -%}<a class="cite" href="#cite-{{ c.id }}" title="{{ c.title }} — {{ c.publisher }}">[{{ c.id[1:] if c.id.startswith('c') else c.id }}]</a>{%- endif -%}
+{%- endfor -%}
+{%- endmacro %}
+
+{% macro citation_list(citations, heading="Sources") -%}
+{% if citations %}
+<section class="sources" aria-label="{{ heading }}">
+  <h3 class="section-label">{{ heading }}</h3>
+  <ol class="source-list">
+    {% for c in citations %}
+    <li id="cite-{{ c.id }}">
+      <a href="{{ c.url }}" rel="noopener noreferrer" target="_blank">{{ c.title }}</a>
+      <span class="source-meta">
+        {{ c.publisher }}{% if c.published_at %} · published {{ c.published_at | fmt_dt }}{% endif %}{% if c.retrieved_at %} · retrieved {{ c.retrieved_at | fmt_dt_time }}{% endif %}
+      </span>
+      {{ c.trust_tier | badge }} {{ c.doc_type | badge }}
+      {% if c.snippet %}<blockquote class="source-snippet">{{ c.snippet }}</blockquote>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{% macro claim_item(claim, citations) -%}
+<li class="claim claim-{{ claim.support_status }}">
+  <span class="claim-text">{{ claim.text }}</span>
+  {{ citation_refs(claim.citation_ids, citations) }}
+  <span class="claim-badges">
+    {{ claim.claim_type | badge }} {{ claim.support_status | badge }}
+    {% if claim.performance_label %}{{ claim.performance_label | badge }}{% endif %}
+  </span>
+  {% if claim.performance_label or claim.performance_period or claim.benchmark %}
+  <span class="claim-perf muted">
+    {% if claim.performance_period %}Period: {{ claim.performance_period }}.{% endif %}
+    {% if claim.benchmark %} Benchmark: {{ claim.benchmark }}.{% endif %}
+  </span>
+  {% endif %}
+  {% if claim.notes %}<span class="claim-notes muted">{{ claim.notes }}</span>{% endif %}
+</li>
+{%- endmacro %}
+
+{% macro brief_card(brief, show_vertical=True, size="") -%}
+<article class="brief-card {{ size }}">
+  <div class="card-kicker">
+    {% if show_vertical %}{{ vertical_tag(brief.vertical) }}{% endif %}
+    {{ demo_badge(brief.is_demo) }}
+    <span class="muted">{{ (brief.published_at or brief.generated_at) | timeago }}</span>
+  </div>
+  <h3 class="card-headline"><a href="/briefs/{{ brief.id }}">{{ brief.headline }}</a></h3>
+  <p class="card-summary">{{ brief.summary | truncate(260) }}</p>
+  {% if brief.citations %}<p class="card-meta muted">{{ brief.citations | length }} source{{ 's' if brief.citations | length != 1 else '' }}</p>{% endif %}
+</article>
+{%- endmacro %}
+
+{% macro expandable(title, open=False) -%}
+<details class="expandable"{% if open %} open{% endif %}>
+  <summary>{{ title }}</summary>
+  <div class="expandable-body">{{ caller() }}</div>
+</details>
+{%- endmacro %}
+
+{% macro empty_state(title, body="") -%}
+<div class="empty-state">
+  <p class="empty-title">{{ title }}</p>
+  {% if body %}<p class="muted">{{ body }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro csrf_field() -%}<input type="hidden" name="csrf_token" value="{{ csrf_token }}">{%- endmacro %}
+
+{% macro generated_note(generated_by, generated_at=None) -%}
+<p class="generated-note muted">
+  {% if generated_by and generated_by != 'offline' %}Drafted by AI agent ({{ generated_by }}){% else %}Drafted by The Newsren's offline evidence engine (extractive, rule-based){% endif %}{% if generated_at %} · {{ generated_at | fmt_dt_time }}{% endif %} · every statement links to its sources.
+</p>
+{%- endmacro %}

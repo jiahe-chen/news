@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ status_code }} — The Newsren{% endblock %}
+{% block content %}
+<section class="error-page">
+  <p class="kicker">Error {{ status_code }}</p>
+  <h1 class="page-title">{% if status_code == 404 %}We couldn't find that page{% elif status_code == 403 %}You don't have access to this page{% else %}Something went wrong{% endif %}</h1>
+  <p class="lede">{{ detail }}</p>
+  <p><a class="button" href="/">Back to the front page</a></p>
+</section>
+{% endblock %}

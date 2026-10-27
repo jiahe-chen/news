@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import shutil
 from collections.abc import Iterator
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pytest
 from sqlalchemy.orm import Session
@@ -127,3 +129,99 @@ class Factory:
 @pytest.fixture()
 def factory(session) -> Factory:
     return Factory(session)
+
+
+# --------------------------------------------------------------------------
+# Demo database built once per test session, copied per test (fast web tests)
+# --------------------------------------------------------------------------
+
+DEMO_EDITOR_PASSWORD = "editor-demo-pass"
+DEMO_READER_PASSWORD = "reader-demo-pass"
+
+
+@pytest.fixture(scope="session")
+def demo_db_template(tmp_path_factory) -> Path:
+    """Run the full offline workflow on the fictional demo data once."""
+    import argparse
+
+    from newsren.cli import cmd_demo
+
+    root = tmp_path_factory.mktemp("demo-template")
+    s = Settings(data_dir=root, database_url=f"sqlite:///{root / 'demo.db'}", llm_mode="offline", secret_key="t")
+    set_settings(s)
+    set_provider(OfflineProvider())
+    db.reset_engine()
+    try:
+        cmd_demo(argparse.Namespace(network=False, max_briefs=60, keep_queue=False))
+    finally:
+        db.reset_engine()
+        set_provider(None)
+        set_settings(None)
+    return root / "demo.db"
+
+
+@pytest.fixture()
+def demo_settings(tmp_path, demo_db_template) -> Iterator[Settings]:
+    target = tmp_path / "demo.db"
+    shutil.copyfile(demo_db_template, target)
+    s = Settings(data_dir=tmp_path, database_url=f"sqlite:///{target}", llm_mode="offline", secret_key="test-secret")
+    set_settings(s)
+    set_provider(OfflineProvider())
+    db.reset_engine()
+    db.init_db()
+    yield s
+    db.reset_engine()
+    set_provider(None)
+    set_settings(None)
+
+
+@pytest.fixture()
+def demo_session(demo_settings) -> Iterator[Session]:
+    s = db.new_session()
+    try:
+        yield s
+    finally:
+        s.rollback()
+        s.close()
+
+
+@pytest.fixture()
+def client(demo_settings):
+    """TestClient over the demo database (anonymous)."""
+    from fastapi.testclient import TestClient
+
+    from newsren.web.app import create_app
+
+    with TestClient(create_app()) as c:
+        yield c
+
+
+def _csrf(client) -> str:
+    """Fetch a page to obtain the session CSRF token from the <meta> tag."""
+    import re
+
+    html = client.get("/login").text
+    match = re.search(r'name="csrf-token" content="([^"]+)"', html)
+    assert match, "csrf meta tag missing"
+    return match.group(1)
+
+
+def login(client, email: str, password: str) -> str:
+    token = _csrf(client)
+    resp = client.post(
+        "/login", data={"email": email, "password": password, "csrf_token": token}, follow_redirects=False
+    )
+    assert resp.status_code in (302, 303), resp.text[:500]
+    return _csrf(client)
+
+
+@pytest.fixture()
+def editor_client(client):
+    client.csrf = login(client, "editor@newsren.example", DEMO_EDITOR_PASSWORD)
+    return client
+
+
+@pytest.fixture()
+def reader_client(client):
+    client.csrf = login(client, "reader@newsren.example", DEMO_READER_PASSWORD)
+    return client

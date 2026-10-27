@@ -67,11 +67,18 @@ def _make_engine(url: str) -> Engine:
 
         @event.listens_for(engine, "connect")
         def _pragmas(dbapi_conn, _record):  # pragma: no cover - trivial
+            # Let SQLAlchemy own transaction boundaries so SAVEPOINTs work
+            # (pysqlite's implicit BEGIN handling breaks nested transactions).
+            dbapi_conn.isolation_level = None
             cur = dbapi_conn.cursor()
             cur.execute("PRAGMA foreign_keys=ON")
             if ":memory:" not in url:
                 cur.execute("PRAGMA journal_mode=WAL")
             cur.close()
+
+        @event.listens_for(engine, "begin")
+        def _begin(conn):  # pragma: no cover - trivial
+            conn.exec_driver_sql("BEGIN")
 
     return engine
 
