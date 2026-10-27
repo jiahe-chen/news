@@ -3,7 +3,6 @@ name = "newsren"
 version = "0.1.0"
 description = "The Newsren: agentic news intelligence for technology, education, industry, and finance"
 readme = "README.md"
-license = { text = "Proprietary" }
 authors = [
     { name = "Claude", email = "noreply@anthropic.com" }
 ]
