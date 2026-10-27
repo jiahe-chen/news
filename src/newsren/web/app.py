@@ -29,6 +29,7 @@ STATIC_DIR = Path(__file__).parent / "static"
 # Route modules, each exposing ``router``. Missing modules are skipped with a
 # warning so the app still starts while a section is under construction.
 ROUTE_MODULES = [
+    "newsren.web.routes.auth",
     "newsren.web.routes.public",
     "newsren.web.routes.tools",
     "newsren.web.routes.account",

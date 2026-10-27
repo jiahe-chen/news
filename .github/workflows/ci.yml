@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      NEWSREN_LLM: offline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - name: Install
+        run: uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check src tests
+          uv run ruff format --check src tests
+      - name: Test
+        run: uv run pytest -q
+      - name: Demo smoke test
+        run: |
+          export NEWSREN_DATA_DIR="$(mktemp -d)"
+          uv run newsren demo
+          uv run newsren metrics > /dev/null

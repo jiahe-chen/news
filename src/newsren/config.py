@@ -89,10 +89,43 @@ class Settings:
         return replace(self, **kwargs)
 
 
+def load_dotenv(path: Path = Path(".env")) -> None:
+    """Read KEY=VALUE lines from ``.env`` into the environment (real env vars win)."""
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key, value = key.strip().removeprefix("export ").strip(), value.strip().strip('"').strip("'")
+        if key and value:
+            os.environ.setdefault(key, value)
+
+
+def _secret_key(data_dir: Path) -> str:
+    """NEWSREN_SECRET_KEY, else a random key persisted in the data dir so sessions survive restarts."""
+    configured = os.environ.get("NEWSREN_SECRET_KEY")
+    if configured:
+        return configured
+    key_file = data_dir / ".secret_key"
+    try:
+        if key_file.is_file():
+            return key_file.read_text().strip()
+        data_dir.mkdir(parents=True, exist_ok=True)
+        key = secrets.token_hex(32)
+        key_file.write_text(key)
+        key_file.chmod(0o600)
+        return key
+    except OSError:
+        return secrets.token_hex(32)
+
+
 def load_settings() -> Settings:
+    load_dotenv()
     data_dir = Path(os.environ.get("NEWSREN_DATA_DIR", "data"))
     database_url = os.environ.get("NEWSREN_DATABASE_URL") or f"sqlite:///{data_dir / 'newsren.db'}"
-    secret = os.environ.get("NEWSREN_SECRET_KEY") or secrets.token_hex(32)
+    secret = _secret_key(data_dir)
     return Settings(
         data_dir=data_dir,
         database_url=database_url,

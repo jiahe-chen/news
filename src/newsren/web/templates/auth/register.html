@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+{% block title %}Create account — The Newsren{% endblock %}
+{% block content %}
+<section class="auth-page">
+  <p class="kicker">My Newsren</p>
+  <h1 class="page-title">Create your account</h1>
+  <p class="lede">Basic news discovery and explainers are free. An account lets The Newsren follow your questions and brief you when something material happens.</p>
+  {% if error %}<p class="flash flash-error" role="alert">{{ error }}</p>{% endif %}
+  <form class="form" method="post" action="/register">
+    {{ m.csrf_field() }}
+    <label>Name <input type="text" name="display_name" autocomplete="name" value="{{ form.display_name or '' }}"></label>
+    <label>Email <input type="email" name="email" autocomplete="email" required value="{{ form.email or '' }}"></label>
+    <label>Password <span class="hint">At least 8 characters.</span>
+      <input type="password" name="password" autocomplete="new-password" minlength="8" required></label>
+    <fieldset>
+      <legend>Explain things for me as a…</legend>
+      {% for a in AUDIENCES %}
+      <label class="checkbox"><input type="radio" name="audience" value="{{ a.slug }}" {% if (form.audience or 'professional') == a.slug %}checked{% endif %}> {{ a.label }}</label>
+      {% endfor %}
+    </fieldset>
+    <div><button class="button" type="submit">Create account</button></div>
+    <p class="muted">Already have an account? <a href="/login">Sign in</a>.</p>
+  </form>
+</section>
+{% endblock %}
