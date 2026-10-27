@@ -1,0 +1,61 @@
+{
+  "_about": "Fictional source documents for editorial quality-gate tests. Publishers, companies, and figures are invented.",
+  "articles": {
+    "vendor_launch": {
+      "publisher": "Lumen Labs Newsroom",
+      "vertical": "technology",
+      "trust_tier": "vendor",
+      "doc_type": "press_release",
+      "title": "Lumen Labs releases Lumen-4 math tutoring model",
+      "body": "Lumen Labs released Lumen-4, a math tutoring model, on Monday. The company says Lumen-4 solves 82% of competition math problems and is its most capable model to date."
+    },
+    "independent_eval": {
+      "publisher": "The Circuit Ledger",
+      "vertical": "technology",
+      "trust_tier": "independent",
+      "doc_type": "news",
+      "title": "Independent benchmark: Lumen-4 solves 61% of held-out problems",
+      "body": "The Open Evaluation Collective tested Lumen-4 on 1,200 held-out competition math problems and found it solved 61% of them, below the 82% figure in Lumen Labs' announcement. The evaluators said the gap may reflect differences between test sets."
+    },
+    "independent_eval_2": {
+      "publisher": "Byte Review",
+      "vertical": "technology",
+      "trust_tier": "independent",
+      "doc_type": "news",
+      "title": "Second lab finds Lumen-4 strong on algebra, weaker on geometry",
+      "body": "A second evaluation by the Northfield AI Lab found Lumen-4 solved 64% of algebra problems but only 48% of geometry problems. The lab disputed Lumen Labs' claim that the model is its most capable for every topic."
+    },
+    "preprint": {
+      "publisher": "Open Evaluation Collective",
+      "vertical": "technology",
+      "trust_tier": "independent",
+      "doc_type": "research_preprint",
+      "title": "Evaluating Lumen-4 on held-out competition problems",
+      "body": "We evaluate Lumen-4 on 1,200 held-out competition math problems drawn from 2024 and 2025 contests. The model solves 61% of them. This manuscript has been posted for comment."
+    },
+    "bank_note": {
+      "publisher": "Harbor Bank Research",
+      "vertical": "finance",
+      "trust_tier": "primary",
+      "doc_type": "press_release",
+      "title": "Harbor Bank: AI portfolio agents beat a 60/40 portfolio in a 20-year backtest",
+      "body": "Harbor Bank researchers reported that AI portfolio agents beat a 60/40 portfolio by 1.8 percentage points a year in a backtest covering 2005 to 2025, assuming trading costs of 0.1% per trade. The authors cautioned that an in-sample result is not proof of future outperformance."
+    },
+    "finance_news": {
+      "publisher": "Ledger Finance Weekly",
+      "vertical": "finance",
+      "trust_tier": "independent",
+      "doc_type": "news",
+      "title": "Harbor Bank's AI agents: a backtest, not a live track record",
+      "body": "Harbor Bank's result comes from a backtest, not a live track record. The bank has not reported live results for the agents, which it says remain a research project."
+    },
+    "learning_study": {
+      "publisher": "Journal of Learning Research",
+      "vertical": "education",
+      "trust_tier": "primary",
+      "doc_type": "research_peer_reviewed",
+      "title": "AI tutoring and algebra outcomes in ninth grade",
+      "body": "In a randomized study of 600 ninth-grade students in 12 schools, students who used an AI tutor for eight weeks scored 4 points higher on an algebra test than a comparison group. The study did not measure transfer to unfamiliar problems."
+    }
+  }
+}

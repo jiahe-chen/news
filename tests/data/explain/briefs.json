@@ -1,0 +1,166 @@
+{
+ "_about": "Hand-built AI Story Briefs over the fictional sample articles in articles.json, for Section 5 tests. Each brief lists its sources in citation order (c1, c2, ...); claims cite those ids. 'story' creates a Story with one StoryEvent per source.",
+ "briefs": {
+  "model_launch": {
+   "vertical": "technology",
+   "story": true,
+   "articles": ["vendor_launch", "launch_coverage", "independent_eval", "eval_coverage", "correction", "vendor_report"],
+   "headline": "Lumen-4: vendor reports 92.1% on its own benchmark; independent test finds 84.3% on new problems",
+   "summary": "Lumen Labs released Lumen-4 and says it scores 92.1% on the MathBench-Pro benchmark in its own tests [c1]. The Open Evaluation Collective's independent benchmark found Lumen-4 scored 84.3% on 1,200 held-out problems written after its training cutoff (preprint, not peer reviewed) [c3]. A Circuit Ledger article first misstated the independent score and was corrected [c5].",
+   "why_it_matters": "Developers and schools weighing Lumen-4 now have an independent evaluation to compare with the vendor's figures [c3].",
+   "sections": [
+    {"title": "What happened?", "body": "Lumen Labs released Lumen-4 through its paid API [c1][c2].", "citation_ids": ["c1", "c2"]},
+    {"title": "What evidence exists?", "body": "An independent evaluation on held-out problems found 84.3% [c3].", "citation_ids": ["c3"]}
+   ],
+   "claims": [
+    {"text": "Lumen Labs says Lumen-4 scores 92.1% on MathBench-Pro in the company's own testing.", "citation_ids": ["c1"]},
+    {"text": "The Open Evaluation Collective's independent benchmark found Lumen-4 scored 84.3% on a held-out set of 1,200 math problems written after its training cutoff.", "citation_ids": ["c3", "c5"]},
+    {"text": "The Open Evaluation Collective found 6.2% of MathBench-Pro problems appear verbatim in public web data predating Lumen-4's training cutoff.", "citation_ids": ["c3"]},
+    {"text": "Lumen-4 is available only through Lumen Labs' paid API, and its weights are not public.", "citation_ids": ["c2"]},
+    {"text": "Lumen-4 outperforms every competing model on multi-step math problems.", "support_status": "contested", "citation_ids": ["c1", "c3"]}
+   ],
+   "uncertainty": ["The independent evaluation is a preprint and has not been peer reviewed [c3]."],
+   "watch_next": ["Replication of the independent results by a second group [c3]."]
+  },
+  "tutor_launch": {
+   "vertical": "technology",
+   "story": false,
+   "articles": ["tutor_launch"],
+   "headline": "Lumen Labs launches Lumen Tutor, citing pilot data it has not released",
+   "summary": "Lumen Labs launched Lumen Tutor, a math tutoring product built on Lumen-4, at $14 per student per year [c1].",
+   "why_it_matters": "Districts deciding whether to buy the tool have only the vendor's claims so far [c1].",
+   "sections": [],
+   "claims": [
+    {"text": "Lumen Tutor costs $14 per student per year for districts.", "citation_ids": ["c1"]},
+    {"text": "Lumen Labs said Lumen Tutor helps students master math faster, citing internal pilots with 180 students, but did not release data from those pilots.", "citation_ids": ["c1"]}
+   ],
+   "uncertainty": [],
+   "watch_next": []
+  },
+  "learning_study": {
+   "vertical": "education",
+   "story": true,
+   "articles": ["study_press_release", "study_preprint", "study_analysis", "study_opinion"],
+   "headline": "AI practice assistant study: students finished faster, but transfer gains were not significant",
+   "summary": "Halbrook University said its StepWise AI practice assistant helped ninth graders learn algebra 30% faster [c1]. The underlying preprint found students completed exercise sets 31% faster, but the difference on a transfer test of unfamiliar problems was not statistically significant [c2][c3].",
+   "why_it_matters": "Schools need to know whether a tool speeds up practice or improves understanding; these are different measures of learning [c3].",
+   "sections": [
+    {"title": "What does the evidence show?", "body": "Students finished practice sets faster; the transfer difference was not significant [c2].", "citation_ids": ["c2"]}
+   ],
+   "claims": [
+    {"text": "Students using StepWise completed exercise sets in a median of 22 minutes versus 32 minutes for the comparison group.", "support_status": "corroborated", "citation_ids": ["c2", "c3"]},
+    {"text": "On the transfer test, StepWise students scored 61.4% versus 59.6%, a difference that was not statistically significant.", "citation_ids": ["c2"]},
+    {"text": "The study randomly assigned 14 ninth-grade algebra classrooms with 212 students in one Calder school district for eight weeks.", "citation_ids": ["c2"]},
+    {"text": "Halbrook University's “30% faster” claim refers to how quickly students finished practice sets.", "citation_ids": ["c3"]},
+    {"text": "StepWise helped ninth graders learn algebra 30% faster.", "support_status": "contested", "citation_ids": ["c1"]},
+    {"text": "Opinion (The Classroom Dispatch): A learning scientist argues the press release conflated speed with learning.", "claim_type": "opinion", "citation_ids": ["c4"]}
+   ],
+   "uncertainty": ["The study is a preprint and has not been peer reviewed [c2].", "Two authors hold equity in the company that licenses StepWise [c2]."],
+   "disagreements": [
+    {"topic": "Whether StepWise improved learning", "positions": [
+     {"position": "Halbrook University: students learned algebra 30% faster.", "citation_ids": ["c1"]},
+     {"position": "The preprint: faster completion, no significant transfer difference.", "citation_ids": ["c2"]}
+    ]}
+   ],
+   "watch_next": ["Peer-reviewed publication and a longer study with a larger transfer test [c3]."]
+  },
+  "policy": {
+   "vertical": "education",
+   "story": true,
+   "articles": ["policy_adopted", "policy_explainer", "policy_rural", "policy_oped"],
+   "headline": "Calder adopts AI literacy requirement for grades 6-12 with phased rollout through 2029",
+   "summary": "The Calder State Board of Education voted 7-2 to require AI literacy instruction in grades 6-12, starting with a 40-district pilot in 2027-28 [c1]. High school requirements begin in fall 2028 and middle school requirements in fall 2029 [c1][c2].",
+   "why_it_matters": "Teachers, districts, and families face a multi-year rollout whose funding and assessment are not settled [c2].",
+   "sections": [],
+   "claims": [
+    {"text": "The requirement takes effect statewide in fall 2028 for grades 9-12 and in fall 2029 for grades 6-8.", "support_status": "corroborated", "citation_ids": ["c1", "c2"]},
+    {"text": "The Board approved $14 million for teacher training in the first year.", "citation_ids": ["c1"]},
+    {"text": "The requirement does not apply to private schools.", "citation_ids": ["c1"]},
+    {"text": "Superintendents from 23 rural districts asked the Board to delay the requirement by one year.", "citation_ids": ["c3"]},
+    {"text": "The legislature will fund teacher training after the first year.", "support_status": "unverified", "citation_ids": []}
+   ],
+   "uncertainty": ["The Board has not decided whether or how AI literacy will be assessed [c1].", "Funding for later years depends on appropriations by the state legislature [c1]."],
+   "watch_next": ["Draft standards due for public comment by March 2027 [c1]."]
+  },
+  "semiconductor": {
+   "vertical": "industry",
+   "story": true,
+   "articles": ["capacity_announcement", "output_report", "capacity_analysis", "lead_times", "supply_deal", "technicians"],
+   "headline": "Corvane's Calder Valley fab reached 11,500 wafers a month, behind its 15,000 interim target",
+   "summary": "Corvane Semiconductor announced an $8.2 billion expansion projecting 40,000 wafer starts per month by late 2027 [c1]. Fab 3 exited the fiscal third quarter at 11,500 wafer starts per month, short of the 15,000 interim target [c2].",
+   "why_it_matters": "Suppliers, customers, and workers depend on whether the ramp keeps pace with its projections [c3].",
+   "sections": [],
+   "claims": [
+    {"text": "Corvane projects 40,000 wafer starts per month of 3nm-class capacity at Calder Valley Fab 3 by late 2027.", "claim_type": "forecast", "citation_ids": ["c1"]},
+    {"text": "Fab 3 exited Corvane's fiscal third quarter at 11,500 wafer starts per month, short of the 15,000 interim target.", "citation_ids": ["c2"]},
+    {"text": "Orrin Lithography said lead times for its newest lithography systems have stretched to about 18 months.", "citation_ids": ["c4"]},
+    {"text": "Pinecrest Mobile signed a multi-year agreement to source 3nm-class wafers from Corvane's Calder Valley expansion.", "citation_ids": ["c5"]},
+    {"text": "Three Calder community colleges will launch 16-week cleanroom technician certificate programs.", "citation_ids": ["c6"]}
+   ],
+   "uncertainty": ["Corvane has not disclosed when it placed its tool orders [c4]."],
+   "watch_next": ["Reported output against projections each quarter [c2]."]
+  },
+  "backtest": {
+   "vertical": "finance",
+   "story": true,
+   "articles": ["backtest_note", "backtest_wire", "paper_trading", "backtest_opinion"],
+   "headline": "Northbridge's AI portfolio agents beat a 60/40 portfolio in a backtest, not in live trading",
+   "summary": "Northbridge Bank researchers reported that AI portfolio agents returned 7.9% a year versus 6.6% for a 60/40 benchmark in a 2005-2024 backtest [c1][c2]. The agents have no live track record and will enter a 12-month paper-trading pilot [c3].",
+   "why_it_matters": "A backtest shows how a strategy would have done on past data; it is not a live track record [c2].",
+   "sections": [],
+   "claims": [
+    {"text": "In a backtest covering 2005 through 2024, the agents' simulated portfolio returned 7.9% a year versus 6.6% for the 60/40 benchmark.", "claim_type": "performance", "support_status": "corroborated", "citation_ids": ["c1", "c2"], "performance_label": "backtest", "performance_period": "January 2005 through December 2024", "benchmark": "60% global equities / 40% investment-grade bonds"},
+    {"text": "The authors caution that the result is in-sample and is not proof of future outperformance.", "citation_ids": ["c1"]},
+    {"text": "Northbridge said the agents will run in a 12-month paper-trading pilot with no client money.", "citation_ids": ["c3"]},
+    {"text": "Northbridge said the agents are not used for client portfolios.", "citation_ids": ["c2"]}
+   ],
+   "uncertainty": ["The bank has not said whether it plans to test the agents with real money [c2]."],
+   "watch_next": ["Results of the paper-trading pilot, which would be simulated results [c3]."]
+  },
+  "earnings": {
+   "vertical": "finance",
+   "story": false,
+   "articles": ["earnings_release", "earnings_coverage"],
+   "headline": "Corvane reports fiscal Q3 revenue of $3.42 billion, above its guidance range",
+   "summary": "Corvane Semiconductor reported fiscal third-quarter revenue of $3.42 billion, up 18% from a year earlier and above its guidance range of $3.25 billion to $3.40 billion [c1][c2].",
+   "why_it_matters": "Results above the company's own guidance say little on their own; comparisons with the prior year matter more [c2].",
+   "sections": [],
+   "claims": [
+    {"text": "Corvane's fiscal third-quarter revenue was $3.42 billion, compared with $2.90 billion a year earlier.", "support_status": "corroborated", "citation_ids": ["c1", "c2"]},
+    {"text": "Diluted earnings per share were $1.12, compared with $0.91 a year earlier.", "citation_ids": ["c1"]},
+    {"text": "Corvane guided fourth-quarter revenue of $3.60 billion to $3.80 billion.", "claim_type": "forecast", "citation_ids": ["c1"]}
+   ],
+   "uncertainty": [],
+   "watch_next": []
+  },
+  "funding": {
+   "vertical": "finance",
+   "story": false,
+   "articles": ["round_tarnwell", "round_quillfield"],
+   "headline": "Tarnwell Compute raises $220 million Series D led by Orbit Growth Partners",
+   "summary": "AI chip designer Tarnwell Compute raised $220 million in a Series D round led by Orbit Growth Partners [c1].",
+   "why_it_matters": "Funding announcements show where investors are active; they are not verdicts on companies [c1].",
+   "sections": [],
+   "claims": [
+    {"text": "Tarnwell Compute raised $220 million in a Series D round led by Orbit Growth Partners.", "citation_ids": ["c1"]}
+   ],
+   "uncertainty": [],
+   "watch_next": []
+  },
+  "enforcement": {
+   "vertical": "finance",
+   "story": false,
+   "articles": ["enforcement_order", "enforcement_wire", "agent_notice"],
+   "headline": "Regulator fines adviser $310,000 over AI claims; broker-dealer authority proposes agent supervision rules",
+   "summary": "The Markets Integrity Commission settled charges that Brightvane Advisors marketed AI agents it did not use [c1][c2]. Separately, the Broker-Dealer Standards Authority proposed supervision expectations for AI agents at member firms [c3].",
+   "why_it_matters": "Marketing claims about AI are held to the same accuracy rules as other claims [c2].",
+   "sections": [],
+   "claims": [
+    {"text": "Brightvane Advisors agreed to a $310,000 civil penalty without admitting or denying the findings.", "support_status": "corroborated", "citation_ids": ["c1", "c2"]},
+    {"text": "The BDSA proposed that member firms inventory AI agents, set authority limits, and keep audit trails for three years; comments are due in 60 days.", "citation_ids": ["c3"]}
+   ],
+   "uncertainty": [],
+   "watch_next": []
+  }
+ }
+}

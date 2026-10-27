@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>The 74</title>
+	<atom:link href="https://www.the74million.org/feed/" rel="self" type="application/rss+xml" />
+	<link>https://www.the74million.org</link>
+	<description>America&#039;s Education News Source</description>
+	<lastBuildDate>Tue, 27 Oct 2026 04:49:28 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.7.2</generator>
+
+<image>
+	<url>https://www.the74million.org/wp-content/uploads/2022/05/cropped-74_favicon-32x32.png</url>
+	<title>The 74</title>
+	<link>https://www.the74million.org</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Opinion: States Don’t Have to Solve the AI Education Equation Alone. Tennessee Shows How</title>
+		<link>https://www.the74million.org/article/states-dont-have-to-solve-the-ai-education-equation-alone-tennessee-shows-how/</link>
+		
+		<dc:creator><![CDATA[Bree Dusseault and Dana Harrison]]></dc:creator>
+		<pubDate>Tue, 27 Oct 2026 16:30:00 +0000</pubDate>
+				<category><![CDATA[Opinion]]></category>
+		<category><![CDATA[AI]]></category>
+		<category><![CDATA[Artificial Intelligence]]></category>
+		<category><![CDATA[commentary]]></category>
+		<category><![CDATA[Tennessee]]></category>
+		<guid isPermaLink="false">https://www.the74million.org/?post_type=article&#038;p=1041109</guid>
+
+					<description><![CDATA[States are taking different approaches to setting policies and guardrails around how artificial intelligence should be used responsibly. Governors have launched task forces. State education agencies have established committees and issued non-binding guidance. Legislatures have passed laws requiring districts to establish AI policies.&#160; Our research shows that of 29 state education agency respondents to a [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p>States are taking different approaches to setting policies and guardrails around how artificial intelligence should be used responsibly. Governors have launched task forces. State education agencies have established committees and issued non-binding guidance. Legislatures have passed laws requiring districts to establish AI policies.&nbsp;</p>
+
+
+
+<p>Our <a href="https://crpe.org/leading-uncertainty-state-approaches-ai-k12/">research</a> shows that of 29 state education agency respondents to a November 2025 survey, 93% said their state or territory had communicated or planned to communicate a vision for AI in K-12 education. Yet only 43% said they had assisted or planned to assist districts with implementation support, like procurement or vendor pricing. And among the 39 states and territories we studied for our<a href="https://crpe.org/2026-ai-state-early-adopter-database/"> state early adopter database</a>, just 11% had reached what we call the “integrator” stage: moving beyond vision and guidance to pilot programs, evaluation, procurement assistance, standards revisions and implementation strategies.&nbsp;</p>
+
+
+
+<span class="cta_snippet"><hr><p><em>Get stories like this delivered straight to your inbox. </em><a class="arrow" href="https://www.the74million.org/about/newsletters/?utm_source=website&utm_medium=article&utm_campaign=top&utm_id=newsletter"><strong>Sign up for The 74 Newsletter</strong></a></p><hr></span>
+
+
+
+<p>AI presents an unusual policy challenge because both the technology and public opinion continue to evolve quickly. Guidance and task forces alone are not enough. School and district leaders need practical support from states to help them navigate implementation challenges, such as vetting products, generating evidence on what works and building awareness and trust in how AI is used. And states need infrastructure that connects policy to practice and turns scattered local experimentation into shared knowledge. Many state education agencies right now lack the funding or internal expertise to lead all these efforts.&nbsp;</p>
+
+
+
+<p>Given these challenges, intermediary organizations play an important, and increasingly imperative, role in AI integration across schools. A majority of participants in our study reported pursuing partnerships to help with strategy development, implementation or both. Respondents told us these partnerships help expand state capacity and reach, particularly for those with limited internal staff and AI expertise.</p>
+
+
+
+<p>To better understand what these partnerships can look like, we <a href="https://crpe.org/exploration-coherence-score-tennessee-ai-schools/">focused</a> on Tennessee’s State Collaborative on Reforming Education, or <a href="https://tnscore.org/">SCORE</a>. SCORE is a statewide nonprofit with no formal authority over district decisions. Its influence comes instead from longstanding relationships with state leaders, districts, colleges, education funders and philanthropies, and technology providers. Those relationships allow SCORE to play roles that are difficult for many state agencies to sustain on their own.</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/for-many-schools-implementing-ai-has-become-a-minefield-how-congress-can-help/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2026/10/AI-policy-forum-Congress.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">For Many Schools, Implementing AI Has Become a Minefield. How Congress Can Help</h4></div></a></aside>
+
+
+
+<p>For example, SCORE helps Tennessee leaders make sense of a rapidly changing landscape by convening local stakeholders and translating their experiences to inform state strategy. After Tennessee required districts to adopt AI policies addressing safety, academic integrity and risk mitigation, SCORE convened a working group of K-12 and higher education leaders, researchers, industry representatives and other state partners. The group met regularly for roughly 18 months, not merely to trade updates, but to compare strategies, surface implementation problems and ask where AI could support state goals for literacy, instructional quality and career readiness.</p>
+
+
+
+<p>From these conversations, SCORE drafted recommendations for Tennessee’s AI Advisory Council that were ultimately reflected in the state’s <a href="https://www.tn.gov/content/dam/tn/finance/aicouncil/documents/TN%20AI%20Advisory%20Council%20Action%20Plan%20-%20November%202025.pdf">Action Plan</a>. It also used lessons from districts to recommend ways of integrating AI literacy skills into the state’s English language arts standards; the state Board of Education considered those recommendations during its review process.&nbsp;</p>
+
+
+
+<p>SCORE also helps districts navigate an increasingly crowded marketplace of products. Its members spend significant time evaluating emerging tools, understanding district needs and sharing what they learn with educators. SCORE does not endorse particular tools or programs, or dictate purchasing decisions. But in a market where new products appear almost daily, that kind of trusted curation can reduce uncertainty without replacing local decision-making.</p>
+
+
+
+<p>Coursemojo, an AI-enabled literacy tool, illustrates how this can work. SCORE studied the product because <a href="https://coursemojo.com/wp-content/uploads/2025/03/CourseMojo-Mid-Year-Report-Brief-Fall-2024.pdf">early evidence</a> suggested it could embed additional reading support for struggling students within core middle school instruction. After a 2024-25 pilot in Sumner County Schools, SCORE partnered with a local foundation to help fund a larger cohort: seven districts, 20 schools,and more than 4,000 students in 2025-26.</p>
+
+
+
+<p>Teachers reported using the tool’s insights to adjust instruction, while students engaged more deeply with texts and revised their work in response to feedback. All participating district leaders reported being highly satisfied, and teachers said the tool had positively affected student learning. Districts subsequently renewed and expanded the work, often with their own funds. Those findings are not a final verdict on the product, but they provide important evidence about promising tools, the conditions that need to be in place for them to make a difference and the feasibility of implementing them across the district.</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/what-school-and-district-leaders-need-to-know-before-they-invest-in-ai/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2026/06/investing-in-artificial-intelligence-ed-tech.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">What School and District Leaders Need to Know Before They Invest in AI</h4></div></a></aside>
+
+
+
+<p>The Tennessee SCORE model will not look the same in every state, nor should it. An intermediary assisting state AI implementation efforts might be a nonprofit, a university, a technical service provider or a research organization. What matters is that the organization has trust, staying power and the ability to connect people who do not routinely learn and work together.&nbsp;</p>
+
+
+
+<p>Without that coordinated support, better-resourced districts may be able to experiment while smaller and higher-need systems may struggle to evaluate products, establish safeguards or provide meaningful professional learning. In this way, states risk repeating a familiar pattern: widened inequities in students&#8217; access to high-quality learning experiences and appropriate protections.&nbsp;</p>
+
+
+
+<p>The next phase of state AI leadership will be defined less by who publishes the next guidance document than by who builds the infrastructure for continuous learning. Policies establish direction. Partnerships can expand capacity to pursue that direction. Together, they offer states their best chance to move from isolated experiments toward coherent, responsible AI integration that benefits every school and student.&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+<item>
+		<title>Opinion: To Build the Education Systems of the Future, Look to Indianapolis</title>
+		<link>https://www.the74million.org/article/to-build-the-education-systems-of-the-future-look-to-indianapolis/</link>
+		
+		<dc:creator><![CDATA[Brandon Brown]]></dc:creator>
+		<pubDate>Tue, 27 Oct 2026 12:30:00 +0000</pubDate>
+				<category><![CDATA[Opinion]]></category>
+		<category><![CDATA[charter schools]]></category>
+		<category><![CDATA[commentary]]></category>
+		<category><![CDATA[enrollment]]></category>
+		<category><![CDATA[Indianapolis]]></category>
+		<category><![CDATA[opinion]]></category>
+		<category><![CDATA[school choice]]></category>
+		<guid isPermaLink="false">https://www.the74million.org/?post_type=article&#038;p=1041104</guid>
+
+					<description><![CDATA[It’s easy to feel like America’s public education system is defined by stagnation and decline.&#160; A falling national birth rate is putting more pressure on public school enrollment, even as more families choose private schools or homeschooling. Meanwhile, according to the latest PISA results, American reading scores just hit a generational low. In too many [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p>It’s easy to feel like America’s public education system is defined by stagnation and decline.&nbsp;</p>
+
+
+
+<p>A falling national birth rate is putting more pressure on public school enrollment, even as more families choose private schools or homeschooling. Meanwhile, according to the <a href="https://www.the74million.org/article/global-test-scores-hit-new-lows-just-as-ai-takes-hold-in-schools/">latest PISA results</a>, American reading scores just hit a generational low. In too many cities and communities, it all adds up to a broken status quo with no solutions in sight.</p>
+
+
+
+<p>Yet there are reasons to be hopeful. <a href="https://www.the74million.org/tag/indianapolis/">Indianapolis</a>, long a leader in education reform, offers one of them. This year, statewide proficiency rates on ILEARN—Indiana’s state test—barely moved. Schools run directly by Indianapolis Public Schools, our city’s largest school district, posted stagnant or even declining proficiency levels. Indianapolis charter schools, however, achieved gains that far exceeded state and local averages. That includes both independent charters and innovation charters that partner with the district for services.</p>
+
+
+
+<p>This isn’t a one-year blip. <a href="https://www.indystar.com/story/news/education/2026/05/21/indiana-charters-edged-traditional-schools-in-academic-gains-post-covid-study-shows/90192467007/">Since the pandemic</a>, charter and innovation schools have achieved significant English Language Arts and math proficiency gains across nearly every student subgroup. For example, Black and Hispanic students at innovation charter schools achieved ELA gains at more than four times the rate of their peers at schools directly run by IPS. Additionally, Black, Hispanic and low-income students who attend independent charter schools are two to three times more likely to achieve academic proficiency than their peers in traditional IPS schools.</p>
+
+
+
+<p>No doubt, overall proficiency remains too low for schools of all types. But Indianapolis charter schools are on an unmistakably positive trajectory. It bears out the theory of change that charter schools are built on: Give talented school leaders autonomy, hold them accountable for results, and significant learning gains usually follow.</p>
+
+
+
+<p>Global Preparatory Academy is a prime example of this theory in action. The school launched on the campus of a shuttered, chronically low-performing district school in 2016. Over the past decade, Global Prep has made steady academic progress and tripled its enrollment. This trajectory led school leadership to <a href="https://www.chalkbeat.org/indiana/2026/01/15/global-prep-expands-middle-school-martindale-brightwood/">add a second campus</a> to house their middle school grades in order to meet the demand from families. Examples like this are found across Indianapolis.</p>
+
+
+
+<p>Contrast the growth of schools like Global Prep with the reality that traditional IPS schools just saw their <a href="https://www.wfyi.org/education/2026-01-29/ips-experiences-biggest-enrollment-loss-since-pandemic-state-records-show">largest single-year enrollment drop</a> since the pandemic. Over the past two years, enrollment in those IPS schools has declined by 9%. Nothing suggests this trend will reverse in the coming years. As a result, IPS faces a $44 million budget deficit this year that is forcing the district into multiple rounds of budget cuts. Financial pressures will only rise if enrollment keeps falling. Many major public school districts nationwide are in a similar boat. </p>
+
+
+
+<p>Recognizing this reality and seeking to build on charter schools’ strong performance, Indiana legislative leaders took bold action earlier this year to establish the <a href="https://www.the74million.org/article/indianapolis-already-leads-on-charters-now-its-going-even-further/">Indianapolis Public Education Corporation</a>. This new body is designed to bring greater coherence to our city’s choice-filled education landscape and create operational efficiencies for the district. Its nine members are appointed by the mayor and represent IPS, local charter schools, and community leadership.</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/indianapolis-already-leads-on-charters-now-its-going-even-further/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2026/04/indianapolis-charter-vs-public-schools.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">Indianapolis Already Leads on Charters. Now It’s Going Even Further</h4></div></a></aside>
+
+
+
+<p>One of IPEC’s first moves was to <a href="https://www.wfyi.org/education/2026-10-14/heres-what-you-need-to-know-about-the-95m-ballot-question-for-ips-and-charter-schools">advance a property tax referendum</a> on behalf of IPS and charter schools. If the ballot question passes this November, it will mark the first time in IPS’ history that a referendum will be fully shared between traditional public schools and charters. While nearly double the amount of the previous operating referendum supporting IPS, it has received little organized opposition as leaders from different school types collectively advocate for its passage.</p>
+
+
+
+<p>Another of IPEC’s key responsibilities is to create a unified accountability framework that applies to all public schools within IPS boundaries. During a July board meeting, IPEC unveiled a vision for a <a href="https://www.indianapolispubliceducationcorporation.com/_files/ugd/526b6d_5a5349f570544967a8a1f18f84ba2114.pdf">shared performance framework</a> meant to replace the patchwork that exists across IPS and multiple charter school authorizers. IPEC’s framework will provide a mechanism to address schools that consistently struggle to improve student outcomes and inform difficult closure decisions with consistency across school types. </p>
+
+
+
+<p>It will be the responsibility of IPS and charter authorizers to implement this framework. Most importantly, all schools will be held to the same standards, and the accountability framework will align with IPEC’s facilities plan to ensure that the best school operators gain access to more space and underutilized buildings are taken offline.</p>
+
+
+
+<p>IPEC’s work has not been without controversy. Many traditional public school supporters worry that the school district is losing out in this new, more unified system. Recent actions by the district are stark reminders of why these governance changes were necessary.&nbsp;</p>
+
+
+
+<p>While IPS announced plans to withdraw from Indianapolis’ family-friendly<a href="https://www.the74million.org/article/bid-for-better-district-charter-school-collaboration-in-indianapolis-has-setback/"> unified enrollment system</a>, IPEC has the statutory authority to ensure all schools participate in a unified enrollment system, although it hasn’t yet invoked it. And as IPS threatens to<a href="https://www.axios.com/local/indianapolis/2026/10/07/ips-plans-to-cancel-charter-school-agreements-innovation-network"> terminate contracts</a> with innovation charter schools, IPEC will soon take over management of district facilities and create a system-level transportation system, thereby allowing charter schools to operate without district interference.</p>
+
+
+
+<p>IPS will soon become one of many operators, alongside charter schools, that will compete on a single playing field. Great schools will expand, and low-performing schools will close — regardless of type.&nbsp;</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/bid-for-better-district-charter-school-collaboration-in-indianapolis-has-setback/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2026/09/Indianapolis-enrollment.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">Bid for Better District — Charter School Collaboration in Indianapolis Has a Setback</h4></div></a></aside>
+
+
+
+<p>Here’s the lesson for other cities: Policymakers should pair school-level autonomy with system-level accountability and shared infrastructure. This enables the conditions that make charter schools successful to be replicated across more schools, while ensuring the system writ large becomes sustainable for generations to come.</p>
+
+
+
+<p>As the country grapples with declining enrollment and increasing school options, will education decisions be driven by a desire to protect the status quo, or will leaders take bold action to create a sustainable system of high-quality public schools? That’s the question education leaders and policymakers in other geographies should be asking themselves.&nbsp;</p>
+
+
+
+<p>Putting our collective head in the sand isn’t a solution. Leaders must act now to build the school systems of the future — before it’s too late.</p>
+
+
+
+<p><em>Disclosure: The Mind Trust provides financial support to</em><a href="https://www.the74million.org/about/supporters/"><em> </em><em>The 74</em></a><em>.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+<item>
+		<title>Opinion: We Can&#8217;t Close the Literacy Gap Until We Close the Honesty Gap</title>
+		<link>https://www.the74million.org/article/we-cant-close-the-literacy-gap-until-we-close-the-honesty-gap/</link>
+		
+		<dc:creator><![CDATA[Arne Duncan]]></dc:creator>
+		<pubDate>Mon, 26 Oct 2026 14:30:00 +0000</pubDate>
+				<category><![CDATA[Opinion]]></category>
+		<category><![CDATA[accountability]]></category>
+		<category><![CDATA[commentary]]></category>
+		<category><![CDATA[opinion]]></category>
+		<category><![CDATA[outcomes-based contracting]]></category>
+		<category><![CDATA[school funding]]></category>
+		<guid isPermaLink="false">https://www.the74million.org/?post_type=article&#038;p=1041035</guid>
+
+					<description><![CDATA[According to a recent Gallup poll, roughly 88% of parents believe their child is performing at or above grade level in reading and math. Yet the reality is quite the opposite: the National Assessment of Educational Progress found that only 31% of fourth graders are proficient readers. We have an honesty gap in American education. [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p>According to a recent <a href="https://urldefense.com/v3/__https://www.gallup.com/analytics/513881/parents-perspectives-on-grades.aspx__;!!ELB0SHoI5QTzoW6b!gwLt0pU1safzsDkPLi_YhFH2Q_g09QxaCmxyd9NxRmUCdVmmcnLRSKuSNgq1uuFreFZvxzyIH3nj7N6yg83mww$">Gallup poll</a>, roughly 88% of parents believe their child is performing at or above grade level in reading and math. Yet the reality is quite the opposite: the National Assessment of Educational Progress found that<a href="https://www.the74million.org/article/new-naep-scores-dash-hope-of-post-covid-learning-recovery/"> only 31% of fourth graders</a> are proficient readers.</p>
+
+
+
+<p>We have an honesty gap in American education.</p>
+
+
+
+<span class="cta_snippet"><hr><p><em>Get stories like this delivered straight to your inbox. </em><a class="arrow" href="https://www.the74million.org/about/newsletters/?utm_source=website&utm_medium=article&utm_campaign=top&utm_id=newsletter"><strong>Sign up for The 74 Newsletter</strong></a></p><hr></span>
+
+
+
+<p>The gap is not simply between perception and reality. It is the gap between what students and families are told about progress and what academic outcomes ultimately reveal. Families cannot address challenges they do not fully understand, and schools cannot solve problems they are unwilling to name.</p>
+
+
+
+<p>It’s also a gap between what school districts are paying for and what they’re getting in return. Every fall, districts invest millions of dollars in programs designed to improve student achievement. They invest heavily in educational resources which often start with the best intentions: adopting new curricula, purchasing technology, hiring tutoring providers and launching new interventions.</p>
+
+
+
+<p>That challenge is particularly important given the scale of educational spending. More broadly, contracted educational services account for approximately<a href="https://urldefense.com/v3/__https://nces.ed.gov/programs/coe/indicator/cmb/public-school-expenditure__;!!ELB0SHoI5QTzoW6b!gwLt0pU1safzsDkPLi_YhFH2Q_g09QxaCmxyd9NxRmUCdVmmcnLRSKuSNgq1uuFreFZvxzyIH3nj7N62-2Tg1w$"> 11% of school expenditures,</a> or roughly $100 billion annually. National assessments show that reading and math achievement<a href="https://urldefense.com/v3/__https://www.nationsreportcard.gov/ltt/2025/__;!!ELB0SHoI5QTzoW6b!gwLt0pU1safzsDkPLi_YhFH2Q_g09QxaCmxyd9NxRmUCdVmmcnLRSKuSNgq1uuFreFZvxzyIH3nj7N522uuhKw$"> remain below pre-pandemic levels</a>, with proficiency rates still lagging where they stood just a few years ago.</p>
+
+
+
+<p>We can readily track how much money is spent, but we are often far less transparent about whether those investments are improving student learning.</p>
+
+
+
+<p>And that&#8217;s particularly troubling because there is no more important investment we make as a society than the investment we make in our children. Taxpayers devote hundreds of billions of dollars to public education every year. Every education dollar represents an investment in our future workforce, our communities, and the next generation of leaders. That&#8217;s why we are right to expect evidence that those investments are producing meaningful results for students.</p>
+
+
+
+<p>We need a fundamental shift in how we think about educational spending and one place to start is the way districts purchase products and services. Specifically, a shift to aligning incentives around student success by way of <a href="https://www.the74million.org/tag/outcomes-based-contracts/">outcomes-based contracting</a>.</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/equity-impact-transparency-rethinking-ed-vendor-contracts-after-esser/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2024/09/ESSER-school-contracts-post-COVID.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">Equity, Impact, Transparency: Rethinking Ed Vendor Contracts After ESSER</h4></div></a></aside>
+
+
+
+<p>For far too long, success in the education marketplace has been determined by what providers can sell rather than by what students learn. Regardless of whether their products meaningfully improve academic outcomes, service providers have largely been paid when contracts are signed.</p>
+
+
+
+<p>Under the outcomes-based contracting approach, however, districts and providers establish clear goals at the start of a partnership. They agree on how progress will be measured, how results will be reviewed, and how both parties will respond if students do not make the expected gains.<strong> </strong>That level of accountability should be welcomed by service providers because it rewards those who are confident in their ability to improve student outcomes and exposes those whose promises do not translate into results.</p>
+
+
+
+<p>Recent independent research supports this approach. <a href="https://urldefense.com/v3/__https://www.wested.org/resource/evaluation-of-outcomes-based-contracting/__;!!ELB0SHoI5QTzoW6b!gwLt0pU1safzsDkPLi_YhFH2Q_g09QxaCmxyd9NxRmUCdVmmcnLRSKuSNgq1uuFreFZvxzyIH3nj7N6ZpYRzfA$">A WestEd evaluation</a> of outcomes-based contracting found that the model strengthened district-provider collaboration, reinforced shared accountability and, when implemented under the right conditions, contributed to improved student outcomes. Researchers also found that participating districts did not spend more than they would under traditional contracts while often receiving greater implementation support and tying a meaningful share of payment to student outcomes.</p>
+
+
+
+<p>We’re<a href="https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.aol.com%2Farticles%2Fsouth-bend-schools-embrace-outcome-093342000.html&amp;data=05%7C02%7CPR%40respublicagroup.com%7Cb10adbc2d2ff46b1bdb708df297d4486%7C78c00daa4aad4cc48e70a4b4443847da%7C0%7C0%7C639275290142920341%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&amp;sdata=Qh26yGQM10SaH4grV1mkGXy8CSEGJbFqc0wQmsCSVWc%3D&amp;reserved=0"> beginning to see</a> districts put that idea into practice. In South Bend, Indiana, the school district recently entered into an outcomes-based literacy contract that establishes clear expectations for implementation and ties a portion of payment to measurable student results.</p>
+
+
+
+<p>Families can handle bad news because at least that gives them the option to do something about it. If a student is behind in reading or math, parents deserve to know. If a program is not producing results, communities deserve to know that, too. Transparency is about creating the urgency required to improve and not about assigning blame.</p>
+
+
+
+<p>As scrutiny of educational outcomes continues to grow, the conversation should shift from whether or not a program was implemented to whether or not a program improved student learning.</p>
+
+
+
+<p>That expectation should extend to both literacy and numeracy. We all deserve a clear understanding of whether children are developing the reading and math skills necessary to succeed, and schools deserve systems that measure success through student outcomes rather than activity alone.</p>
+
+
+
+<p>It is what students deserve.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+<item>
+		<title>Opinion: Will NYC Try an Integration Plan That Failed Spectacularly in San Francisco?</title>
+		<link>https://www.the74million.org/article/will-nyc-try-an-integration-plan-that-failed-spectacularly-in-san-francisco/</link>
+		
+		<dc:creator><![CDATA[Alina Adams]]></dc:creator>
+		<pubDate>Sun, 25 Oct 2026 10:30:00 +0000</pubDate>
+				<category><![CDATA[Opinion]]></category>
+		<category><![CDATA[commentary]]></category>
+		<category><![CDATA[Integration]]></category>
+		<category><![CDATA[k-12]]></category>
+		<category><![CDATA[New York City]]></category>
+		<category><![CDATA[opinion]]></category>
+		<guid isPermaLink="false">https://www.the74million.org/?post_type=article&#038;p=1041013</guid>
+
+					<description><![CDATA[At a town hall meeting on October 20, Nikole Hannah-Jones peppered Chancellor of New York City Public Schools Kamar Samuels with questions regarding his and Mayor Zohran Mamdani’s vision for America’s largest public schools system. Among Hannah-Jones’ suggestions for improvement was a plan that had, just the week before, been repealed in San Francisco after [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p>At a <a href="https://gothamist.com/news/parents-grumble-as-nyc-schools-chancellor-dodges-calls-for-nyc-schools-integration-plan">town hall meeting</a> on October 20, Nikole Hannah-Jones peppered Chancellor of New York City Public Schools Kamar Samuels with questions regarding his and Mayor Zohran Mamdani’s vision for America’s largest public schools system. Among Hannah-Jones’ suggestions for improvement was a plan that had, just the week before, been repealed in San Francisco after 15 years of community dissatisfaction — and disastrous results.</p>
+
+
+
+<p>When it came to raising achievement in NYC schools, Hannah-Jones did not ask Samuels to answer for the institutions which, last month, she so <a href="https://www.nytimes.com/2026/09/20/magazine/ny-public-schools-black-students-segregation.html">publicly accused</a> of failing her daughter during the time when Samuels was Brooklyn District 13’s superintendent. Instead, what she wanted to know was whether Samuels and Mandani would be implementing former Mayor Bill de Blasio’s Diversity Task Force recommendations which included getting rid of schools which look at grades or test scores for admissions, and redrawing, or possibly doing away altogether, with residential school zones.&nbsp;</p>
+
+
+
+<span class="cta_snippet"><hr><p><em>Get stories like this delivered straight to your inbox. </em><a class="arrow" href="https://www.the74million.org/about/newsletters/?utm_source=website&utm_medium=article&utm_campaign=top&utm_id=newsletter"><strong>Sign up for The 74 Newsletter</strong></a></p><hr></span>
+
+
+
+<p>Samuels pointed to Manhattan’s District 3 which, under his stewardship, did <a href="https://www.the74million.org/article/adams-nyc-middle-school-screening-the-great-district-divide/">get rid of middle school screening</a>, despite his own official poll indicating local families were against the move. Perhaps that’s why now, he’s advocating for <a href="https://www.the74million.org/article/nycs-mayor-asked-for-parents-opinions-on-schools-heres-what-some-have-to-say/">soliciting stake-holders’ buy-in</a> instead of dictating top-down policies.&nbsp;</p>
+
+
+
+<p>Even before Samuels got there, that same District 3, in 2016, <a href="https://www.politico.com/states/new-york/city-hall/story/2016/11/contentious-school-rezoning-on-upper-west-side-passes-after-years-of-protest-107566">rezoned three elementary schools</a>. The high-performing, majority wealthy 452 was moved into the building then housing PS 191, a low-performing, majority low-income school. PS 191 received a brand new building as a means for enticing more families to attend. At the same time, the highest-performing and wealthiest school of them all, PS 199, had its attendance zone amended to include a portion of students from the Amsterdam Houses, with the rest of the kids from that housing project divided between the newly relocated 452 and 191.</p>
+
+
+
+<p>The stated goal was i<a href="https://www.the74million.org/tag/integration/">ntegration</a>, which would, presumably, in and of itself, instantly lead to higher achievement for all children. However, what actually happened is that the ranking driven primarily by test scores at PS 452 <a href="https://www.schooldigger.com/go/NY/schools/0007806187/school.aspx">slipped 9 percentile points</a> over the past decade, <a href="https://www.schooldigger.com/go/NY/schools/0007802677/school.aspx">6 percentile points</a> at 199, and remained <a href="https://www.schooldigger.com/go/NY/schools/0007802655/school.aspx">“well below” average</a> at 191.</p>
+
+
+
+<p>Meanwhile, in Manhattan’s District 1, all elementary schools were unzoned in 1989, allowing any family to apply to any school in the district. The goal was, once again, integration leading to presumed rising achievement. Instead, at <a href="https://insideschools.org/school/01M315">PS 19</a>, where 46% of students qualify for free and reduced-price meals, 81% of students are performing at grade level in math and reading. At <a href="https://insideschools.org/school/01M364">Earth School</a>, where 62% are FRL, 42% are at grade level in math and 68% in English. At <a href="https://insideschools.org/school/01M134">PS 134</a> the FRL number is 100%. Only a quarter of the students are performing at grade level in either subject.</p>
+
+
+
+<p>At all of the schools listed above, as I’ve <a href="https://www.the74million.org/article/adams-the-surprising-numbers-behind-which-new-york-city-schools-actually-educate-students/">reported repeatedly</a>, the students whose families could afford to pay for them to prep for the state tests continued to perform well, and those who couldn’t, mostly didn’t.&nbsp;</p>
+
+
+
+<p>This would suggest that integration through rezoning or the even more extreme unzoning isn’t the one-size-fits-all-solution for lagging student achievement its supporters insist it is.&nbsp;</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/parents-should-not-feel-guilty-about-choosing-a-good-school/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2026/09/nikole-hannah-jones-essay.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">Parents Should Not Feel Guilty About Choosing a Good School</h4></div></a></aside>
+
+
+
+<p>And if District 1 and District 3 examples aren’t enough evidence of that, there is San Francisco which, in 2011, replaced its previous system of zoning and federal racial quotas with a citywide choice lottery, with some set-aside priority for students coming from areas with historically low standardized test scores. The goal was integration and raising student achievement. This October 13, San Francisco Unified School District voted to scrap the entire thing and return to a system of residential zones with options to apply to specialized programs across the city. Pretty much what NYC has now with its <a href="https://www.the74million.org/article/adams-more-gifted-talented-classes-would-help-school-diversity-in-new-york-city-not-harm-it-heres-why/">Gifted &amp; Talented</a> and <a href="https://www.educationnext.org/who-really-benefits-from-dual-language-education/">Dual Language</a> programs.&nbsp;</p>
+
+
+
+<p>SFSUD Superintendent Maria Su <a href="https://www.sfusd.edu/announcements/2026-10-20-historic-step-toward-great-neighborhood-school-every-student">explained her reasons</a> for the change as “I chose this direction because the current system has not worked equally for everyone. Many families who do not feel confident in their neighborhood school choose to go elsewhere, which leaves those schools with fewer students and fewer resources. At the same time, not all families have had equal access to school choice. The current system often favors families with the time, language access, and resources to navigate a complicated process.”</p>
+
+
+
+<p>Which is a polite way of saying that, as it stands, <a href="https://thevoicesf.org/school-district-description-of-student-test-scores-as-very-promising-results-called-into-question/">test scores</a> for the neediest students demonstrate them falling further behind, while 30% of San Francisco children in grades kindergarten through 12th grade attend private schools, <a href="https://www.kqed.org/news/12037206/why-is-private-schooling-so-popular-in-the-san-francisco-bay-area">far exceeding</a> the California state average of around 8% This bluest of blue cities is also <a href="https://www.seattletimes.com/seattle-news/data/seattle-private-school-enrollment-spikes-ranks-no-2-among-big-cities/">ranked No. 1 nationally</a> on that metric.&nbsp;</p>
+
+
+
+<p>It would be silly to suggest that there is one magic bullet for fixing everything which ails NYC’s — and America’s — schools. A phenomenal amount of work needs to be done across the board in everything from the <a href="https://www.the74million.org/tag/science-of-reading/">science of reading</a> to effective <a href="https://www.the74million.org/tag/math-instruction/">math instruction</a> to improving <a href="https://www.the74million.org/tag/attendance/">attendance</a> and <a href="https://www.the74million.org/tag/teacher-quality/">teacher quality</a>.</p>
+
+
+
+<p>But it is just as silly to suggest, as Nikole Hannah-Jones and others do, that integration via rezoning or unzoning is the obvious and all-encompassing solution. Especially in light of its failure to produce academic success for the lowest-served students not just in NYC, but at other locations, too.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+<item>
+		<title>Supreme Court to Weigh Discrimination Against Asian Students at K-12 Schools</title>
+		<link>https://www.the74million.org/article/supreme-court-to-weigh-discrimination-against-asian-students-at-k-12-schools/</link>
+		
+		<dc:creator><![CDATA[Linda Jacobson]]></dc:creator>
+		<pubDate>Tue, 27 Oct 2026 14:30:00 +0000</pubDate>
+				<category><![CDATA[News]]></category>
+		<category><![CDATA[Boston]]></category>
+		<category><![CDATA[education]]></category>
+		<category><![CDATA[k-12]]></category>
+		<category><![CDATA[magnet schools]]></category>
+		<category><![CDATA[Maryland]]></category>
+		<category><![CDATA[Montgomery County]]></category>
+		<category><![CDATA[Supreme Court]]></category>
+		<guid isPermaLink="false">https://www.the74million.org/?post_type=article&#038;p=1041113</guid>
+
+					<description><![CDATA[In early 2024, the Supreme Court declined to hear a lawsuit over a northern Virginia district’s efforts to create more diversity at its top-ranked, selective high school.&#160; Justices Samuel Alito and Clarence Thomas dissented. They called the lower court’s decision to uphold the admissions system at Thomas Jefferson High School for Science and Technology in [&#8230;]]]></description>
+										<content:encoded><![CDATA[
+<p>In early 2024, the Supreme Court declined to hear a lawsuit over a northern Virginia district’s efforts to create more diversity at its top-ranked, selective high school.&nbsp;</p>
+
+
+
+<p>Justices Samuel Alito and Clarence Thomas dissented. They called the lower court’s decision to uphold the admissions system at Thomas Jefferson High School for Science and Technology in Fairfax County “a virus that may spread if not promptly eliminated.”&nbsp;</p>
+
+
+
+<p>Families, most of them Asian Americans, sued the district after it changed rigorous admissions criteria to open up more seats for Black and Hispanic students.&nbsp;</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/supreme-court-wont-hear-challenge-to-admissions-policy-at-elite-virginia-high-school/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2024/02/thomas-jefferson-high-school.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">Supreme Court Won’t Hear Challenge to Admissions Policy at Elite Va. High School</h4></div></a></aside>
+
+
+
+<p>Alito and Thomas objected again 10 months later when the court <a href="https://www.the74million.org/article/scotus-passes-on-hearing-affirmative-action-case-involving-elite-boston-schools/">rejected a similar case</a> from Boston. Now, with <a href="https://pacificlegal.org/press-release/maryland-parents-win-supreme-court-review-of-magnet-school-admissions/">last week’s announcement</a> that the justices will hear a lawsuit over a Maryland district’s four magnet middle schools, they’ll finally get the chance to put such admission policies on trial. The outcome could affect other districts’ efforts to integrate competitive schools.</p>
+
+
+
+<p>“We allege that the board members did this for racial-balancing purposes,” said Chris Kieser, a senior attorney with the Pacific Legal Foundation. The conservative firm represents the <a href="https://www.supremecourt.gov/DocketPDF/26/26-12/415230/20260629115956010_FINAL%20AFEF%20PETITION.pdf">Asian American parents who sued</a> the Montgomery County Public Schools in 2020 after the district revised a mostly merit-based admissions process for the humanities- and STEM-focused schools. &nbsp;</p>
+
+
+
+<figure class="wp-block-image size-full"><img fetchpriority="high" decoding="async" width="1000" height="667" src="https://www.the74million.org/wp-content/uploads/2026/10/samuel-alito-and-clarence-thomas.jpg" alt="" class="wp-image-1041121" srcset="https://www.the74million.org/wp-content/uploads/2026/10/samuel-alito-and-clarence-thomas.jpg 1000w, https://www.the74million.org/wp-content/uploads/2026/10/samuel-alito-and-clarence-thomas-300x200.jpg 300w, https://www.the74million.org/wp-content/uploads/2026/10/samuel-alito-and-clarence-thomas-750x500.jpg 750w, https://www.the74million.org/wp-content/uploads/2026/10/samuel-alito-and-clarence-thomas-193x129.jpg 193w, https://www.the74million.org/wp-content/uploads/2026/10/samuel-alito-and-clarence-thomas-768x512.jpg 768w" sizes="(max-width: 1000px) 100vw, 1000px" /><figcaption class="wp-element-caption">Supreme Court Justices Samuel Alito and Clarence Thomas pushed to hear cases on K-12 selective admissions policies. (Chip Somodevilla/POOL/AFP via Getty Images)</figcaption></figure>
+
+
+
+<p>The change came after a 2016 <a href="https://www.montgomeryschoolsmd.org/info/choice/implications">consultant’s report</a> found that Black and Hispanic students were underrepresented in district programs for high-achievers. Districts have been prohibited from explicitly using race to achieve greater diversity <a href="https://www.oyez.org/cases/2006/05-908">since 2007</a>. But Kieser said the parent group, the Association for Education Fairness, was never able to prove discrimination against Asian students because they couldn’t first produce the statistical evidence the court wanted.</p>
+
+
+
+<p>That’s why the question before the court is narrow: Do parents challenging a neutral admissions policy have to prove that the proportion of students from a specific racial group fell below a certain benchmark before the court can consider whether district leaders intended to discriminate?&nbsp;</p>
+
+
+
+<p>That standard, known as disparate impact, is one that the Trump administration <a href="https://www.the74million.org/article/justice-dept-action-leaves-feds-without-key-tool-to-prove-bias-in-schools/">no longer considers</a> when examining civil rights complaints over issues like racial disparities in school discipline or special education. In this case, the legal theory was standing in the way of getting to the “meat of the case,” Kieser said.&nbsp;</p>
+
+
+
+<p>The families want the court to send the case back to the U.S. Court of Appeals for the Fourth Circuit, which dismissed it, and then to the district court for a full hearing.&nbsp;</p>
+
+
+
+<p>The district urged the court to reject it.</p>
+
+
+
+<p>“Montgomery County Public Schools remains committed to providing equitable access to rigorous opportunities for all students,” spokeswoman Liliana López said in a statement. “This commitment will continue uninterrupted as the judicial process proceeds.”</p>
+
+
+
+<p>The court is expected to hear the case early next year and issue a ruling in late June.</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/after-havard-ruling-will-admissions-policies-at-elite-k-12-schools-be-next/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2023/07/harvard-k-12-stuyvesant-education-supreme-court-new-york.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">After Harvard Ruling, Will Admissions Policies at Elite K-12 Schools Be Next?</h4></div></a></aside>
+
+
+
+<h3 class="wp-block-heading"><strong>‘Lost seats’</strong></h3>
+
+
+
+<p>Following the consultant’s report, the diverse suburban district outside Washington, D.C., held a series of community forums in which board members discussed equity goals for the competitive magnet schools and Asian American parents voiced concern that their children would have fewer opportunities to attend.&nbsp;</p>
+
+
+
+<p>The new system favored students who didn’t attend elementary school with a lot of gifted peers. Unlike Black and Hispanic students who are spread across the district, Asian-American students are concentrated in a small handful of elementary schools.&nbsp;</p>
+
+
+
+<p>The process also included a cognitive ability test in which students’ scores were compared to those from schools with similar poverty levels. The fact that most Asian students attend low-poverty, high-achieving schools in the district worked against them because they had to score much higher on the test to earn a spot, according to the <a href="https://pacificlegal.org/wp-content/uploads/2020/08/AFEF-v.-Montgomery-County-Public-Schools-Complaint.pdf">2020 complaint</a>.&nbsp;</p>
+
+
+
+<p>“While white, Black and Hispanic students have all benefited from the changes,</p>
+
+
+
+<p>Asian Americans have lost seats,” the parents’ attorneys wrote. “Overwhelming public evidence exists that the new criteria were adopted with the purpose to disadvantage Asian American students and reduce Asian American enrollment at these schools. As such, the changes violate the Equal Protection Clause.”</p>
+
+
+
+<p>During pandemic school closures, when students were unable to take the test in person, the district switched to a lottery for admissions, using existing standardized test scores. The parent group argued that the change still harmed their children and was made without any public hearings.</p>
+
+
+
+<p>The <a href="https://www.supremecourt.gov/DocketPDF/26/26-12/421289/20260827123353617_MCPS%20BIO%20-%208-27-26%20Final.pdf">district said</a> officials followed ordinary procedures, and during the first year of the “pandemic plan,” the proportion of Asian American students actually increased at two of the schools.</p>
+
+
+
+<p>Ary Amerikaner has watched the changes play out both professionally and personally. She runs Brown’s Promise, a nonprofit focused on school integration. She also has two daughters in Montgomery County elementary schools. Identifying talented students faced with significant obstacles, she said, is progress.&nbsp;</p>
+
+
+
+<p>“If MCPS has chosen to recognize the giftedness of students who are achieving academically, despite being classrooms with poverty, and give them a boost in the admissions process, that&#8217;s excellent,” she said. “That&#8217;s exactly what public education should be — a path out of poverty.”</p>
+
+
+
+<h3 class="wp-block-heading"><strong>Circuit split</strong></h3>
+
+
+
+<p>Scrutiny of selective admissions at competitive K-12 schools increased as the Supreme Court was considering racial preferences in higher education.&nbsp;</p>
+
+
+
+<p>After the <a href="https://www.oyez.org/cases/2022/20-1199">court sided</a> with Students for Fair Admissions in cases against Harvard College and the University of North Carolina in 2023, experts wondered whether the justices would take the Fairfax County case.&nbsp;</p>
+
+
+
+<p>At the time, Richard Kahlenberg, an expert on integration and the director of housing policy at the Progressive Policy Institute, said the court didn’t have “an appetite” for eliminating integration programs based on socioeconomic status or geography. That seemed even more clear when the court turned down both the Fairfax County and Boston cases.&nbsp;</p>
+
+
+
+<p>But Kieser explained that the court likely didn’t agree to hear the earlier complaints because the legal questions needed “more time to percolate in the lower courts.” Now there’s a clear split.&nbsp;</p>
+
+
+
+<p>“In the First and Fourth circuits, a challenger does not even get off the ground without a showing that the admissions criteria suppressed the targeted group’s enrollment at least below the group’s share of the applicant pool,” the Pacific Legal Foundation team wrote in <a href="https://www.supremecourt.gov/DocketPDF/26/26-12/415230/20260629115956010_FINAL%20AFEF%20PETITION.pdf">their petition</a>. The Second and Third circuits don’t require those alleging discrimination to meet that threshold.</p>
+
+
+
+<p>“I think one reason the court liked it is because the facts are not complicated,” he said.&nbsp;</p>
+
+
+
+<aside class="inline_story shortcode simple"><a href="https://www.the74million.org/article/new-research-school-pairings-can-foster-racial-socioeconomic-integration/"><figure style="background-image: url(https://www.the74million.org/wp-content/uploads/2025/03/school-pairing-research-integration.jpg);"></figure><div><span class="sans related_tag">Related</span><h4 class="sans">New Research: School ‘Pairings’ Can Foster Racial, Socioeconomic Integration</h4></div></a></aside>
+
+
+
+<p>Michael Petrilli, president of the conservative Thomas B. Fordham Institute, also a Montgomery County parent, said it was “particularly interesting that the Supreme Court is wading into the question of intent at a time when the Trump folks have argued, in other contexts, that we should move away from ‘disparate impact analysis.’ “</p>
+
+
+
+<p><a href="https://www.federalregister.gov/documents/2025/12/10/2025-22448/rescinding-portions-of-department-of-justice-title-vi-regulations-to-conform-more-closely-with-the">In December</a>, the Justice Department rescinded a 50-year-old rule that said schools could be held responsible if a neutral policy or action, according to data, negatively affected students of a specific race or nationality. People should only be treated as individuals, not part of a particular group, officials said.&nbsp;</p>
+
+
+
+<p>But Joshua Dunn, executive director of the Institute of American Civics at the University of Tennessee, Knoxville, said he could see how the Montgomery County case would appeal to both conservatives and liberals on the court.</p>
+
+
+
+<p>“Conservatives in general don’t like disparate impact, and liberals would not like expanding disparate impact beyond historically underrepresented minority groups,” he said. “You could see a coalition of conservative and liberal justices agreeing that it needed to be remanded.”</p>
+
+
+
+<p>The court’s decision in the case could also affect a newer challenge to the admissions policy for Boston’s highly selective exam schools. In addition to considering students’ academic performance, <a href="https://www.bostonpublicschools.org/academics/exam-schools/admissions-policy/tier-map">the process</a> awards additional points for factors such as having unstable housing or living in a single-parent household.</p>
+
+
+
+<p>Civil rights groups who intervened in the Boston case hope the system remains in place.&nbsp;</p>
+
+
+
+<p>“As participants in this lawsuit, we will work to hold the line against further rollbacks of equitable admissions policies in Boston and across the nation,” they said in an <a href="https://www.naacpldf.org/press-release/multi-racial-coalition-of-boston-students-and-parents-defend-equal-access-to-selective-boston-public-schools/">August statement</a>.&nbsp;&nbsp;</p>
+
+
+
+<p>Kahlenberg, who advocates for integration policies based on socioeconomic status — and testified on behalf of Students for Fair Admissions in the higher education case — doesn’t want to see Montgomery County’s system reversed either.</p>
+
+
+
+<p>“This is a good policy,” <a href="https://www.linkedin.com/feed/update/urn:li:activity:7518279499235446784/">he wrote</a> on social media. “There are no racial preferences involved, and hard working students who do well despite attending a high-poverty school deserve extra consideration.”</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

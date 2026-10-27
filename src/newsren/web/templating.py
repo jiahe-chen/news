@@ -17,7 +17,8 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 
 VERTICALS = [
-    {"slug": v.value, "label": VERTICAL_LABELS[v]} for v in (Vertical.TECHNOLOGY, Vertical.EDUCATION, Vertical.INDUSTRY, Vertical.FINANCE)
+    {"slug": v.value, "label": VERTICAL_LABELS[v]}
+    for v in (Vertical.TECHNOLOGY, Vertical.EDUCATION, Vertical.INDUSTRY, Vertical.FINANCE)
 ]
 AUDIENCES = [
     {"slug": Audience.STUDENT.value, "label": "Student"},
@@ -129,12 +130,28 @@ def pct(value: float | None, digits: int = 1) -> str:
 
 
 templates.env.filters.update(
-    {"label": label, "badge": badge, "fmt_dt": fmt_dt, "fmt_dt_time": fmt_dt_time, "timeago": timeago, "money": money, "pct": pct}
+    {
+        "label": label,
+        "badge": badge,
+        "fmt_dt": fmt_dt,
+        "fmt_dt_time": fmt_dt_time,
+        "timeago": timeago,
+        "money": money,
+        "pct": pct,
+    }
 )
-templates.env.globals.update({"VERTICALS": VERTICALS, "AUDIENCES": AUDIENCES, "VERTICAL_LABELS": {k.value: v for k, v in VERTICAL_LABELS.items()}})
+templates.env.globals.update(
+    {
+        "VERTICALS": VERTICALS,
+        "AUDIENCES": AUDIENCES,
+        "VERTICAL_LABELS": {k.value: v for k, v in VERTICAL_LABELS.items()},
+    }
+)
 
 
-def render(request: Request, name: str, context: dict[str, Any] | None = None, status_code: int = 200, **kwargs: Any):
+def render(
+    request: Request, name: str, context: dict[str, Any] | None = None, status_code: int = 200, **kwargs: Any
+):
     """TemplateResponse with the shared per-request context (user, audience, csrf, flash)."""
     from newsren.web.deps import AUDIENCE_COOKIE, csrf_token
 

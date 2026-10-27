@@ -1,0 +1,325 @@
+{
+ "_about": "Fictional sample articles (copied from The Newsren's demo data) for Section 5 tests: learning, impact, and editorial products. All organizations and figures are invented.",
+ "articles": {
+  "vendor_launch": {
+   "title": "Lumen Labs launches Lumen-4, claims state-of-the-art math reasoning",
+   "summary": "Lumen Labs released Lumen-4, a language model it says scores 92.1% on the MathBench-Pro benchmark and outperforms every model it tested on multi-step math problems.",
+   "body": "Lumen Labs today released Lumen-4, its newest large language model, which the company describes as its most capable model for mathematical reasoning. According to Lumen Labs' own testing, Lumen-4 scores 92.1% on MathBench-Pro, a benchmark of 4,000 competition-style and textbook math problems, up from 78.4% for its predecessor, Lumen-3.\n\n“Lumen-4 is the best math reasoner available today,” said Priya Valcourt, chief executive of Lumen Labs. “It shows its work step by step, which makes it a natural fit for tutoring.” The company said Lumen-4 outperformed every competing model it evaluated, but did not name the competing models or publish the prompts it used.\n\nLumen-4 is available through the Lumen API under the Lumen Community License. Model weights are not being released. The company said a technical report with evaluation details is available on its website and that it welcomes independent evaluation.\n\nLumen Labs said a version of the model tuned for classroom use will be announced in the coming weeks.",
+   "publisher": "Lumen Labs Newsroom",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "vendor",
+   "days_ago": 20
+  },
+  "vendor_report": {
+   "title": "Lumen-4 Technical Report: training, evaluation, and limitations",
+   "summary": "Lumen Labs' self-published technical report describes Lumen-4's training and reports benchmark scores measured by the company; it has not been peer reviewed.",
+   "body": "This technical report describes Lumen-4, a decoder-only language model trained by Lumen Labs. All evaluation results in this report were produced by Lumen Labs researchers using internal evaluation harnesses. The report has not been peer reviewed.\n\nOn MathBench-Pro, Lumen-4 achieves 92.1% accuracy with chain-of-thought prompting and 85.0% without it. On a 600-problem multi-step word-problem subset, accuracy is 81.7%. The report notes that MathBench-Pro problems were collected from public sources between 2019 and 2024 and that the team “applied n-gram filtering to reduce overlap with training data,” but it does not report the share of benchmark items found in the training corpus.\n\nLimitations listed by the authors include occasional arithmetic slips in long calculations, sensitivity to problem phrasing, and evaluation in English only. The report states that results on held-out problems written after the training cutoff “may differ.”",
+   "publisher": "Lumen Labs Newsroom",
+   "vertical": "technology",
+   "doc_type": "research_preprint",
+   "trust_tier": "vendor",
+   "days_ago": 20
+  },
+  "launch_coverage": {
+   "title": "Lumen Labs unveils Lumen-4; benchmark claims not yet independently verified",
+   "summary": "Lumen Labs says its new Lumen-4 model leads on math reasoning, but the 92.1% MathBench-Pro score comes from the company's own tests and no third party has reproduced it yet.",
+   "body": "Lumen Labs on Monday released Lumen-4, a language model the company says is the strongest math reasoner on the market. The headline number, 92.1% on the MathBench-Pro benchmark, comes from Lumen Labs' own evaluation; as of publication no independent group had published results for the model.\n\nResearchers who reviewed the company's technical report told The Circuit Ledger that the claims are plausible but incomplete. “The report doesn't say how much of MathBench-Pro appears in the training data,” said Dr. Ines Marlowe, director of the Open Evaluation Collective, a nonprofit that runs independent model evaluations. “Benchmark contamination can inflate scores by several points. We plan to test Lumen-4 on problems written after its training cutoff.”\n\nLumen-4 is available only through Lumen Labs' paid API; the weights are not public, which limits outside scrutiny. The model's license prohibits using its outputs to train competing models.\n\nLumen Labs said it intends to offer a classroom version of the model. Education researchers cautioned that strong benchmark scores do not show whether students learn more when using an AI tutor.",
+   "publisher": "The Circuit Ledger",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 19
+  },
+  "independent_eval": {
+   "title": "Independent evaluation of Lumen-4: strong on algebra, weaker on unfamiliar multi-step word problems",
+   "summary": "The Open Evaluation Collective's independent benchmark found Lumen-4 scored 84.3% on a held-out set of 1,200 math problems written after its training cutoff, below the 92.1% the vendor reported on MathBench-Pro.",
+   "body": "The Open Evaluation Collective (OEC) evaluated Lumen-4 through its public API using HoldOut-Math 2026, a set of 1,200 problems written by OEC contributors after Lumen-4's stated training cutoff. This report is an independent evaluation; it has not been peer reviewed. OEC received no funding from Lumen Labs.\n\nLumen-4 answered 84.3% of HoldOut-Math problems correctly (95% confidence interval 82.2% to 86.3%), compared with 79.6% for the strongest prior model OEC has tested. Performance was highest on algebra (91.0%) and lowest on multi-step word problems that require setting up equations from text (71.8%).\n\nOEC also re-ran MathBench-Pro and found 6.2% of its problems appear verbatim in public web data predating Lumen-4's training cutoff. On the remaining items, Lumen-4 scored 88.9%, compared with 92.1% reported by the vendor on the full benchmark. Differences in prompting and answer-checking may explain part of the gap.\n\nLimitations: the evaluation used default API settings, English-language problems only, and automated answer checking that may miss correct answers written in unusual formats. OEC publishes its problems after each evaluation cycle so others can reproduce the results.",
+   "publisher": "Open Evaluation Collective",
+   "vertical": "technology",
+   "doc_type": "research_preprint",
+   "trust_tier": "independent",
+   "days_ago": 14
+  },
+  "eval_coverage": {
+   "title": "Independent benchmark puts Lumen-4 below vendor's math claims",
+   "summary": "An independent evaluation by the Open Evaluation Collective found Lumen-4 scored 81.3% on fresh math problems, short of the 92.1% Lumen Labs reported; the company says testing conditions differed.",
+   "body": "Lumen-4, the model Lumen Labs called the best math reasoner available, scored lower on an independent benchmark than in the company's own tests. The Open Evaluation Collective reported that Lumen-4 answered 81.3% of 1,200 newly written problems correctly, compared with the 92.1% Lumen Labs reported on the MathBench-Pro benchmark.\n\nThe evaluators said 6.2% of MathBench-Pro problems were already public before Lumen-4 was trained, which can inflate scores. Lumen-4 still beat every other model the collective has tested, by about five points.\n\nLumen Labs said in a statement that the two tests are “not directly comparable” because they use different problems and settings, and that it “welcomes independent evaluation.” The company did not dispute the contamination finding.\n\nThe two sets of results now disagree on how large Lumen-4's lead is, though both show it ahead of earlier models. Independent replication by a second group would help settle the question.",
+   "publisher": "The Circuit Ledger",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 13
+  },
+  "correction": {
+   "title": "Correction: Independent benchmark score for Lumen-4 was 84.3%, not 81.3%",
+   "summary": "An earlier Circuit Ledger article misstated Lumen-4's score on the Open Evaluation Collective's held-out benchmark; the correct figure is 84.3%.",
+   "body": "An article published by The Circuit Ledger on the independent evaluation of Lumen Labs' Lumen-4 model misstated the model's score. Lumen-4 answered 84.3% of the Open Evaluation Collective's 1,200 held-out problems correctly, not 81.3%. The gap between the independent result and Lumen Labs' self-reported 92.1% on a different benchmark is therefore 7.8 points, not 10.8 points.\n\nThe article also said Lumen-4 led other tested models by about five points; that figure was correct (84.3% versus 79.6%). The article has been updated.\n\nThe Circuit Ledger regrets the error.",
+   "publisher": "The Circuit Ledger",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 12
+  },
+  "tutor_launch": {
+   "title": "Introducing Lumen Tutor: Lumen-4 powered math tutoring for high schools",
+   "summary": "Lumen Labs launched Lumen Tutor, a classroom product built on Lumen-4 that gives step-by-step hints in algebra and geometry; the company says pilots will begin in several US districts.",
+   "body": "Lumen Labs today launched Lumen Tutor, a math tutoring product for high schools built on the Lumen-4 model. Lumen Tutor gives students step-by-step hints rather than final answers, lets teachers see where students get stuck, and covers Algebra I, Geometry, and Algebra II.\n\n“Lumen Tutor brings the strongest math model to every classroom,” said Priya Valcourt, chief executive of Lumen Labs. The company said Lumen Tutor “helps students master math faster,” citing internal pilots with 180 students; it did not release data from those pilots.\n\nLumen Tutor costs $14 per student per year for districts. Lumen Labs said student data is encrypted, is not used to train its models, and is deleted at the end of each school year unless a district opts in to longer retention.\n\nThe company said several districts will begin pilots this semester.",
+   "publisher": "Lumen Labs Newsroom",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "vendor",
+   "days_ago": 10
+  },
+  "study_press_release": {
+   "title": "Halbrook study: AI practice assistant helps students learn algebra 30% faster",
+   "summary": "Halbrook University says its StepWise AI practice assistant helped ninth graders learn algebra 30% faster in a randomized study across four schools.",
+   "body": "Students who practiced algebra with StepWise, an AI practice assistant developed at Halbrook University's Learning Systems Lab, learned 30% faster than their peers, according to a new study led by Halbrook researchers.\n\n“This is strong evidence that AI can accelerate learning,” said Professor Miriam Castellanos-Webb, the study's lead author. “Students got through the material faster and with fewer errors.” The study followed ninth graders in four Calder high schools over eight weeks.\n\nStepWise gives students hints tailored to their mistakes as they work through practice problems. Halbrook said the results “point the way to more efficient math instruction” and that the lab is working with districts to expand use of the tool.\n\nThe study is available as a preprint on EdArchive.",
+   "publisher": "Halbrook University News Office",
+   "vertical": "education",
+   "doc_type": "press_release",
+   "trust_tier": "vendor",
+   "days_ago": 16
+  },
+  "study_preprint": {
+   "title": "Effects of an AI practice assistant on algebra exercise completion and transfer: a cluster-randomized study with 212 ninth-grade students",
+   "summary": "Preprint (not peer reviewed): students using the StepWise AI assistant completed exercise sets 31% faster and scored higher on practiced problem types, but showed no statistically significant difference on a transfer test of unfamiliar problems.",
+   "body": "Design: We randomly assigned 14 ninth-grade algebra classrooms in four high schools in one Calder school district to practice with the StepWise AI assistant (7 classrooms, 109 students) or with the same online problem sets without AI hints (7 classrooms, 103 students) for eight weeks. This manuscript is a preprint and has not been peer reviewed.\n\nOutcomes: We pre-registered three outcomes: (1) time to complete assigned exercise sets; (2) accuracy on end-of-unit problems of the types students practiced; (3) accuracy on a transfer test of 20 unfamiliar problems requiring the same concepts in new forms.\n\nResults: StepWise students completed exercise sets in a median of 22 minutes versus 32 minutes for the comparison group, 31% less time. Accuracy on practiced problem types was 78% versus 72% (difference 6 points, 95% CI 2.4 to 9.6). On the transfer test, StepWise students scored 61.4% versus 59.6% (difference 1.8 points, 95% CI −2.1 to 5.7), which was not statistically significant.\n\nLimitations: The study took place in a single district over eight weeks; teachers knew which condition their class was in; 9% of students did not complete the transfer test; the tests were written by the research team. The comparison condition was online practice without hints, not human tutoring. StepWise was developed by the authors' lab, and two authors hold equity in StepWise Learning Inc., which licenses the tool.",
+   "publisher": "EdArchive Preprints",
+   "vertical": "education",
+   "doc_type": "research_preprint",
+   "trust_tier": "primary",
+   "days_ago": 16
+  },
+  "study_analysis": {
+   "title": "AI tutor study: students finished faster, but did they learn more?",
+   "summary": "Halbrook University's “30% faster” claim refers to how quickly students finished practice sets; the underlying preprint found no significant difference on unfamiliar problems.",
+   "body": "Halbrook University announced this week that its StepWise AI assistant helped students “learn algebra 30% faster.” The study behind the announcement tells a narrower story.\n\nAccording to the preprint, which has not been peer reviewed, students who used StepWise finished their practice sets in 31% less time and scored 6 points higher on the kinds of problems they had practiced. But on a test of unfamiliar problems designed to measure whether students could transfer what they learned, the difference was 1.8 points and not statistically significant.\n\n“Completing exercises faster and learning more are different things,” said Dr. Hannah Voss, an education researcher not involved in the study, who reviewed the preprint for The Classroom Dispatch. “The transfer result is the one that tells you about understanding, and here it's inconclusive.”\n\nThe study included 212 ninth graders in one district for eight weeks, and compared StepWise with online practice without hints rather than with human tutoring. Two of the authors hold equity in the company that licenses StepWise, which the preprint discloses. Professor Miriam Castellanos-Webb, the lead author, said the team is planning a longer study with a larger transfer test.",
+   "publisher": "The Classroom Dispatch",
+   "vertical": "education",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 15
+  },
+  "study_opinion": {
+   "title": "Opinion: Faster isn't smarter. What the Halbrook AI study actually shows",
+   "summary": "A learning scientist argues that the Halbrook press release conflated speed with learning, while crediting the researchers for pre-registering a transfer test.",
+   "body": "The Halbrook study deserves credit for something many education-technology studies skip: the researchers pre-registered a transfer test, a set of unfamiliar problems that checks whether students can use what they learned somewhere new. That is the measure that matters most, and it is the one the university's press release left out.\n\nThe press release's “30% faster” is real, but it describes how quickly students finished practice sets with hints. Hints can make practice faster without making understanding deeper. On the transfer test, the difference was small and not statistically significant.\n\nNone of this means StepWise doesn't work. An eight-week study in one district may simply be too short to detect a difference. It means the honest headline is “AI assistant speeds up practice; effect on deeper learning unclear.”\n\nThis is an opinion piece. Others reading the same study may put more weight on the gains on practiced problems, which were statistically significant.",
+   "publisher": "The Classroom Dispatch",
+   "vertical": "education",
+   "doc_type": "opinion",
+   "trust_tier": "independent",
+   "days_ago": 14
+  },
+  "policy_adopted": {
+   "title": "Board adopts AI literacy requirement for grades 6 through 12, with phased rollout through 2029",
+   "summary": "The Calder State Board of Education voted 7-2 to require AI literacy instruction in grades 6-12, starting with a 40-district pilot in 2027-28 and statewide requirements from fall 2028 (grades 9-12) and fall 2029 (grades 6-8).",
+   "body": "The Calder State Board of Education voted 7-2 on Thursday to require instruction in AI literacy for students in grades 6 through 12 in public and charter schools. Students will learn how AI systems are built and trained, how to evaluate AI-generated information, and how to use AI tools responsibly, including privacy and academic-integrity expectations.\n\nImplementation timeline: the Board will publish draft standards for public comment by March 2027. Forty volunteer districts will pilot the standards in the 2027-28 school year. The requirement takes effect statewide in fall 2028 for grades 9-12, where students must complete at least 15 instructional hours, and in fall 2029 for grades 6-8.\n\nThe Board approved $14 million for teacher training in the first year. Funding for later years depends on appropriations by the state legislature. The Board has not decided whether or how AI literacy will be assessed; staff will propose options next year.\n\nThe requirement does not apply to private schools. Two Board members voted against the measure, citing the pace of the rollout and uncertain funding.",
+   "publisher": "Calder State Board of Education",
+   "vertical": "education",
+   "doc_type": "policy",
+   "trust_tier": "primary",
+   "days_ago": 12
+  },
+  "policy_explainer": {
+   "title": "What Calder's new AI literacy requirement means for teachers and students",
+   "summary": "Calder's AI literacy mandate starts with a pilot in 40 districts; teachers will get training funds in year one, but assessment plans and long-term funding remain open questions.",
+   "body": "Calder's Board of Education has made the state one of the first to require AI literacy in middle and high school. Here is what is decided and what is not.\n\nWho is affected: students in grades 6-12 in public and charter schools. High school students will need at least 15 hours of instruction starting in fall 2028; middle schoolers start in fall 2029. Private schools are exempt.\n\nWhat happens first: draft standards are due by March 2027, followed by a pilot in 40 volunteer districts in 2027-28. The Board set aside $14 million for teacher training in the first year.\n\nWhat is uncertain: how AI literacy will be assessed, whether the legislature will fund training after year one, and whether the instruction will be a standalone course or woven into existing subjects. “Districts are going to make very different choices,” said Gloria Harrington, president of the Calder Association of School Administrators.",
+   "publisher": "The Classroom Dispatch",
+   "vertical": "education",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 11
+  },
+  "policy_oped": {
+   "title": "Op-Ed: Calder's AI literacy mandate is the right idea on the wrong timeline",
+   "summary": "A high school computer science teacher supports the requirement but argues that 15 hours by fall 2028 is too fast without sustained training funds.",
+   "body": "I teach computer science at a high school in Calder, and my students already use AI tools every day, sometimes well and often badly. They need to understand what these systems can and cannot do. The Board's AI literacy requirement is overdue.\n\nBut the timeline worries me. Most teachers who will deliver these 15 hours have never been trained in the subject. One year of training money, with later years left to the legislature, is not a plan for a statewide requirement.\n\nI would rather see the pilot run for two years, with results published, before the requirement takes effect. Getting this right matters more than getting it first.\n\nThese are my views as a classroom teacher. Colleagues and Board members who supported the timeline make a reasonable case that waiting has costs too.",
+   "publisher": "The Classroom Dispatch",
+   "vertical": "education",
+   "doc_type": "opinion",
+   "trust_tier": "independent",
+   "days_ago": 8
+  },
+  "policy_rural": {
+   "title": "Rural districts ask for more time and training money for AI literacy rollout",
+   "summary": "Superintendents from 23 rural Calder districts asked the Board to extend the AI literacy timeline by a year, citing teacher shortages and broadband gaps.",
+   "body": "Superintendents from 23 rural districts in Calder have asked the state Board of Education to delay its AI literacy requirement by one year, according to a letter obtained by The Classroom Dispatch.\n\nThe letter says many rural schools lack a teacher with computer science training and that 14% of students in the signing districts do not have reliable home internet access. It asks for training funds to be guaranteed for at least three years.\n\nA Board spokesperson said the Board will consider the request during the standards comment period next spring and noted that the 2027-28 pilot is open to rural districts. None of the 23 districts has yet applied to join the pilot.",
+   "publisher": "The Classroom Dispatch",
+   "vertical": "education",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 4
+  },
+  "capacity_announcement": {
+   "title": "Corvane Semiconductor to add 40,000 wafers per month of 3nm-class capacity at Calder Valley",
+   "summary": "Corvane Semiconductor announced an $8.2 billion expansion of its Calder Valley Fab 3, projecting 40,000 wafer starts per month of 3-nanometer-class capacity by late 2027 and 15,000 by the end of its current fiscal quarter.",
+   "body": "Corvane Semiconductor today announced an $8.2 billion expansion of Fab 3 at its Calder Valley campus. The company projects that the expansion will bring capacity for its 3-nanometer-class process to 40,000 wafer starts per month by late 2027, with an interim target of 15,000 wafer starts per month by the end of the current fiscal quarter.\n\n“Demand for advanced chips for AI and mobile devices continues to exceed supply,” said Elias Brandvold, Corvane's chief executive. “Fab 3 positions Corvane to serve that demand.”\n\nCorvane said the expansion will create about 1,800 permanent jobs. Equipment orders have been placed with lithography and deposition suppliers, including Orrin Lithography.\n\nForward-looking statements: projected capacity, timing, and job figures are estimates that depend on equipment delivery, hiring, and process yields, and actual results may differ materially.",
+   "publisher": "Corvane Semiconductor Newsroom",
+   "vertical": "industry",
+   "doc_type": "press_release",
+   "trust_tier": "vendor",
+   "days_ago": 21
+  },
+  "capacity_analysis": {
+   "title": "Corvane's capacity plan: what 40,000 wafers a month would mean, and for whom",
+   "summary": "FabLine Weekly examines who depends on Corvane's Calder Valley expansion, including smartphone maker Pinecrest Mobile and AI chip designer Tarnwell Compute, and which suppliers must deliver for the plan to hold.",
+   "body": "Corvane Semiconductor's plan to reach 40,000 wafer starts per month at Calder Valley Fab 3 by late 2027 is a projection, and it depends on a chain of suppliers and customers.\n\nOn the customer side, Pinecrest Mobile, which designs smartphone processors, and Tarnwell Compute, an AI accelerator startup, have both said publicly that they use Corvane's 3nm-class process. Neither company has disclosed how many wafers it has reserved.\n\nOn the supply side, the expansion requires extreme-ultraviolet lithography tools from Orrin Lithography and high-purity process gases from suppliers including Quarry Peak Specialty Gases. Orrin said in its last quarterly report that it had a backlog of more than 14 months for its newest tools.\n\nAnalysts interviewed by FabLine Weekly described several scenarios. If equipment arrives on schedule and yields improve as Corvane expects, the 2027 target is achievable. If tool deliveries slip by two quarters, a more conservative scenario puts capacity near 28,000 wafers per month by late 2027. These are scenarios, not forecasts of what will happen.",
+   "publisher": "FabLine Weekly",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 20
+  },
+  "lead_times": {
+   "title": "Orrin Lithography says lead times for newest tools stretch to 18 months",
+   "summary": "Lithography supplier Orrin said delivery times for its newest systems have grown to about 18 months as fab expansions, including Corvane's, compete for tools.",
+   "body": "Orrin Lithography said lead times for its newest extreme-ultraviolet lithography systems have stretched to about 18 months, up from 14 months earlier this year, as several chipmakers expand capacity at once.\n\n“We are adding assembly capacity, but customers should plan around current lead times,” Orrin's chief operating officer, Benedikt Sauer, said on a call with analysts. Orrin did not comment on individual customers. Corvane Semiconductor said last week it had placed tool orders for its Calder Valley expansion.\n\nFabLine Weekly's analysis of public statements suggests that tools ordered now would arrive in the first half of 2028 at the earliest, unless orders were placed earlier than announced. Corvane has not disclosed when it placed its orders.",
+   "publisher": "FabLine Weekly",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 17
+  },
+  "supply_deal": {
+   "title": "Pinecrest Mobile signs multi-year wafer supply agreement with Corvane",
+   "summary": "Smartphone chip designer Pinecrest Mobile said it signed a multi-year agreement to source 3nm-class wafers from Corvane's Calder Valley expansion; financial terms were not disclosed.",
+   "body": "Pinecrest Mobile said Wednesday it has signed a multi-year agreement with Corvane Semiconductor for 3nm-class wafers produced at Corvane's expanding Calder Valley Fab 3. The companies did not disclose volumes or prices.\n\nPinecrest said the agreement “secures supply for our next two generations of smartphone processors.” Pinecrest currently splits production between Corvane and another foundry; it did not say whether the new agreement changes that split.\n\nSupply-chain analysts said long-term agreements are common when capacity is tight and can help a foundry justify expansion, but they noted that such agreements usually include volume flexibility. The agreement does not, by itself, confirm that Corvane will reach its projected capacity.",
+   "publisher": "Supply Signal",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 15
+  },
+  "output_report": {
+   "title": "Corvane's Calder Valley line reached 11,500 wafers a month, behind its 15,000 interim target",
+   "summary": "Corvane reported that Fab 3 exited its fiscal third quarter at 11,500 wafer starts per month, short of the 15,000 it had projected; the company kept its late-2027 target of 40,000.",
+   "body": "Corvane Semiconductor's Calder Valley Fab 3 exited the company's fiscal third quarter at 11,500 wafer starts per month, according to the company's quarterly results, short of the interim target of 15,000 that Corvane had projected when it announced the expansion.\n\nCorvane attributed the shortfall to slower-than-planned qualification of new tools and said yields on the 3nm-class process were “in line with plan.” The company reiterated its projection of 40,000 wafer starts per month by late 2027.\n\nThe gap between projected and reported output is about 23%. Customers including Pinecrest Mobile have not commented on whether their deliveries were affected.\n\nFabLine Weekly will continue to track reported output against Corvane's projections each quarter.",
+   "publisher": "FabLine Weekly",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 4
+  },
+  "technicians": {
+   "title": "Fab expansion drives demand for cleanroom technicians; Calder community colleges add certificates",
+   "summary": "Three Calder community colleges are launching 16-week cleanroom technician certificates as Corvane's Fab 3 expansion and supplier plants seek about 1,800 new workers.",
+   "body": "Three community colleges in Calder will launch 16-week certificate programs for semiconductor cleanroom technicians next semester, citing hiring plans tied to Corvane Semiconductor's Calder Valley expansion.\n\nThe programs cover contamination control, equipment maintenance basics, and safety. Corvane has said its expansion will create about 1,800 permanent jobs; the colleges estimate about 40% will be technician roles.\n\nGraduates are not guaranteed jobs, and program leaders said enrollment targets are based on employer projections that could change if expansion timelines shift. Corvane has agreed to interview program graduates but has not committed to a number of hires.",
+   "publisher": "The Industrial Review",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 10
+  },
+  "earnings_release": {
+   "title": "Corvane Semiconductor reports third-quarter fiscal 2026 results; guides fourth-quarter revenue of $3.6 billion to $3.8 billion",
+   "summary": "Corvane reported fiscal Q3 revenue of $3.42 billion, up 18% year over year and above its prior guidance range of $3.25 billion to $3.40 billion; diluted EPS was $1.12.",
+   "body": "Corvane Semiconductor today reported results for its fiscal third quarter. Revenue was $3.42 billion, compared with $2.90 billion in the same quarter last year (up 18%) and $3.18 billion in the prior quarter. The company had guided third-quarter revenue of $3.25 billion to $3.40 billion.\n\nGross margin was 47.8%, within the company's guidance of 46% to 48%. Net income was $612 million, or $1.12 per diluted share, compared with $498 million, or $0.91 per diluted share, a year earlier.\n\nFab 3 at Calder Valley exited the quarter at 11,500 wafer starts per month. Capital expenditures were $1.9 billion in the quarter.\n\nFourth-quarter guidance: revenue of $3.60 billion to $3.80 billion and gross margin of 47% to 49%. Guidance is a forward-looking estimate based on current expectations for demand, tool deliveries, and yields; actual results may differ materially.",
+   "publisher": "Corvane Semiconductor Investor Relations",
+   "vertical": "finance",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "days_ago": 5
+  },
+  "earnings_coverage": {
+   "title": "Corvane tops its own revenue guidance but flags slower Calder Valley ramp",
+   "summary": "Corvane's fiscal Q3 revenue of $3.42 billion beat the top of its guidance range; on the earnings call, executives said Fab 3 tool qualification is running behind plan.",
+   "body": "Corvane Semiconductor reported fiscal third-quarter revenue of $3.42 billion, slightly above the top of the $3.25 billion to $3.40 billion range it gave three months ago, and up 18% from a year earlier. Diluted earnings per share were $1.12, up from $0.91.\n\nOn the earnings call, chief financial officer Mina Sorensen said the Calder Valley Fab 3 ramp was “about a quarter behind” the company's internal plan because new tools took longer to qualify. Fab 3 ran at 11,500 wafer starts per month at quarter end, compared with the 15,000 Corvane had projected.\n\nCorvane guided fourth-quarter revenue of $3.60 billion to $3.80 billion. The midpoint, $3.70 billion, would be an 8% increase from the third quarter. Guidance is the company's estimate, not a reported result.\n\nThe figures in this article are from Corvane's earnings release and call; The Ledger Street has not independently audited them.",
+   "publisher": "The Ledger Street",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 5
+  },
+  "backtest_note": {
+   "title": "Northbridge researchers: AI portfolio agents outperformed a 60/40 benchmark in a 20-year backtest",
+   "summary": "Northbridge Bank's research team reported that regime-based AI portfolio agents beat a 60/40 portfolio in a 2005-2024 backtest, while cautioning that the in-sample result is not proof of future performance.",
+   "body": "Researchers at Northbridge Bank today published a research note describing AI portfolio agents that adjust allocations based on detected market regimes. In a backtest covering January 2005 through December 2024, the agents' simulated portfolio returned 7.9% a year, compared with 6.6% for a benchmark portfolio of 60% global equities and 40% investment-grade bonds, rebalanced monthly.\n\nIn the backtest, the agent portfolio had a Sharpe ratio of 0.68 versus 0.52 for the benchmark and a maximum drawdown of 22% versus 29%. The backtest assumed transaction costs of 5 basis points per trade and did not account for taxes.\n\nThe authors caution that the result is in-sample: the market regimes were defined using the full 2005-2024 history, and model choices were tuned on the same data. “An in-sample backtest is not proof of future outperformance,” the note says. The agents have no live track record and do not manage client money.\n\nNorthbridge said the research is intended to inform its internal work on AI tools and does not constitute investment advice.",
+   "publisher": "Northbridge Bank Newsroom",
+   "vertical": "finance",
+   "doc_type": "press_release",
+   "trust_tier": "vendor",
+   "days_ago": 18
+  },
+  "backtest_wire": {
+   "title": "Bank's AI agents 'beat' a 60/40 portfolio, in a backtest",
+   "summary": "Northbridge Bank's report that AI agents outperformed a 60/40 portfolio describes a two-decade backtest, not live results; the authors themselves warn the in-sample result may not hold.",
+   "body": "Northbridge Bank researchers say their AI portfolio agents outperformed a classic 60/40 stock-and-bond portfolio over two decades. The result comes from a backtest, a simulation of how a strategy would have performed on historical data, not from managing real money.\n\nIn the simulation, covering 2005 through 2024, the agents returned 7.9% a year versus 6.6% for the benchmark, with smaller losses in the worst downturn. The researchers assumed trading costs of 5 basis points per trade and ignored taxes.\n\nThe authors flagged the main limitation themselves: the market regimes the agents respond to were identified using the whole 20-year period, information no investor had in real time. Researchers call this an in-sample result. “Backtests that use the full history to design the strategy almost always look better than live trading,” said Dr. Felix Amundsen, a finance professor who was not involved in the research.\n\nNorthbridge said the agents are not used for client portfolios. The bank has not said whether it plans to test them with real money.",
+   "publisher": "Meridian Wire - Markets",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 17
+  },
+  "paper_trading": {
+   "title": "Northbridge says AI portfolio agents will enter a year of paper trading before any live use",
+   "summary": "Northbridge Bank said its AI portfolio agents will run in a 12-month simulated (paper-trading) pilot with no client money; any live use would require internal risk approval and regulatory review.",
+   "body": "Northbridge Bank said Monday its AI portfolio agents, which outperformed a 60/40 benchmark in a 20-year backtest, will run in a 12-month paper-trading pilot before the bank decides whether to use them with real money. In paper trading, the agents make simulated trades on live market data without placing real orders.\n\n“We want out-of-sample evidence before anything else,” said Imogen Talbot-Reyes, head of quantitative research at Northbridge. The bank said results from the pilot will be labelled as simulated, and any live use would require approval from its risk committee and review under applicable advisory rules.\n\nThe bank confirmed that no client accounts are managed by the agents today. That makes the agents a research project at the backtest and simulation stages, not a live deployment.",
+   "publisher": "The Ledger Street",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 6
+  },
+  "backtest_opinion": {
+   "title": "Opinion: A backtest is a hypothesis, not a track record",
+   "summary": "A columnist uses Northbridge's AI-agent backtest to explain overfitting and why in-sample results routinely overstate future performance.",
+   "body": "Northbridge's researchers did something admirable: they told readers, in plain words, that their in-sample backtest is not proof of future outperformance. Most headlines about the note skipped that sentence.\n\nA backtest asks: if we had followed these rules in the past, what would have happened? The trouble is that the rules were designed by people who already knew what happened. With enough tuning, almost any strategy can be made to look good on historical data. That is overfitting.\n\nThe tests that would mean more are out-of-sample results on data the model never saw, followed by a live track record with real costs. Until then, the right label for Northbridge's agents is “promising simulation.”\n\nThis is commentary for readers learning to interpret financial research; it is not investment advice, and no AI system has been shown to reliably beat the market.",
+   "publisher": "The Ledger Street",
+   "vertical": "finance",
+   "doc_type": "opinion",
+   "trust_tier": "independent",
+   "days_ago": 12
+  },
+  "enforcement_order": {
+   "title": "Markets Integrity Commission charges Brightvane Advisors with misleading clients about AI use",
+   "summary": "The Markets Integrity Commission settled charges that Brightvane Advisors falsely marketed portfolios as managed by autonomous AI agents; Brightvane agreed to a $310,000 penalty without admitting or denying the findings.",
+   "body": "The Markets Integrity Commission today announced settled charges against Brightvane Advisors LLC, a registered investment adviser, for making false and misleading statements about its use of artificial intelligence, a practice sometimes called “AI washing.”\n\nAccording to the Commission's order, Brightvane's website and client presentations stated that client portfolios were “managed in real time by autonomous AI agents.” The order finds that Brightvane's portfolios were in fact allocated using a spreadsheet-based model that staff updated quarterly, and that the firm did not use the AI agents it described.\n\nWithout admitting or denying the findings, Brightvane agreed to a censure, a civil penalty of $310,000, and to retain an independent compliance consultant to review its marketing materials.\n\n“Advisers who describe AI capabilities to clients must be able to show that those capabilities exist and are used as described,” said Commission enforcement director Harriet Vandermeer.",
+   "publisher": "Markets Integrity Commission",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "days_ago": 13
+  },
+  "enforcement_wire": {
+   "title": "Regulator fines adviser $310,000 for claiming AI agents it did not use",
+   "summary": "Brightvane Advisors agreed to pay $310,000 to settle Markets Integrity Commission charges that it marketed autonomous AI portfolio management it did not actually use.",
+   "body": "Brightvane Advisors agreed to pay a $310,000 penalty to settle charges by the Markets Integrity Commission that it misled clients by claiming their portfolios were run by autonomous AI agents. According to the regulator, the firm actually used a spreadsheet model updated once a quarter.\n\nBrightvane neither admitted nor denied the findings. The firm said in a statement that it had “updated its marketing to describe its investment process accurately.”\n\nThe case is the Commission's first this year focused on exaggerated AI claims. Compliance lawyers said the message to advisers is that marketing language about AI is subject to the same accuracy rules as any other claim.",
+   "publisher": "Meridian Wire - Markets",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 13
+  },
+  "agent_notice": {
+   "title": "Regulatory Notice: BDSA proposes supervision expectations for AI agents at member firms",
+   "summary": "The Broker-Dealer Standards Authority proposed guidance requiring member firms to inventory AI agents, set authority limits, require human approval for actions beyond those limits, and keep audit trails for three years; comments are due in 60 days.",
+   "body": "The Broker-Dealer Standards Authority (BDSA) is requesting comment on proposed guidance for member broker-dealers that use AI agents, meaning software that can plan and take actions such as drafting client communications, flagging suspicious trades, or routing orders.\n\nWho is affected: all member firms that use or plan to use AI agents in customer-facing, surveillance, trading, or operational functions.\n\nWhat would change: firms would be expected to (1) maintain an inventory of AI agents and their permitted actions; (2) set written authority limits for each agent; (3) require human approval before an agent acts outside those limits; (4) keep audit trails of agent actions for at least three years; and (5) test controls on what data agents can access.\n\nWhen: comments are due within 60 days. BDSA expects to issue final guidance after reviewing comments, with expectations taking effect six months after the final notice. BDSA noted that existing rules on supervision, communications, and best interest obligations already apply to activity performed with AI tools.",
+   "publisher": "Broker-Dealer Standards Authority",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "days_ago": 7
+  },
+  "round_quillfield": {
+   "title": "Quillfield raises $45 million in a Series B led by Harrow Ventures to expand AI feedback tools for teachers",
+   "summary": "Edtech startup Quillfield raised $45 million in a Series B round led by Harrow Ventures, with participation from Larchmont Capital and Saltmarsh Partners.",
+   "body": "Quillfield, a startup that builds AI tools to help teachers give feedback on student writing, has raised $45 million in a Series B led by Harrow Ventures, with participation from existing investors Larchmont Capital and Saltmarsh Partners. The company did not disclose its valuation.\n\nQuillfield says its software is used by about 9,000 teachers. Chief executive Noor Abadi said the funding will go toward expanding into middle-school science and hiring a research team to study whether AI feedback improves student writing over time. “We have usage data, not learning-outcome data yet,” Abadi said.\n\nThe round brings Quillfield's total funding to $63 million, according to the company.",
+   "publisher": "Seed & Series",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 19
+  },
+  "round_tarnwell": {
+   "title": "Tarnwell Compute raises $220 million Series D led by Orbit Growth Partners to build AI accelerators",
+   "summary": "AI chip designer Tarnwell Compute raised $220 million in a Series D led by Orbit Growth Partners, with participation from Corvane Ventures, the venture arm of its foundry partner.",
+   "body": "Tarnwell Compute, which designs chips for running AI models in data centers, has raised $220 million in a Series D round led by Orbit Growth Partners. Corvane Ventures, the investment arm of Corvane Semiconductor, which manufactures Tarnwell's chips, also participated.\n\nTarnwell said the money will fund production of its second-generation accelerator on Corvane's 3nm-class process. The company said it has signed customers but declined to disclose revenue.\n\nCorvane's participation links an investor with a supplier relationship, which is common in the chip industry. Tarnwell's production plans depend in part on Corvane reaching its projected capacity at Calder Valley.",
+   "publisher": "The Ledger Street",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "days_ago": 6
+  }
+ }
+}

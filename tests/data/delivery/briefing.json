@@ -1,0 +1,85 @@
+{
+  "title": "Your briefing: an independent test of Lumen-4 and new AI-tutoring guidance",
+  "content": {
+    "title": "Your briefing: an independent test of Lumen-4 and new AI-tutoring guidance",
+    "intro": "Two developments matched your interests since your last briefing: an independent benchmark of a math-tutoring model, and state guidance for schools using AI tutors.",
+    "sections": [
+      {
+        "heading": "AI models for learning mathematics",
+        "items": [
+          {
+            "headline": "Independent test finds Lumen-4 solves 61% of held-out problems, below the company's 82% figure",
+            "what_changed": "An independent evaluation of 1,200 held-out problems reported 61% accuracy; Lumen Labs' launch materials claimed 82% on competition problems.",
+            "why_it_matters": "Schools weighing AI math tutors now have third-party evidence alongside the vendor's own figure; the two used different problem sets.",
+            "citation_ids": ["c1", "c2"],
+            "story_id": 7,
+            "brief_id": 12,
+            "interest": "AI models for learning mathematics"
+          },
+          {
+            "headline": "Tutoring <script>alert('x')</script> & \"quotes\" are escaped",
+            "what_changed": "A source with an unsafe link scheme is listed without a link.",
+            "why_it_matters": "Readers should never receive executable markup or javascript: links.",
+            "citation_ids": ["c3", "c99"],
+            "story_id": null,
+            "brief_id": null,
+            "interest": ""
+          }
+        ]
+      },
+      {
+        "heading": "Education policy",
+        "items": [
+          {
+            "headline": "State issues draft guidance on AI tutors in classrooms",
+            "what_changed": "The draft asks districts to review evidence of learning outcomes before adopting AI tutors.",
+            "why_it_matters": "It applies to public schools from the 2027 school year if adopted; the comment period is still open.",
+            "citation_ids": [],
+            "story_id": 9,
+            "brief_id": null,
+            "interest": "education policy"
+          }
+        ]
+      }
+    ],
+    "closing_note": "Nothing else you follow changed materially. We will write again when something does."
+  },
+  "citations": [
+    {
+      "id": "c1",
+      "url": "https://evals.example/reports/lumen-4-math",
+      "title": "Independent evaluation of Lumen-4 on 1,200 held-out math problems",
+      "publisher": "Open Eval Lab (demo)",
+      "published_at": "2026-10-24T09:00:00Z",
+      "retrieved_at": "2026-10-24T10:15:00Z",
+      "article_id": 101,
+      "snippet": "Lumen-4 solved 61% of 1,200 held-out problems.",
+      "trust_tier": "independent",
+      "doc_type": "news"
+    },
+    {
+      "id": "c2",
+      "url": "https://lumenlabs.example/news/lumen-4",
+      "title": "Lumen Labs launches Lumen-4",
+      "publisher": "Lumen Labs (demo)",
+      "published_at": "2026-10-20T14:00:00Z",
+      "retrieved_at": "2026-10-20T15:00:00Z",
+      "article_id": 100,
+      "snippet": "Lumen-4 solves 82% of competition math problems.",
+      "trust_tier": "vendor",
+      "doc_type": "press_release"
+    },
+    {
+      "id": "c3",
+      "url": "javascript:alert(document.cookie)",
+      "title": "Unsafe <b>link</b> source",
+      "publisher": "Example & Co",
+      "published_at": null,
+      "retrieved_at": "2026-10-25T08:00:00Z",
+      "article_id": 102,
+      "snippet": "",
+      "trust_tier": "independent",
+      "doc_type": "news"
+    }
+  ]
+}

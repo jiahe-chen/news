@@ -1,0 +1,183 @@
+{
+  "_comment": "Fictional synthetic articles for Story Intelligence tests: two multi-article storylines (an AI math model from launch to evaluation, adoption and correction; a semiconductor capacity announcement vs. reported output) plus unrelated noise. 'days_ago' is relative to the test's clock. 'duplicate_of' marks a syndicated copy.",
+  "articles": [
+    {
+      "key": "atlas_launch",
+      "storyline": "atlas",
+      "days_ago": 20,
+      "vertical": "technology",
+      "doc_type": "press_release",
+      "trust_tier": "vendor",
+      "publisher": "Nimbus Labs Newsroom",
+      "title": "Nimbus Labs launches Atlas-3, a math tutoring model for high school students",
+      "summary": "Nimbus Labs released Atlas-3 on Tuesday and said the model scores 92% on its own MathBench algebra benchmark. The company said Atlas-3 explains each step of a solution and will be offered to high schools this fall."
+    },
+    {
+      "key": "atlas_launch_news",
+      "storyline": "atlas",
+      "days_ago": 19,
+      "vertical": "technology",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Tech Ledger",
+      "title": "Nimbus Labs debuts Atlas-3 math model and claims a top MathBench score",
+      "summary": "Startup Nimbus Labs unveiled Atlas-3, an AI model aimed at high school mathematics, and claimed a 92% score on the MathBench algebra benchmark. No outside evaluation of the Atlas-3 model was available at launch."
+    },
+    {
+      "key": "atlas_eval_preprint",
+      "storyline": "atlas",
+      "days_ago": 14,
+      "vertical": "technology",
+      "doc_type": "research_preprint",
+      "trust_tier": "primary",
+      "publisher": "arXiv",
+      "title": "An independent evaluation of the Atlas-3 math model on unseen high school algebra problems",
+      "summary": "Researchers at the Open Evaluation Institute evaluated Atlas-3 on 1,200 unseen algebra problems and found it solved 71%, below the 92% Nimbus Labs reported. The authors note the problems differ from MathBench and that the preprint has not been peer reviewed."
+    },
+    {
+      "key": "atlas_eval_news",
+      "storyline": "atlas",
+      "days_ago": 13,
+      "vertical": "technology",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Tech Ledger",
+      "title": "Independent benchmark finds Atlas-3 math scores lower than Nimbus Labs claimed",
+      "summary": "An evaluation by the Open Evaluation Institute found the Atlas-3 model solved 71% of unseen algebra problems, compared with the 92% Nimbus Labs reported on its own MathBench test. Nimbus Labs disputes the methodology, saying the problem set was harder than typical high school coursework."
+    },
+    {
+      "key": "atlas_opinion",
+      "storyline": "atlas",
+      "days_ago": 12,
+      "vertical": "technology",
+      "doc_type": "opinion",
+      "trust_tier": "commentary",
+      "publisher": "The Classroom Column",
+      "title": "Opinion: The Atlas-3 math model is a breakthrough for high school algebra",
+      "summary": "Atlas-3 could transform how high school students learn algebra, argues a former math teacher, who says the Nimbus Labs model's step-by-step explanations matter more than benchmark scores."
+    },
+    {
+      "key": "atlas_adoption",
+      "storyline": "atlas",
+      "days_ago": 9,
+      "vertical": "technology",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "EdWire",
+      "title": "Riverside Unified School District adopts Atlas-3 math model for algebra classes",
+      "summary": "Riverside Unified School District will pilot the Atlas-3 math model from Nimbus Labs in 14 high schools this semester, district officials said, citing the model's step-by-step algebra explanations."
+    },
+    {
+      "key": "atlas_correction",
+      "storyline": "atlas",
+      "days_ago": 8,
+      "vertical": "technology",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Tech Ledger",
+      "title": "Correction: Open Evaluation Institute revises Atlas-3 algebra score",
+      "summary": "An earlier version of this article said the Atlas-3 math model solved 71% of algebra problems in the Open Evaluation Institute evaluation. The institute's corrected figure is 74%, still below the 92% Nimbus Labs reported."
+    },
+    {
+      "key": "atlas_eval_syndicated",
+      "storyline": "atlas",
+      "days_ago": 13,
+      "hours_offset": 3,
+      "vertical": "technology",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Regional Tech Wire",
+      "duplicate_of": "atlas_eval_news",
+      "title": "Independent benchmark finds Atlas-3 math scores lower than Nimbus Labs claimed",
+      "summary": "An evaluation by the Open Evaluation Institute found the Atlas-3 model solved 71% of unseen algebra problems, compared with the 92% Nimbus Labs reported on its own MathBench test. Nimbus Labs disputes the methodology."
+    },
+    {
+      "key": "kestrel_announce",
+      "storyline": "kestrel",
+      "days_ago": 18,
+      "vertical": "industry",
+      "doc_type": "press_release",
+      "trust_tier": "vendor",
+      "publisher": "Kestrel Semiconductor Investor Relations",
+      "title": "Kestrel Semiconductor announces new chip fab capacity in Arizona",
+      "summary": "Kestrel Semiconductor said it plans to add 20,000 wafers per month of 3-nanometer chip capacity at its Arizona fab by 2027, citing demand for AI accelerators."
+    },
+    {
+      "key": "kestrel_suppliers",
+      "storyline": "kestrel",
+      "days_ago": 16,
+      "vertical": "industry",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Supply Chain Daily",
+      "title": "Kestrel Semiconductor's Arizona fab expansion could lift orders for chip packaging suppliers",
+      "summary": "Analysts said Kestrel Semiconductor's planned Arizona fab capacity of 20,000 wafers per month may lift orders for packaging suppliers such as Corvid Materials, though the timeline depends on equipment deliveries."
+    },
+    {
+      "key": "kestrel_output",
+      "storyline": "kestrel",
+      "days_ago": 6,
+      "vertical": "industry",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Supply Chain Daily",
+      "title": "Kestrel Semiconductor Arizona fab output falls short of its capacity projections",
+      "summary": "Kestrel Semiconductor said its Arizona fab produced 12,000 wafers per month in the third quarter, short of the 20,000 wafers it projected, citing equipment delays."
+    },
+    {
+      "key": "kestrel_filing",
+      "storyline": "kestrel",
+      "days_ago": 5,
+      "vertical": "industry",
+      "doc_type": "filing",
+      "trust_tier": "primary",
+      "publisher": "SEC EDGAR",
+      "title": "Kestrel Semiconductor 8-K: update on Arizona fab capacity ramp",
+      "summary": "Kestrel Semiconductor disclosed in an 8-K filing that the ramp of its Arizona fab to 20,000 wafers per month is delayed by two quarters because of equipment delivery delays."
+    },
+    {
+      "key": "noise_fed",
+      "storyline": "noise",
+      "days_ago": 10,
+      "vertical": "finance",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Market Desk",
+      "title": "Fed holds interest rates steady and signals patience on cuts",
+      "summary": "The Federal Reserve left its benchmark rate unchanged at its meeting and said it would watch inflation data before cutting rates."
+    },
+    {
+      "key": "noise_meals",
+      "storyline": "noise",
+      "days_ago": 11,
+      "vertical": "education",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "EdWire",
+      "title": "State expands free school meals program to 300 more districts",
+      "summary": "The state education board approved money to extend free breakfast and lunch to 300 more districts next year, officials said."
+    },
+    {
+      "key": "noise_funding",
+      "storyline": "noise",
+      "days_ago": 4,
+      "vertical": "finance",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Venture Wire",
+      "title": "Brightpath Robotics raises $40 million Series B for warehouse robots",
+      "summary": "Brightpath Robotics raised $40 million in a Series B round led by Harbor Point Ventures to expand production of its warehouse picking robots."
+    },
+    {
+      "key": "noise_cisa",
+      "storyline": "noise",
+      "days_ago": 3,
+      "vertical": "technology",
+      "doc_type": "news",
+      "trust_tier": "independent",
+      "publisher": "Security Brief",
+      "title": "CISA warns of actively exploited flaw in popular VPN appliances",
+      "summary": "The Cybersecurity and Infrastructure Security Agency added a VPN vulnerability to its catalog of known exploited flaws and urged federal agencies to patch."
+    }
+  ]
+}

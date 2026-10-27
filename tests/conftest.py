@@ -164,7 +164,9 @@ def demo_db_template(tmp_path_factory) -> Path:
 def demo_settings(tmp_path, demo_db_template) -> Iterator[Settings]:
     target = tmp_path / "demo.db"
     shutil.copyfile(demo_db_template, target)
-    s = Settings(data_dir=tmp_path, database_url=f"sqlite:///{target}", llm_mode="offline", secret_key="test-secret")
+    s = Settings(
+        data_dir=tmp_path, database_url=f"sqlite:///{target}", llm_mode="offline", secret_key="test-secret"
+    )
     set_settings(s)
     set_provider(OfflineProvider())
     db.reset_engine()

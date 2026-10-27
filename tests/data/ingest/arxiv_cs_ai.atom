@@ -1,0 +1,182 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/j4ShPnxK1RZ7CVZFXb6yX7hLn+U</id>
+  <title>arXiv Query: search_query=cat:cs.AI&amp;id_list=&amp;start=0&amp;max_results=5</title>
+  <updated>2026-10-27T18:25:35Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=cat:cs.AI&amp;start=0&amp;max_results=5&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>5</opensearch:itemsPerPage>
+  <opensearch:totalResults>209442</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2610.35868v1</id>
+    <title>Retriever-Free Retrieval: Navigating Documents with Decision Models</title>
+    <updated>2026-10-26T17:59:44Z</updated>
+    <link href="https://arxiv.org/abs/2610.35868v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.35868v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>While language models have become dramatically more capable, retrieval still largely relies on lexical matching or similarity in fixed embedding spaces. This creates a capability asymmetry: what the retriever fails to find, even the strongest generator cannot recover. We propose DecisionRAG, which brings the capabilities of pretrained language models to retrieval using decision models that jointly evaluate candidate branches in a single forward pass, without generating any tokens, and show that judging candidates in a shared context makes their relevance estimates comparable. Like a person browsing a library, DecisionRAG navigates the corpus's inherent structure from broad topics down to individual passages, deciding at each level which branches are worth exploring. Without task-specific training or a first-stage retriever, DecisionRAG outperforms dense retrieval with an 8B reranker by 13.8 R@1 points on MultiDoc2Dial and 17.4 Hit@1 points on Natural Questions. Across four benchmarks, including a corpus of 2.68 million Wikipedia paragraphs, retrieval takes just 0.7-1.8 seconds per query.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-26T17:59:44Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Chao Wan</name>
+    </author>
+    <author>
+      <name>Paul Jünger</name>
+    </author>
+    <author>
+      <name>Beixi Du</name>
+    </author>
+    <author>
+      <name>Bodong Liu</name>
+    </author>
+    <author>
+      <name>Navaneetha Krishnan</name>
+    </author>
+    <author>
+      <name>Kilian Q. Weinberger</name>
+    </author>
+  </entry>
+<entry>
+    <id>http://arxiv.org/abs/2610.35865v1</id>
+    <title>Center-of-Mass Interpretation of Evolution Strategies</title>
+    <updated>2026-10-26T17:59:33Z</updated>
+    <link href="https://arxiv.org/abs/2610.35865v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.35865v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Evolution strategies (ES) update a model by sampling a population of perturbed copies, scoring each one, and moving in the reward-weighted direction of the perturbations. This update is usually presented as an estimate of a smoothed gradient. We present a geometrical interpretation of this update instead. Treat each perturbed model as a particle and its reward as the particle's mass. Before scoring, every particle has the same mass and the population balances at its centroid. Once rewards are assigned, it balances at its reward-weighted center of mass instead. We show that the mean-subtracted ES update is exactly this displacement, scaled by a scalar factor that depends on the mean reward, for any finite population. The physical reading needs nonnegative rewards, which can always be arranged by adding a constant to every reward without changing the update. In the limit of a large population or under antithetic sampling, the centroid sits on the model itself, so ES has an even simpler geometric interpretation: from its current location, the model moves towards the reward-weighted center of mass of its own population. The same picture explains what subtracting the mean reward does: it changes the point from which the displacement is measured, from the model to the sampled centroid. Our contribution is an intuitive, geometric way to visualize an ES update, exact for any finite population.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-26T17:59:33Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Akshat Gupta</name>
+    </author>
+  </entry>
+<entry>
+    <id>http://arxiv.org/abs/2610.35862v1</id>
+    <title>Learning Force-Reactive Humanoid Loco-Manipulation</title>
+    <updated>2026-10-26T17:59:11Z</updated>
+    <link href="https://arxiv.org/abs/2610.35862v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.35862v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Many everyday tasks require controlling contact force as well as motion. On a humanoid, this force must often be coordinated across both hands and the whole body, and cannot be specified by kinematic trajectories alone. Therefore, we present FLORE, a framework for learning force-reactive humanoid loco-manipulation. We collect robot-free demonstrations using two force-sensing UMI-style handheld grippers for hand motion and contact wrenches, and wearable trackers for body motion. A force-reactive diffusion policy takes vision, proprioception, and measured wrenches as input, then predicts actions and per-hand force commands. A hybrid compliance whole-body controller with force tracking executes these commands while maintaining balance: an integral of the force error measured by real force/torque (F/T) sensors lets each hand track force accurately along the commanded direction and remain compliant along the others. In simulation, the controller tracks per-hand force commands of varied magnitude and direction, with little loss in whole-body motion accuracy. Across three contact-rich tasks on the robot, the force-reactive policy succeeds in 80% of rollouts, compared with 26.7% for a position-only policy trained on the same demonstrations and executed by the same controller. For more details, please visit our website: https://louis-leee.github.io/FLoRe/.</summary>
+    <category term="cs.RO" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.LG" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="eess.SY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-26T17:59:11Z</published>
+    <arxiv:comment>9 pages, 6 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.RO"/>
+    <author>
+      <name>Sihang Li</name>
+    </author>
+    <author>
+      <name>Xiaofeng Guo</name>
+    </author>
+    <author>
+      <name>Jinkun Cao</name>
+    </author>
+    <author>
+      <name>Charlie Cheng</name>
+    </author>
+    <author>
+      <name>Ruihan Yang</name>
+    </author>
+    <author>
+      <name>Chen Feng</name>
+    </author>
+    <author>
+      <name>Guanya Shi</name>
+    </author>
+    <author>
+      <name>Haozhi Qi</name>
+    </author>
+  </entry>
+<entry>
+    <id>http://arxiv.org/abs/2610.35847v1</id>
+    <title>Patient-specific rubric-based evaluation of large language models across longitudinal cancer care</title>
+    <updated>2026-10-26T17:56:26Z</updated>
+    <link href="https://arxiv.org/abs/2610.35847v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.35847v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Large language models (LLMs) show promise in specialty medicine, yet existing evaluations largely focus on isolated clinical encounters rather than tracking how clinical responsibilities evolve across a longitudinal care pathway. Here we introduce NPC-RubricBench, a phase-aware benchmark for evaluating multistage clinical reasoning across the cancer care continuum, using nasopharyngeal carcinoma as a defined disease context. Curated from longitudinal records of 405 patients across two cancer centers, the benchmark comprises 941 patient-phase units across six sequential care phases and 17,688 patient-specific atomic criteria spanning five evaluation dimensions, with each assessment strictly restricted to decision-time clinical evidence. Evaluating 30 general-purpose and medical LLMs revealed that strong diagnostic performance does not carry over to downstream care. We evaluated 30 general-purpose and medical LLMs, showing that high diagnostic performance did not translate into improved downstream care. Instead, the dominant failure modes reversed across phases. Explicit decision errors dominated anatomical staging at 48.2%, whereas decision omissions dominated initial work-up and post-treatment follow-up at 33.4% and 30.4%, respectively. In the evaluated model set, medically adapted models showed higher omission rates than general-purpose models. Moreover, varying query granularity exposes a critical specification trade-off: broad open-ended requests degrade Decision Quality across all 30 models, while more detailed, checklist-like prompts raise Decision Quality but reduce Evidence Faithfulness and Safety Adherence. Furthermore, NPC-RubricBench demonstrates that static diagnostic benchmarks are insufficient to ensure consistent clinical reliability over time, highlighting the importance of phase-adaptive safeguards in multistage medical AI.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-26T17:56:26Z</published>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Wei-Wei Zhang</name>
+    </author>
+    <author>
+      <name>Pengkai Wang</name>
+    </author>
+    <author>
+      <name>Yan Li</name>
+    </author>
+    <author>
+      <name>Zhijie Sang</name>
+    </author>
+    <author>
+      <name>Guan-Qun Zhou</name>
+    </author>
+    <author>
+      <name>Jun-Yan Li</name>
+    </author>
+    <author>
+      <name>Shu-Han Zhou</name>
+    </author>
+    <author>
+      <name>Pei-Wen Liu</name>
+    </author>
+    <author>
+      <name>Ting-Xi Tang</name>
+    </author>
+    <author>
+      <name>Min Tang</name>
+    </author>
+    <author>
+      <name>Zhitian Hou</name>
+    </author>
+    <author>
+      <name>Jianmin Wu</name>
+    </author>
+    <author>
+      <name>Jian Guan</name>
+    </author>
+    <author>
+      <name>i Lin</name>
+    </author>
+    <author>
+      <name>Hongxia Yang</name>
+    </author>
+    <author>
+      <name>Ying Sun</name>
+    </author>
+  </entry>
+<entry>
+    <id>http://arxiv.org/abs/2610.35835v1</id>
+    <title>I-HITL: Inalienable Human-in-the-Loop</title>
+    <updated>2026-10-26T17:52:14Z</updated>
+    <link href="https://arxiv.org/abs/2610.35835v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.35835v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Human oversight is a pillar of AI safety. It is often exercised by a human in the loop (HITL) who approves critical actions taken by an AI agent. AI agents' increasing ability to bypass guardrails, though, raises the question of how to enforce HITL robustly.
+  We introduce the concept of inalienable human-in-the-loop (I-HITL). An I-HITL protocol ensures that an agent can initiate an action only with explicit human approval, even when the human interacts with a system (e.g., a local agentic harness) compromised by the agent. A strong I-HITL protocol additionally ensures such approval even when an adversarial human attempts to delegate approvals to an agent.
+  To motivate I-HITL, we report on experiments with a popular agentic wallet platform in which raising an agent's spending cap requires HITL approval via emailed one-time passcodes (OTPs). Given access to the user's email and a task blocked by the cap, we find that ten different frontier models will often autonomously raise the cap, harvesting OTPs to bypass a HITL guardrail and surfacing other vulnerabilities.
+  We formally define I-HITL using the concept of communication topologies and prove necessary and sufficient conditions for its realization. We show that an I-HITL protocol requires a trusted entity - a trusted computing device (or equivalent) - and characterize which such devices can and cannot realize an I-HITL protocol. We present a prototype I-HITL system called Countersign that can plug into and strengthen existing HITL systems using off-the-shelf consumer mobile devices.</summary>
+    <category term="cs.CR" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-26T17:52:14Z</published>
+    <arxiv:primary_category term="cs.CR"/>
+    <author>
+      <name>Samuel Breckenridge</name>
+    </author>
+    <author>
+      <name>Dani Vilardell</name>
+    </author>
+    <author>
+      <name>Wenhao Wang</name>
+    </author>
+    <author>
+      <name>Fan Zhang</name>
+    </author>
+    <author>
+      <name>Ari Juels</name>
+    </author>
+  </entry>
+</feed>

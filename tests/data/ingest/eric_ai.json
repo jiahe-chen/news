@@ -1,0 +1,180 @@
+{
+ "response": {
+  "numFound": 6289,
+  "start": 0,
+  "numFoundExact": true,
+  "docs": [
+   {
+    "id": "EJ1464545",
+    "title": "Exploring Generative AI Literacy in Higher Education: Student Adoption, Interaction, Evaluation and Ethical Perceptions",
+    "author": [
+     "Kong Chen",
+     "April C. Tallant",
+     "Ian Selig"
+    ],
+    "description": "Purpose: Current knowledge and research on students' utilization and interaction with generative artificial intelligence (AI) tools in their academic work is limited. This study aims to investigate students' engagement with these tools. Design/methodology/approach: This research used survey-based research to investigate generative AI literacy (utilization, interaction, evaluation of output and ethics) among students enrolled in a four-year public university in the southeastern USA. This article focuses on the respondents who have used generative AI (218; 47.2%). Findings: Most respondents used generative AI to generate ideas for papers, projects or assignments, and they also used AI to assist with their original ideas. Despite their use of AI assistance, most students were critical of generative AI output, and this mindset was reflected in their reported interactions with ChatGPT. Respondents expressed a need for explicit guidance from course syllabi and university policies regarding generative AI's ethical and appropriate use. Originality/value: Literature related to generative AI use in higher education specific to ChatGPT is predominantly from educators' viewpoints. This study provides empirical evidence about how university students report using generative AI in the context of generative AI literacy.",
+    "subject": [
+     "Artificial Intelligence",
+     "Higher Education",
+     "College Students",
+     "Technology Integration",
+     "Technology Uses in Education",
+     "Digital Literacy",
+     "Ethics",
+     "Interaction",
+     "Writing Assignments",
+     "Reliability"
+    ],
+    "publicationtype": [
+     "Journal Articles",
+     "Reports - Research"
+    ],
+    "publicationdateyear": 2025,
+    "language": [
+     "English"
+    ],
+    "issn": [
+     "ISSN-2398-5348"
+    ],
+    "publisher": "Emerald Publishing Limited. Howard House, Wagon Lane, Bingley, West Yorkshire, BD16 1WA, UK. Tel: +44-1274-777700; Fax: +44-1274-785201; e-mail: emerald@emeraldinsight.com; Web site: http://www.emerald.com/insight",
+    "peerreviewed": "T"
+   },
+   {
+    "id": "EJ1520263",
+    "title": "Exploring AI Literacy, Reliance, and Ethical Practices of Secondary Level Students in Using Generative AI",
+    "author": [
+     "Allan Deanmacgy S. Cruz",
+     "Paul Christian J. Manrique",
+     "Jonalyn M. Mendeja"
+    ],
+    "description": "Generative artificial intelligence (AI) is rapidly changing education, creating opportunities and challenges. With this technology now widely available to secondary students, it is crucial to explore how they are using it. To explore secondary level students' AI literacy, AI reliance, and ethical practices when using generative AI, the researchers collected data from a sample of 595 secondary level students from a private institution using an adopted 20-item Generative AI Literacy Assessment (GLAT) and a researcher made tool for AI reliance and ethical practices with 5-point rating scale. Findings revealed that the students' mean AI literacy score was 8.71 out of 20, indicating a limited understanding of generative AI. The mean for AI reliance was found to be 2.91, while the mean for ethical practices was 3.88. Multiple linear regression analyses indicated that AI literacy and ethical practices significantly predict AI reliance, accounting for 6.02% of the variance in reliance (R[subscript 2] = 0.0602, p-value < 0.001). Specifically, AI literacy was a significant negative predictor of AI reliance, suggesting that as students' knowledge increases, their reliance decreases. However, ethical practices was a significant positive predictor of AI reliance, suggesting that more ethical students tend to also be more reliant on the technology. Furthermore, both AI literacy and AI reliance were found to be significant positive predictors of ethical practices, explaining 9.13% of the variance in ethical practices (R[subscript 2] = 0.0913, p-value < 0.001). This suggests a direct link where higher AI literacy leads to more ethical behavior, and that students who are more reliant on AI also tend to exhibit more ethical practices. The findings highlight the complex relationship between students' AI knowledge, reliance, and behavior, providing a foundation for targeted educational interventions.",
+    "subject": [
+     "Ethics",
+     "Secondary School Students",
+     "Artificial Intelligence",
+     "Technology Uses in Education",
+     "Digital Literacy",
+     "Private Schools",
+     "Student Behavior"
+    ],
+    "publicationtype": [
+     "Journal Articles",
+     "Reports - Research"
+    ],
+    "publicationdateyear": 2026,
+    "language": [
+     "English"
+    ],
+    "publisher": "Springer. Available from: Springer Nature. One New York Plaza, Suite 4600, New York, NY 10004. Tel: 800-777-4643; Tel: 212-460-1500; Fax: 212-460-1700; e-mail: customerservice@springernature.com; Web site: https://link.springer.com/",
+    "peerreviewed": "T"
+   },
+   {
+    "id": "EJ1492717",
+    "title": "From an Unsettled Middle: A Critical-Ethical Stance for GenAI-Engaged Writing Assignments",
+    "author": [
+     "Christopher Basgier",
+     "Lydia Wilkes"
+    ],
+    "description": "From an unsettled, ambivalent middle between discourses of generative AI integration and refusal, we offer a critical-ethical stance for AI-engaged writing assignments. We apply a critical thinking framework to these assignments, assert critical AI literacy as a kind of critical thinking, and discuss how critical thinking and critical AI literacy can facilitate ethical discernment about generative AI use. This unsettled, critical-ethical stance positions scholars in our field to support context-sensitive pedagogical responses to generative AI across first-year writing, Writing Across the Curriculum, writing centers, and beyond.",
+    "subject": [
+     "Artificial Intelligence",
+     "Writing Assignments",
+     "Critical Thinking",
+     "Digital Literacy",
+     "Ethics",
+     "Writing Across the Curriculum",
+     "Freshman Composition",
+     "Laboratories",
+     "Writing (Composition)",
+     "Writing Instruction",
+     "Computer Uses in Education"
+    ],
+    "publicationtype": [
+     "Journal Articles",
+     "Reports - Descriptive"
+    ],
+    "publicationdateyear": 2025,
+    "language": [
+     "English"
+    ],
+    "issn": [
+     "ISSN-0010-096X"
+    ],
+    "publisher": "National Council of Teachers of English. 1111 West Kenyon Road, Urbana, IL 61801-1096. Tel: 877-369-6283; Tel: 217-328-3870; Web site: http://www.ncte.org/journals",
+    "peerreviewed": "T"
+   },
+   {
+    "id": "EJ1461180",
+    "title": "Leveraging Generative AI in Higher Education: An Analysis of Opportunities and Challenges Addressed in University Guidelines",
+    "author": [
+     "Sonja Christ-Brendemühl"
+    ],
+    "description": "As generative Artificial Intelligence (AI) is seen as a catalyst for a new learning and examination culture in higher education, it urges universities to reinvent themselves and to adapt to these changes effectively. By analysing the content of 67 university guidelines on generative AI, this study investigates how universities in Germany position themselves towards the rise of generative AI. Findings reveal that a majority of university guidelines explicitly permit both university lecturers and students to engage with generative AI, emphasising the importance of building AI literacy among both groups and preparing students for changing demands in the world of work. Importantly, 56.7% of university guidelines posit that the opportunities of generative AI for higher education outweigh the risks, underscoring the potential transformative impact on teaching and research. In addition, the results of a workshop with 25 faculty members were scrutinised to deepen and specify the findings of the content analysis.",
+    "subject": [
+     "Artificial Intelligence",
+     "Technology Uses in Education",
+     "Higher Education",
+     "Universities",
+     "Guidelines",
+     "Digital Literacy",
+     "College Faculty",
+     "College Students",
+     "Educational Change",
+     "Teacher Workshops",
+     "Content Analysis"
+    ],
+    "publicationtype": [
+     "Journal Articles",
+     "Reports - Research"
+    ],
+    "publicationdateyear": 2025,
+    "language": [
+     "English"
+    ],
+    "issn": [
+     "ISSN-0141-8211"
+    ],
+    "publisher": "Wiley. Available from: John Wiley & Sons, Inc. 111 River Street, Hoboken, NJ 07030. Tel: 800-835-6770; e-mail: cs-journals@wiley.com; Web site: https://www.wiley.com/en-us",
+    "peerreviewed": "T"
+   },
+   {
+    "id": "EJ1497603",
+    "title": "Teacher&apos;s Perspective on Generative Artificial Intelligence-Driven Innovation of Vocational Undergraduate Teaching Models in Road and Bridge Engineering--An Empirical Study Based on Structural Equation Modeling",
+    "author": [
+     "Hou Tiejun",
+     "Yuan Yuan",
+     "Bai Shuxuan",
+     "Liu Leqing",
+     "Zhang Chenchen",
+     "Saifon Songsiengchai"
+    ],
+    "description": "This study examines the role mechanism of generative artificial intelligence (GAI) in empowering the innovation of vocational undergraduate teaching modes in road and bridge engineering from the teachers' perspective. Integrating the Technology Acceptance Model (TAM), Constructivist Learning Theory (CLT), and Engineering Education Theory (EET), a multidimensional Structural Equation Model (SEM) is constructed, covering Teaching AI Literacy (TAL), Generative AI Use Behavior (GAU), Teaching Perception of Adaptation (TPA), Learning Engagement (LE), Learning Outcomes (LO), Engineering Problem Solving Skills (EPS), Teaching Satisfaction (TS), Ethical Risk Perception (ERP), and College-Company Collaboration Intensity (CCI) as a contextual moderating variable. Taking all 54 teachers of the road and bridge engineering program at Qinghai Vocational and Technical University as the empirical sample, the study showed that teachers' AI literacy significantly contributed to AI usage behavior and students' learning engagement; AI usage behavior further positively affected learning engagement by enhancing teachers' teaching perception of adaptation; and learning engagement significantly and positively impacted the students' learning outcomes, which in turn improved their engineering problem-solving ability and teaching satisfaction. The increase in learning engagement also considerably enhanced students' ability to perceive the ethical risks of AI. The intensity of school-enterprise collaboration (CCI) as a contextual variable was significantly and positively correlated with both teacher AI literacy TAL and generative AI usage behavior (GAU). This study has significant practical implications for the generative AI-driven reform of vocational undergraduate teaching modes and school-enterprise synergy in road and bridge engineering.",
+    "subject": [
+     "Artificial Intelligence",
+     "Undergraduate Study",
+     "Career and Technical Education",
+     "Technology Integration",
+     "Teacher Attitudes",
+     "College Faculty",
+     "Engineering Education",
+     "Foreign Countries",
+     "Learner Engagement",
+     "Technological Literacy"
+    ],
+    "publicationtype": [
+     "Journal Articles",
+     "Reports - Research"
+    ],
+    "publicationdateyear": 2025,
+    "language": [
+     "English"
+    ],
+    "issn": [
+     "ISSN-1925-0746"
+    ],
+    "publisher": "Sciedu Press. 1120 Finch Avenue West Suite 701-309, Toronto, ON., M3J 3H7, Canada. Tel: 416-479-0028; Fax: 416-642-8548; e-mail: jct@sciedupress.com; Web site: https://www.sciedu.ca/journal/index.php/wje/index/",
+    "peerreviewed": "T"
+   }
+  ]
+ }
+}

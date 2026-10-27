@@ -72,7 +72,9 @@ def stories_needing_briefs(session: Session, limit: int) -> list[Story]:
     out: list[Story] = []
     for story in stories:
         latest = session.scalars(
-            select(Brief).where(Brief.story_id == story.id, Brief.kind == "story").order_by(Brief.generated_at.desc())
+            select(Brief)
+            .where(Brief.story_id == story.id, Brief.kind == "story")
+            .order_by(Brief.generated_at.desc())
         ).first()
         if latest is None or latest.generated_at < story.last_updated_at:
             out.append(story)
@@ -140,7 +142,9 @@ def run_pipeline(
     if finance:
         from newsren.finance.service import refresh_finance
 
-        report.finance = _step(report, "finance", session, refresh_finance, session, orchestrator, settings, network) or {}
+        report.finance = (
+            _step(report, "finance", session, refresh_finance, session, orchestrator, settings, network) or {}
+        )
 
     # 5. Output: opt-in monitoring and low-risk personal briefings.
     if monitor:

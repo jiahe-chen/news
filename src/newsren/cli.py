@@ -59,7 +59,9 @@ def cmd_demo(args: argparse.Namespace) -> int:
             # front page has content; finance and high-risk drafts stay in the
             # queue to show the human-review gate.
             for brief in review_queue(session):
-                blockers = [c for c in brief.check_results if not c.get("passed") and c.get("severity") == "blocker"]
+                blockers = [
+                    c for c in brief.check_results if not c.get("passed") and c.get("severity") == "blocker"
+                ]
                 if brief.vertical != "finance" and brief.risk_level != "high" and not blockers:
                     approve(session, brief, editor, notes="Demo sign-off")
                     published += 1
@@ -133,7 +135,12 @@ def cmd_finance(args: argparse.Namespace) -> int:
     init_db()
     with session_scope() as session:
         if args.ticker:
-            from newsren.finance.edgar import build_earnings_report, earnings_brief, get_or_create_company, lookup_cik
+            from newsren.finance.edgar import (
+                build_earnings_report,
+                earnings_brief,
+                get_or_create_company,
+                lookup_cik,
+            )
 
             settings = get_settings()
             cik = lookup_cik(args.ticker, settings)
@@ -153,7 +160,9 @@ def cmd_create_user(args: argparse.Namespace) -> int:
 
     init_db()
     with session_scope() as session:
-        user = create_user(session, args.email, args.password, args.name or args.email.split("@")[0], role=args.role)
+        user = create_user(
+            session, args.email, args.password, args.name or args.email.split("@")[0], role=args.role
+        )
         print(f"Created {user.role} {user.email} (id {user.id})")
     return 0
 
@@ -197,7 +206,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-briefs", type=int, default=25)
     p.set_defaults(func=cmd_pipeline)
 
-    sub.add_parser("monitor", help="check every active follow for material developments").set_defaults(func=cmd_monitor)
+    sub.add_parser("monitor", help="check every active follow for material developments").set_defaults(
+        func=cmd_monitor
+    )
     sub.add_parser("briefings", help="build and deliver personal briefings").set_defaults(func=cmd_briefings)
 
     p = sub.add_parser("finance", help="refresh finance trackers")
@@ -212,9 +223,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--role", choices=["reader", "editor", "admin"], default="reader")
     p.set_defaults(func=cmd_create_user)
 
-    sub.add_parser("metrics", help="print trust/usefulness/education/engagement/editorial/cost metrics").set_defaults(
-        func=cmd_metrics
-    )
+    sub.add_parser(
+        "metrics", help="print trust/usefulness/education/engagement/editorial/cost metrics"
+    ).set_defaults(func=cmd_metrics)
 
     p = sub.add_parser("serve", help="run the web app")
     p.add_argument("--host", default="127.0.0.1")
@@ -228,7 +239,8 @@ def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
     logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     sys.exit(args.func(args))
 

@@ -102,7 +102,9 @@ def csrf_token(request: Request) -> str:
     return token
 
 
-async def verify_csrf(request: Request, csrf_token_field: Annotated[str | None, Form(alias="csrf_token")] = None) -> None:
+async def verify_csrf(
+    request: Request, csrf_token_field: Annotated[str | None, Form(alias="csrf_token")] = None
+) -> None:
     """Reject state-changing requests without the session's CSRF token (form field or X-CSRF-Token header)."""
     expected = request.session.get("csrf")
     supplied = request.headers.get("X-CSRF-Token") or csrf_token_field
