@@ -59,7 +59,7 @@ ids that exist in the evidence pack.
 - `classify_event(article) -> str` — `EventType` value by rules (doc_type + title/summary cues: "benchmark", "evaluation", "launch", "funding", "raises", "10-Q", "enforcement", "charged", "correction", "advisory", "opinion" ...). Pure and fast; used by monitoring and timelines.
 
 `newsren/intelligence/clustering.py`
-- `assign_stories(session, articles=None, window_days=21, threshold=0.28) -> list[Story]` — incremental clustering: non-duplicate articles without `story_id` join the best-matching existing story (TF-IDF cosine on title+summary combined with entity Jaccard, same vertical preferred, recency window) or start a new story. Returns stories that changed.
+- `assign_stories(session, articles=None, window_days=21, threshold=0.28) -> list[Story]` — incremental clustering: non-duplicate articles without `story_id` join the best-matching existing story (TF-IDF cosine on title+summary combined with entity Jaccard, same vertical preferred, recency window) or start a new story. Returns stories that changed. Live-feed rules (see the module docstring): headline anchors (`title_anchors`), per-source boilerplate suppression, publisher self-names never anchor, same-publisher releases need a shared named subject, filings cluster only by CIK, repeated series titles carry no signal.
 - `related_stories(session, story, limit=5) -> list[Story]` — cross-story connections via shared entities/keywords (across verticals).
 
 `newsren/intelligence/timeline.py`
@@ -129,10 +129,11 @@ ids that exist in the evidence pack.
 - `build_earnings_report(session, company, settings, facts=None) -> EarningsReport` + `earnings_brief(session, report, orchestrator=None) -> Brief` (vertical finance, kind `"earnings"`, goes through review).
 
 `newsren/finance/funding.py`
-- `extract_funding(article) -> FundingExtractOut` (rule-based: "raises $X million Series B led by ..."; LLM optional via orchestrator) and `update_funding_tracker(session, articles=None, orchestrator=None) -> list[FundingRound]`; `funding_trends(session, days=90) -> dict` (by sector, stage, top investors by count — never ranks startups as investments).
+- `extract_funding(article) -> FundingExtractOut` (rule-based: "raises $X million Series B led by ..."; LLM optional via orchestrator) and `update_funding_tracker(session, articles=None, orchestrator=None) -> list[FundingRound]`; `funding_trends(session, days=90) -> dict` (by sector, stage, top investors by count — never ranks startups as investments). Extraction skips regulator, filing, regulatory and opinion documents and negative contexts (charges, fraud, "no returns", valuation-only mentions) via `negative_context` / `skip_reason`.
 
 `newsren/finance/ai_claims.py`
 - `SEED_CLAIMS` from the plan's research table (FINRA Jan 2026 agent types; Deutsche Bank/Google Cloud surveillance agents; Goldman exploring; TradingAgents research prototype (backtest); JPMorgan LLM Suite ~50,000 staff (live deployment); JPMorgan 2026 regime-based portfolio agents (backtest, two-decade, 60/40 benchmark, authors' caveat); SEC AI-washing actions Delphia $225,000 / Global Predictions $175,000 (regulatory finding); vendor surveys 16%/8% (announcement/survey); Metal Raise Agent Aug 2026 (announcement)) with the plan's source citations.
+- Claims require a financial-sector actor plus an AI capability claim or finding (`is_ai_finance_sentence`); sponsored, commentary, and generic marketing items are skipped.
 - `seed_ai_claims(session) -> int`, `classify_claim(article, orchestrator=None) -> AIFinanceClaimOut`, `update_ai_claims(session, articles=None, orchestrator=None) -> list[AIFinanceClaim]`.
 
 `newsren/finance/regulation.py`
