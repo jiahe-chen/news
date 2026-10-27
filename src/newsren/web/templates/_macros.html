@@ -1,4 +1,5 @@
-{# Shared presentation macros. Import with: {% import "_macros.html" as m %} #}
+{# Shared presentation macros. Import WITH CONTEXT (csrf_field needs the request context):
+   {% import "_macros.html" as m with context %} #}
 
 {% macro finance_notice(text) -%}
 <aside class="finance-notice" role="note">
@@ -15,20 +16,20 @@
 {%- endmacro %}
 
 {# citations: list of CitationRef dicts #}
-{% macro citation_refs(ids, citations) -%}
+{% macro citation_refs(ids, citations, prefix="") -%}
 {%- for cid in ids or [] -%}
   {%- set c = (citations | selectattr('id', 'equalto', cid) | first) if citations else None -%}
-  {%- if c -%}<a class="cite" href="#cite-{{ c.id }}" title="{{ c.title }} — {{ c.publisher }}">[{{ c.id[1:] if c.id.startswith('c') else c.id }}]</a>{%- endif -%}
+  {%- if c -%}<a class="cite" href="#{{ prefix }}cite-{{ c.id }}" title="{{ c.title }} — {{ c.publisher }}">[{{ c.id[1:] if c.id.startswith('c') else c.id }}]</a>{%- endif -%}
 {%- endfor -%}
 {%- endmacro %}
 
-{% macro citation_list(citations, heading="Sources") -%}
+{% macro citation_list(citations, heading="Sources", prefix="") -%}
 {% if citations %}
 <section class="sources" aria-label="{{ heading }}">
   <h3 class="section-label">{{ heading }}</h3>
   <ol class="source-list">
     {% for c in citations %}
-    <li id="cite-{{ c.id }}">
+    <li id="{{ prefix }}cite-{{ c.id }}">
       <a href="{{ c.url }}" rel="noopener noreferrer" target="_blank">{{ c.title }}</a>
       <span class="source-meta">
         {{ c.publisher }}{% if c.published_at %} · published {{ c.published_at | fmt_dt }}{% endif %}{% if c.retrieved_at %} · retrieved {{ c.retrieved_at | fmt_dt_time }}{% endif %}
@@ -42,10 +43,10 @@
 {% endif %}
 {%- endmacro %}
 
-{% macro claim_item(claim, citations) -%}
+{% macro claim_item(claim, citations, prefix="") -%}
 <li class="claim claim-{{ claim.support_status }}">
   <span class="claim-text">{{ claim.text }}</span>
-  {{ citation_refs(claim.citation_ids, citations) }}
+  {{ citation_refs(claim.citation_ids, citations, prefix) }}
   <span class="claim-badges">
     {{ claim.claim_type | badge }} {{ claim.support_status | badge }}
     {% if claim.performance_label %}{{ claim.performance_label | badge }}{% endif %}
@@ -68,7 +69,7 @@
     <span class="muted">{{ (brief.published_at or brief.generated_at) | timeago }}</span>
   </div>
   <h3 class="card-headline"><a href="/briefs/{{ brief.id }}">{{ brief.headline }}</a></h3>
-  <p class="card-summary">{{ brief.summary | truncate(260) }}</p>
+  <p class="card-summary">{{ brief.summary | strip_cites | truncate(260) }}</p>
   {% if brief.citations %}<p class="card-meta muted">{{ brief.citations | length }} source{{ 's' if brief.citations | length != 1 else '' }}</p>{% endif %}
 </article>
 {%- endmacro %}

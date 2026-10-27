@@ -1,0 +1,48 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+{% set p = "product-" %}
+<section class="tool-content tool-product" data-tool-root aria-labelledby="tool-h-product-{{ brief.id }}">
+  <header class="tool-header">
+    <p class="kicker">{{ m.vertical_tag(spec.vertical) }} · Editorial product</p>
+    <h2 class="tool-title" id="tool-h-product-{{ brief.id }}">{{ spec.name }}</h2>
+    <p class="tool-blurb">{{ spec.reader_value or spec.description }}</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  <article class="product-output">
+    {% if product_title %}<h3 class="product-title">{{ product_title }}</h3>{% endif %}
+    {% if product.labels %}<p class="product-labels">{{ product.labels | join(', ') | label_badges }}</p>{% endif %}
+    <p class="product-summary">{{ product.summary | cite_markers(citations, p) }}</p>
+
+    {% for s in product.sections %}
+    <section class="product-section" aria-labelledby="ps-{{ content.id }}-{{ loop.index }}">
+      <h4 class="product-section-heading" id="ps-{{ content.id }}-{{ loop.index }}">{{ s.heading | strip_cites }} {% if s.label %}<span class="product-section-label">{{ s.label | label_badges }}</span>{% endif %}</h4>
+      {{ t.blocks(s.body, citations, p, "h5") }}
+      {% set extra = s.citation_ids | uncited(s.body) %}
+      {% if extra %}<p class="product-section-refs small muted">Sources: {{ t.refs(extra, citations, p) }}</p>{% endif %}
+    </section>
+    {% else %}
+      {{ m.empty_state("Nothing to report yet", "The sources for this brief don't contain the evidence this product needs.") }}
+    {% endfor %}
+
+    {% if product.caveats %}
+    <div class="uncertainty product-caveats">
+      <strong>Caveats</strong>
+      <ul>{% for c in product.caveats %}<li>{{ c | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+  </article>
+
+  {{ t.source_list(citations, p) }}
+  {{ m.generated_note(content.generated_by, content.generated_at) }}
+  {{ t.feedback_quick("product", content.id, "Was this useful?", "/briefs/" ~ brief.id ~ "/tools/products/" ~ spec.key) }}
+
+  {% if other_products %}
+  <nav class="other-products" aria-label="Other editorial products for this brief">
+    <span class="section-label">Other editorial products</span>
+    <ul class="pill-list">
+      {% for o in other_products %}<li><a class="pill" href="{{ o.url }}"{{ t.hx_swap(o.url) }}>{{ o.label }}</a></li>{% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+</section>

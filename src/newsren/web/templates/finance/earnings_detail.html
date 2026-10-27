@@ -1,0 +1,165 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% set r = report %}
+{% block title %}{{ r.company }} {{ r.form }}, {{ r.fiscal_label }} — Earnings Decoder — The Newsren{% endblock %}
+{% block description %}Earnings Decoder for {{ r.company }} ({{ r.form }}, {{ r.fiscal_label }}): reported figures from the filing, compared with prior periods, each with its source.{% endblock %}
+
+{% macro metrics_table(rows, caption, annual=False) -%}
+<div class="table-wrap">
+  <table class="data fin-table fin-metrics">
+    <caption class="sr-only">{{ caption }}</caption>
+    <thead>
+      <tr>
+        <th scope="col">Metric</th>
+        <th scope="col" class="num">Reported</th>
+        <th scope="col" class="num">{{ 'Previous fiscal year' if annual else 'Same quarter a year earlier' }}</th>
+        <th scope="col" class="num">Change</th>
+        {% if not annual %}<th scope="col" class="num">Previous quarter</th>{% endif %}
+        <th scope="col">Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <th scope="row" data-label="Metric">
+          {{ row.name }}
+          {% if row.derived %}<span class="badge" title="The quarter is not tagged separately: fiscal year minus the nine-month figure">Derived</span>{% endif %}
+        </th>
+        <td class="num" data-label="Reported"><span class="fin-figure">{{ row.display }}</span><span class="fin-cell-note">{{ row.period }}</span></td>
+        <td class="num" data-label="{{ 'Previous fiscal year' if annual else 'Year earlier' }}">
+          {% if row.has_prior %}<span class="fin-figure">{{ row.prior_display }}</span><span class="fin-cell-note">{% if not row.year_ago and not annual %}{{ row.comparison_label }}: {% endif %}{{ row.prior_period }}</span>{% else %}<span class="muted">Not available</span>{% endif %}
+        </td>
+        <td class="num" data-label="Change">{% if row.has_prior %}{{ f.change(row.change, row.comparison_label | lower) }}{% else %}<span class="muted">—</span>{% endif %}</td>
+        {% if not annual %}
+        <td class="num" data-label="Previous quarter">
+          {% if row.has_prior_quarter %}<span class="fin-figure">{{ row.prior_quarter_display }}</span> {{ f.change(row.prior_quarter_change, "the previous quarter") }}<span class="fin-cell-note">{{ row.prior_quarter_period }}</span>{% else %}<span class="muted">—</span>{% endif %}
+        </td>
+        {% endif %}
+        <td data-label="Source" class="fin-source-cell">
+          {% if row.source_url %}<a href="{{ row.source_url }}" rel="noopener noreferrer" target="_blank">{{ row.form or 'Filing' }}{% if row.filed %} filed {{ row.filed | fmt_dt }}{% endif %}<span class="sr-only"> (opens the filing on SEC EDGAR)</span></a>{% endif %}
+          {% if row.prior_source_url and row.prior_source_url != row.source_url %}<br><a href="{{ row.prior_source_url }}" rel="noopener noreferrer" target="_blank">Comparison filing<span class="sr-only"> (opens on SEC EDGAR)</span></a>{% endif %}
+          {% if row.source_quote %}
+          <details class="fin-quote">
+            <summary>Source quote</summary>
+            <blockquote>{{ row.source_quote }}</blockquote>
+          </details>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{%- endmacro %}
+
+{% block finance_content %}
+<nav class="fin-breadcrumb" aria-label="Breadcrumb"><a href="/finance/earnings">← All Earnings Decoder reports</a></nav>
+<header class="fin-page-header">
+  <p class="kicker fin-kicker">Earnings Decoder {{ m.demo_badge(r.is_demo) }}</p>
+  <h1 class="page-title">{{ r.company }}{% if r.ticker %} <span class="fin-ticker">({{ r.ticker }})</span>{% endif %}</h1>
+  <p class="lede">{{ r.form }} for {{ r.fiscal_label }}{% if r.filing_period %} ({{ r.filing_period }}){% endif %}{% if r.filed_at %}, filed {{ r.filed_at | fmt_dt }}{% endif %}. Reported figures only — each linked to its filing.</p>
+</header>
+
+{{ f.data_note(r.data_delay_note, "Figures are as filed; a later amended filing (10-Q/A or 10-K/A) can change them.") }}
+
+<div class="layout-main-side fin-earnings">
+  <div class="fin-earnings-main">
+    <section aria-labelledby="metrics-heading">
+      <h2 class="section-heading" id="metrics-heading">Reported results</h2>
+      {% if r.quarterly %}
+        {{ metrics_table(r.quarterly, "Quarterly figures from the filing with comparisons") }}
+      {% endif %}
+      {% if r.annual %}
+        <h3 class="fin-subheading">Fiscal year</h3>
+        {{ metrics_table(r.annual, "Fiscal-year figures from the filing", annual=True) }}
+      {% endif %}
+      {% if not r.quarterly and not r.annual %}
+        {{ m.empty_state("No tagged figures in this filing", "The filing's XBRL data had none of the tracked metrics (revenue, gross profit, operating income, net income, diluted EPS).") }}
+      {% endif %}
+      <p class="fin-footnote muted">The comparison period is the same quarter a year earlier when the filings give it (this removes seasonal effects), otherwise the previous quarter. Percentage changes are omitted (n/m) when either figure is a loss or zero, because they are not meaningful. Changes are arithmetic, not judgements: ▲ means the figure is higher than in the comparison period, ▼ lower.</p>
+    </section>
+
+    <section aria-labelledby="guidance-heading">
+      <h2 class="section-heading" id="guidance-heading">Versus company guidance</h2>
+      {% if r.guidance %}
+      <div class="table-wrap">
+        <table class="data fin-table">
+          <caption class="sr-only">Reported figures compared with the company's own guidance</caption>
+          <thead>
+            <tr>
+              <th scope="col">Metric</th>
+              <th scope="col">Company guidance</th>
+              <th scope="col">Reported</th>
+              <th scope="col">Position</th>
+              <th scope="col">Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for g in r.guidance %}
+            <tr>
+              <th scope="row" data-label="Metric">{{ g.metric }}</th>
+              <td data-label="Company guidance">{{ g.guidance }} <span class="badge badge-forecast">Forecast</span></td>
+              <td data-label="Reported">{{ g.actual or '—' }}</td>
+              <td data-label="Position">{{ g.position_label }}</td>
+              <td data-label="Source">
+                {% if g.source_url %}<a href="{{ g.source_url }}" rel="noopener noreferrer" target="_blank">Company release<span class="sr-only"> (opens the source)</span></a>{% else %}<span class="muted">Not linked</span>{% endif %}
+                {% if g.source_quote %}<details class="fin-quote"><summary>Source quote</summary><blockquote>{{ g.source_quote }}</blockquote></details>{% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="fin-footnote muted">Guidance is the company's own forward-looking estimate, quoted from its earnings release or call. It is a forecast, not a reported result.</p>
+      {% else %}
+      <div class="fin-callout">
+        <p><strong>No guidance comparison for this report.</strong> {{ r.guidance_note }}</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <aside class="fin-earnings-side" aria-label="Filing details">
+    <div class="panel">
+      <h2 class="panel-title">The filing</h2>
+      <dl class="fin-facts">
+        <div><dt>Company</dt><dd>{{ r.company }}</dd></div>
+        {% if r.ticker %}<div><dt>Ticker</dt><dd>{{ r.ticker }}</dd></div>{% endif %}
+        {% if r.cik %}<div><dt>SEC CIK</dt><dd>{{ r.cik }}</dd></div>{% endif %}
+        {% if r.sector %}<div><dt>Industry</dt><dd>{{ r.sector }}</dd></div>{% endif %}
+        <div><dt>Form</dt><dd>{{ r.form }}</dd></div>
+        <div><dt>Fiscal period</dt><dd>{{ r.fiscal_label }}</dd></div>
+        {% if r.filed_at %}<div><dt>Filed</dt><dd>{{ r.filed_at | fmt_dt }}</dd></div>{% endif %}
+        {% if r.accession %}<div><dt>Accession</dt><dd>{{ r.accession }}</dd></div>{% endif %}
+        <div><dt>Retrieved</dt><dd>{{ r.retrieved_at | fmt_dt_time }}</dd></div>
+      </dl>
+      <ul class="plain-list fin-links">
+        {% if r.filing_url %}<li><a href="{{ r.filing_url }}" rel="noopener noreferrer" target="_blank">Read the {{ r.form }}<span class="sr-only"> (opens on SEC EDGAR)</span></a></li>{% endif %}
+        {% if r.filing_index_url and r.filing_index_url != r.filing_url %}<li><a href="{{ r.filing_index_url }}" rel="noopener noreferrer" target="_blank">Filing index on EDGAR</a></li>{% endif %}
+        {% if r.xbrl_source %}<li><a href="{{ r.xbrl_source }}" rel="noopener noreferrer" target="_blank">XBRL company facts (data source)</a></li>{% endif %}
+      </ul>
+      {% if r.release %}
+      <p class="fin-small"><strong>Earnings release:</strong> {% if r.release.url %}<a href="{{ r.release.url }}" rel="noopener noreferrer" target="_blank">{{ r.release.form }}{% if r.release.filed %} filed {{ r.release.filed | fmt_dt }}{% endif %}</a>{% else %}{{ r.release.form }}{% endif %}. <span class="muted">{{ r.release.note }}</span></p>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">Earnings and Filings Brief</h2>
+      {% if r.brief and r.brief.approved %}
+        <p><a href="/briefs/{{ r.brief.id }}">{{ r.brief.headline }}</a></p>
+        <p class="muted fin-small">Reviewed by an editor and published{% if r.brief.published_at %} {{ r.brief.published_at | fmt_dt }}{% endif %}.</p>
+        {{ m.generated_note(r.brief.generated_by, r.brief.generated_at) }}
+      {% elif r.brief %}
+        <p><span class="badge badge-in_review">In editorial review</span></p>
+        <p class="fin-small">An AI-drafted brief explaining these figures is waiting for a human editor. Finance stories are always reviewed before publication.</p>
+        {% if r.brief.can_open %}<p class="fin-small"><a href="/briefs/{{ r.brief.id }}">Preview the unpublished draft</a> <span class="muted">(editors only)</span></p>{% endif %}
+      {% else %}
+        <p class="fin-small muted">No brief has been written for this report yet.</p>
+      {% endif %}
+    </div>
+
+    {{ f.concept_pills(concepts, "Concepts for reading this report") }}
+  </aside>
+</div>
+{% endblock %}

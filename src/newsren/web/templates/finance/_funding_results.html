@@ -1,0 +1,104 @@
+{% import "_macros.html" as m with context %}
+<div id="funding-results" class="fin-results" aria-live="polite">
+  <section aria-labelledby="fund-trends-heading">
+    <h2 class="section-heading" id="fund-trends-heading">Trends in the last {{ trends.window_days }} days</h2>
+    <p class="fin-trend-intro muted">All announced rounds in the window{% if filtered %}; the filters below apply to the rounds table only{% endif %}. Counts of rounds and the US-dollar amounts companies disclosed — not a measure of any company's prospects.</p>
+    <div class="stat-grid fin-stats">
+      <div class="stat"><div class="stat-label">Rounds announced</div><div class="stat-value">{{ trends.total_rounds }}</div><div class="stat-note">since {{ trends.since | fmt_dt }}</div></div>
+      <div class="stat"><div class="stat-label">Disclosed (USD)</div><div class="stat-value">{{ trends.total_disclosed_usd | money if trends.rounds_with_disclosed_usd else '—' }}</div><div class="stat-note">{{ trends.rounds_with_disclosed_usd }} of {{ trends.total_rounds }} rounds disclosed a US-dollar amount</div></div>
+      <div class="stat"><div class="stat-label">Sectors</div><div class="stat-value">{{ trends.by_sector | length }}</div><div class="stat-note">with at least one round</div></div>
+    </div>
+
+    {% if trends.total_rounds %}
+    <div class="grid grid-3 fin-charts">
+      <section aria-labelledby="fund-sector-heading">
+        <h3 class="fin-chart-title" id="fund-sector-heading">By sector</h3>
+        <ul class="fin-bars">
+          {% for b in sector_bars %}
+          <li>
+            <div class="fin-bar-label"><a href="{{ filter_url(sector=b.key) }}">{{ b.label }}</a><span class="fin-bar-value">{{ b.rounds }} round{{ 's' if b.rounds != 1 else '' }}{% if b.disclosed_usd %} · {{ b.disclosed_usd | money }}{% endif %}</span></div>
+            <div class="bar" aria-hidden="true"><span style="width: {{ b.width }}%"></span></div>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      <section aria-labelledby="fund-stage-heading">
+        <h3 class="fin-chart-title" id="fund-stage-heading">By stage</h3>
+        <ul class="fin-bars">
+          {% for b in stage_bars %}
+          <li>
+            <div class="fin-bar-label"><a href="{{ filter_url(stage=b.key) }}">{{ b.label }}</a><span class="fin-bar-value">{{ b.rounds }} round{{ 's' if b.rounds != 1 else '' }}{% if b.disclosed_usd %} · {{ b.disclosed_usd | money }}{% endif %}</span></div>
+            <div class="bar" aria-hidden="true"><span style="width: {{ b.width }}%"></span></div>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      <section aria-labelledby="fund-investor-heading">
+        <h3 class="fin-chart-title" id="fund-investor-heading">Investor activity</h3>
+        <p class="fin-chart-note muted">Number of announced rounds each investor took part in. Activity, not performance.</p>
+        {% if investor_bars %}
+        <ul class="fin-bars">
+          {% for b in investor_bars %}
+          <li>
+            <div class="fin-bar-label"><span>{{ b.name }}</span><span class="fin-bar-value">{{ b.rounds }} round{{ 's' if b.rounds != 1 else '' }}</span></div>
+            <div class="bar" aria-hidden="true"><span style="width: {{ b.width }}%"></span></div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}<p class="muted">No investors named in the announcements.</p>{% endif %}
+      </section>
+    </div>
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="fund-rounds-heading">
+    <h2 class="section-heading" id="fund-rounds-heading">Rounds</h2>
+    <p class="fin-filter-summary">
+      Showing {{ rounds | length }} of {{ window_count }} round{{ 's' if window_count != 1 else '' }} announced in the last {{ filters.days }} days{% if filters.sector %} · sector: <strong>{{ filters.sector }}</strong>{% endif %}{% if filters.stage %} · stage: <strong>{{ stage_label }}</strong>{% endif %}.
+      {% if filtered %}<a href="{{ filter_url(sector='', stage='') }}">Clear sector and stage</a>{% endif %}
+    </p>
+    {% if rounds %}
+    <div class="table-wrap">
+      <table class="data fin-table fin-rounds">
+        <caption class="sr-only">Funding rounds, newest announcement first</caption>
+        <thead>
+          <tr>
+            <th scope="col">Company</th>
+            <th scope="col">Stage</th>
+            <th scope="col">Amount as reported</th>
+            <th scope="col">Lead investors</th>
+            <th scope="col">Announced</th>
+            <th scope="col">Source</th>
+            <th scope="col">Logged by</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rounds %}
+          <tr>
+            <th scope="row" data-label="Company">{{ r.company }} {{ m.demo_badge(r.is_demo) }}<span class="fin-cell-note">{{ r.sector }}</span></th>
+            <td data-label="Stage">{{ r.stage_label }}</td>
+            <td data-label="Amount as reported">{{ r.amount_text }}{% if r.amount_usd is not none %}<span class="fin-cell-note">{{ r.amount_usd | money }} in USD</span>{% endif %}</td>
+            <td data-label="Lead investors">
+              {% if r.lead_investors %}{{ r.lead_investors | join(', ') }}{% else %}<span class="muted">No lead named</span>{% endif %}
+              {% if r.other_investors %}<span class="fin-cell-note">Also: {{ r.other_investors | join(', ') }}</span>{% endif %}
+            </td>
+            <td data-label="Announced">{{ r.announced_at | fmt_dt if r.announced_at else '—' }}</td>
+            <td data-label="Source">
+              {% if r.source_url %}<a href="{{ r.source_url }}" rel="noopener noreferrer" target="_blank">{{ r.source_title | truncate(70) }}<span class="sr-only"> (opens the original announcement)</span></a>{% else %}{{ r.source_title }}{% endif %}
+              <span class="fin-cell-note">{{ r.publisher }}{% if r.publisher %} · {% endif %}retrieved {{ r.retrieved_at | fmt_dt_time }}</span>
+            </td>
+            <td data-label="Logged by">
+              {% if r.verified %}<span class="badge badge-verified">Editor-verified</span>
+              {% else %}<span class="badge badge-auto">Auto-extracted</span><span class="fin-cell-note">{{ r.confidence }}% extraction confidence</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="fin-footnote muted">“Auto-extracted” rounds were read from the announcement by a rule-based extractor and have not yet been checked by an editor; the confidence score describes the extraction, not the company.</p>
+    {% else %}
+      {{ m.empty_state("No rounds match these filters", "Try a longer time window or clear the sector and stage filters. Rounds are logged from public announcements in approved sources.") }}
+    {% endif %}
+  </section>
+</div>

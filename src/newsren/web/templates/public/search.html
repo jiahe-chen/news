@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "public/_public.html" as p with context %}
+{% block title %}{% if q %}{{ q }} — Search{% else %}Search{% endif %} — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">{% endblock %}
+{% block content %}
+<header>
+  <p class="kicker">Search</p>
+  <h1 class="page-title">{% if q %}Results for “{{ q }}”{% else %}Search The Newsren{% endif %}</h1>
+  <form class="search-form" method="get" action="/search" role="search">
+    <label class="sr-only" for="search-q">Search briefs and sources</label>
+    <input type="search" id="search-q" name="q" value="{{ q }}" placeholder="Search published briefs and the source archive" maxlength="200">
+    <button class="button" type="submit">Search</button>
+  </form>
+  {% if q %}
+  <p class="ask-instead">Want a sourced answer instead of a list? <a href="/ask?question={{ q | urlencode }}">Ask Newsren instead</a> — the research agent searches approved sources and reports what it could and could not verify.</p>
+  {% endif %}
+</header>
+
+{% if q %}
+<section aria-labelledby="brief-results">
+  <h2 class="section-heading" id="brief-results">AI Story Briefs <span class="muted">({{ briefs | length }})</span></h2>
+  {% if briefs %}
+  <div class="grid grid-2">
+    {% for brief in briefs %}{{ p.card(brief, length=200) }}{% endfor %}
+  </div>
+  {% else %}
+    {{ m.empty_state("No published briefs match", "Try fewer or different words, or browse a section.") }}
+  {% endif %}
+</section>
+
+<section aria-labelledby="article-results">
+  <h2 class="section-heading" id="article-results">Source documents <span class="muted">({{ articles | length }})</span></h2>
+  {% if articles %}
+  <p class="search-meta">Reports, papers, filings and releases from approved sources, best match first. Links open the original publisher.</p>
+  <ul class="article-lines">
+    {% for article in articles %}
+      <li class="article-line">
+        <div class="card-kicker">{{ m.vertical_tag(article.vertical) }}</div>
+        <a href="{{ article.url }}" rel="noopener noreferrer" target="_blank">{{ article.title }}<span class="sr-only"> (opens the original source)</span></a>
+        <span class="source-meta">{{ article.source.name if article.source else '' }}{% if article.published_at %} · published {{ article.published_at | fmt_dt }}{% endif %} · retrieved {{ article.retrieved_at | fmt_dt_time }}</span>
+        <span class="article-badges">
+          {{ article.trust_tier | badge }} {{ article.doc_type | badge }} {{ m.demo_badge(article.is_demo) }}
+          {% if article.story_id %}<a class="story-link" href="/stories/{{ article.story_id }}">See the story timeline →</a>{% endif %}
+        </span>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    {{ m.empty_state("No source documents match", "The archive covers articles retrieved from approved sources.") }}
+  {% endif %}
+</section>
+{% else %}
+<p class="lede">Search published AI Story Briefs and the archive of approved sources — news reports, research papers, filings, regulatory notices and education reports.</p>
+{% endif %}
+{% endblock %}

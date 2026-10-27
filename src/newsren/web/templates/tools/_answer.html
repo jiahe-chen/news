@@ -1,0 +1,71 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+{% set p = prefix %}
+<article class="answer-block" aria-labelledby="answer-h-{{ question.id }}">
+  <p class="kicker">Ask Newsren · research answer</p>
+  {% set htag = answer_heading_tag or "h3" %}
+  <{{ htag }} class="answer-question" id="answer-h-{{ question.id }}">{{ question.question }}</{{ htag }}>
+  {% if answer_brief %}<p class="answer-context muted small">Asked about <a href="/briefs/{{ answer_brief.id }}">{{ answer_brief.headline }}</a></p>{% endif %}
+
+  {% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+  {% if result.refused %}
+  <div class="refusal" role="note">
+    <p class="refusal-title"><strong>We can't give personalized investment advice.</strong></p>
+    {% if result.refusal_reason %}<p>{{ result.refusal_reason }}</p>{% endif %}
+    <p>Here is what can help you understand the news behind your question:</p>
+    <ul>
+      <li><a href="/finance/concepts">Finance concepts for learners</a> — backtesting, drawdown, dilution, guidance, and more</li>
+      <li><a href="/finance">Finance coverage</a> — earnings, funding rounds, and regulation, with sources</li>
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="answer">
+    {% for b in result.answer | text_blocks %}
+      {% if b.kind == 'list' %}<ul>{% for item in b.entries %}<li>{{ item | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+      {% elif b.kind == 'heading' %}<h4 class="block-heading">{{ b.text }}</h4>
+      {% else %}<p class="answer-text">{{ b.text | cite_markers(citations, p) }}</p>{% endif %}
+    {% endfor %}
+  </div>
+
+  {% if result.plan %}
+  {% call m.expandable("How the agent researched this") %}
+    <ol class="plan-steps">{% for step in result.plan %}<li>{{ step | cite_markers(citations, p) }}</li>{% endfor %}</ol>
+  {% endcall %}
+  {% endif %}
+
+  {% if not result.refused %}
+  <div class="verify-grid">
+    <div class="verified">
+      <h4 class="verify-heading">Verified in the sources</h4>
+      {% if result.verified %}
+      <ul>{% for s in result.verified %}<li>{{ s.text | cite_markers(citations, p) }}{{ t.refs(s.citation_ids | uncited(s.text), citations, p) }}</li>{% endfor %}</ul>
+      {% else %}<p>No statement could be confirmed in an approved source.</p>{% endif %}
+    </div>
+    <div class="not-verified">
+      <h4 class="verify-heading">Could not verify</h4>
+      {% if result.could_not_verify %}
+      <ul>{% for item in result.could_not_verify %}<li>{{ item | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+      {% else %}<p>Nothing flagged: every part of the question was addressed by a cited source.</p>{% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  {{ t.source_list(citations, p) }}
+
+  {% if result.follow_up_questions %}
+  <div class="follow-ups">
+    <p class="section-label">Follow-up questions</p>
+    <ul class="pill-list">
+      {% for f in result.follow_up_questions %}
+      <li><a class="pill prompt-pill" href="{{ ask_url }}?{{ {'question': f} | urlencode }}"{% if not permalink %} data-prompt="{{ f }}"{% endif %}>{{ f }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {{ m.generated_note(generated_by, generated_at) }}
+  <p class="answer-permalink small muted">Permalink (visible only to you): <a href="/questions/{{ question.id }}">/questions/{{ question.id }}</a></p>
+  {{ t.feedback_full("answer", question.id, "/questions/" ~ question.id) }}
+</article>

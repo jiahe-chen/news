@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}How The Newsren works — The Newsren{% endblock %}
+{% block description %}How The Newsren researches, verifies, connects and explains the news — and the editorial standards and guardrails behind every brief.{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">{% endblock %}
+{% block content %}
+<header>
+  <p class="kicker">Standards</p>
+  <h1 class="page-title">How The Newsren works</h1>
+  <p class="lede">The Newsren is not just a website that publishes news. It is an AI news agent that researches, explains, connects, and helps readers act on news — with human editors in control of what is published.</p>
+</header>
+
+<div class="layout-main-side">
+  <div>
+    <section aria-labelledby="workflow-heading">
+      <h2 class="section-heading" id="workflow-heading">The news intelligence workflow</h2>
+      <p>An editorially controlled multi-agent workflow — not a collection of unrestricted chatbots. Each agent has a defined goal, access only to approved retrieval tools, and time, tool-call and cost budgets set by an orchestrator.</p>
+      <ol class="workflow">
+        <li><strong>Discover</strong>Monitor <a href="/sources">approved sources</a>: news, research papers, policy announcements, company filings, earnings calls, regulatory releases and education reports. Duplicates are detected and collapsed.</li>
+        <li><strong>Verify</strong>Cross-check claims: provenance (original, independent, vendor or commentary), dates, and corroboration across independent sources.</li>
+        <li><strong>Connect</strong>Group related developments into evolving stories with entities and timelines: what happened first, what is new, what is disputed, and how the evidence changed.</li>
+        <li><strong>Explain</strong>Draft the AI Story Brief, learning materials for students, educators and professionals, industry impact analyses and the editorial products.</li>
+        <li><strong>Quality gate</strong>Automated checks for citations, approved sources, licensing, preprint and forecast labels and finance guardrails — then human review for high-impact claims and every finance story.</li>
+        <li><strong>Output</strong>Published stories, personalized My Newsren briefings, timelines, and opt-in alerts when a followed story changes meaningfully.</li>
+      </ol>
+      <p class="reader-loop"><strong>Reader loop:</strong> you ask a question, the agent plans a research task and gathers evidence from approved sources, and you receive a sourced answer that says what it could and could not verify.</p>
+    </section>
+
+    <section aria-labelledby="compare-heading">
+      <h2 class="section-heading" id="compare-heading">Conventional AI versus agentic AI</h2>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th scope="col">Conventional AI news feature</th><th scope="col">Agentic AI news feature (The Newsren)</th></tr></thead>
+          <tbody>
+            <tr><td>Summarizes one article</td><td>Retrieves multiple sources, verifies key details, and produces a sourced synthesis</td></tr>
+            <tr><td>Recommends articles</td><td>Learns reader-selected interests and proactively monitors relevant developments</td></tr>
+            <tr><td>Answers questions using a saved summary</td><td>Plans a research task, searches primary sources, and reports what it could and could not verify</td></tr>
+            <tr><td>Generates a daily newsletter</td><td>Monitors specific topics over time and produces a briefing when meaningful developments occur</td></tr>
+            <tr><td>Assigns articles to categories</td><td>Connects related events, companies, policies, scientific findings, and timelines</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-family: var(--sans); font-size: 14px; margin-top: 8px">Merely calling a language model to write a summary does not make a feature agentic: each agent has a goal, approved tools, and a controlled process for gathering evidence.</p>
+    </section>
+
+    <section aria-labelledby="features-heading">
+      <h2 class="section-heading" id="features-heading">Six agentic features — and where to find them</h2>
+      <div class="feature-grid">
+        <div class="panel">
+          <h3>My Newsren</h3>
+          <p>Your personal research agent. Choose topics, questions, organizations and technical depth; it monitors relevant sources and prepares a briefing explaining what changed and why it matters.</p>
+          <p class="feature-where">Find it: <a href="/me">My Newsren</a></p>
+        </div>
+        <div class="panel">
+          <h3>Story Intelligence</h3>
+          <p>Connects the dots: related developments become evolving stories — from a model announcement to evaluations, product launches, school adoption and regulation.</p>
+          <p class="feature-where">Find it: every story page, and "Connected stories" on each brief</p>
+        </div>
+        <div class="panel">
+          <h3>News-to-Learning</h3>
+          <p>Turns verified news into explainers, glossaries, quizzes, discussion questions and classroom activities for students, educators and professionals.</p>
+          <p class="feature-where">Find it: "Learn this topic" on each brief, with "Explain for"</p>
+        </div>
+        <div class="panel">
+          <h3>Industry Impact</h3>
+          <p>Translates announcements and breakthroughs into implications for industries, occupations and decisions — separating supported effects from speculation.</p>
+          <p class="feature-where">Find it: "Industry impact" on each brief</p>
+        </div>
+        <div class="panel">
+          <h3>Evidence and Bias Inspection</h3>
+          <p>Identifies original sources, compares claims across independent reporting, highlights uncertainty, and separates facts from interpretations — without calling a source "biased" for holding a different view.</p>
+          <p class="feature-where">Find it: "Inspect evidence" on each brief</p>
+        </div>
+        <div class="panel">
+          <h3>Follow This Story</h3>
+          <p>Ask the system to follow a question. It revisits trusted sources and notifies you only when an event meets your criteria — "an independent benchmark", not "another opinion piece".</p>
+          <p class="feature-where">Find it: "Follow developments" on each brief, or "Follow this story" on story pages</p>
+        </div>
+      </div>
+      <p style="margin-top: 14px">Plus <a href="/ask">Ask Newsren</a>, the research assistant grounded in cited sources, and thirteen editorial products across the four sections — from the Launch Reality Check to the Earnings Decoder.</p>
+    </section>
+
+    <section aria-labelledby="standards-heading">
+      <h2 class="section-heading" id="standards-heading">Editorial standards and guardrails</h2>
+      <ul class="standards">
+        <li><strong>Provenance for everything.</strong> Every generated item keeps a record of its sources, their publication timestamps, when we retrieved them, and the evidence supporting its main claims.</li>
+        <li><strong>Disagreement is described, not resolved silently.</strong> When credible sources disagree, the brief shows each position with its sources rather than choosing one interpretation.</li>
+        <li><strong>Labels that matter.</strong> Research papers are marked as preprints or peer-reviewed and we avoid overstating causality. Industry forecasts and scenarios are labelled as projections. Education findings name the studied population and outcomes before generalizing.</li>
+        <li><strong>Approved sources only.</strong> Agents use approved source APIs and retrieval tools — no unrestricted browsing, no unapproved scraping, no autonomous posting to social media, and no agent-triggered financial or educational decisions.</li>
+        <li><strong>Human approval before publication.</strong> Editors review briefs before they are published; automatic delivery is limited to low-risk personal briefings built from published briefs and your own alerts.</li>
+        <li><strong>Corrections are public.</strong> Each brief lists its corrections with dates and whether they were material.</li>
+      </ul>
+      <h3 style="margin-top: 18px">Finance guardrails</h3>
+      {{ m.finance_notice("Finance coverage is for education and news only.") }}
+      <ul class="standards">
+        <li>No buy, sell or hold calls, price targets, portfolio recommendations or personalized investment advice; no trade execution or brokerage connections. Advice requests are redirected to education.</li>
+        <li>A clear notice on every finance page that content is informational and not investment advice.</li>
+        <li>Every performance claim is labelled backtest, simulated or live, with its period, benchmark and source.</li>
+        <li>Forecasts are never presented as facts, and we never state that an AI agent can reliably beat the market.</li>
+        <li>Licensed or public data only (for example SEC EDGAR filings and company releases); market data is timestamped and delays are noted.</li>
+        <li>Human editorial review for every finance story before publication.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="metrics-heading">
+      <h2 class="section-heading" id="metrics-heading">What we measure</h2>
+      <p>Total article output and chatbot usage are <strong>not</strong> our primary metrics. We track:</p>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th scope="col">Metric</th><th scope="col">What it measures</th></tr></thead>
+          <tbody>
+            <tr><td>Trust</td><td>Share of sampled claims accurately supported by their linked sources; frequency of material corrections.</td></tr>
+            <tr><td>Usefulness</td><td>Reader ratings of whether a briefing answered their question and reduced time spent searching.</td></tr>
+            <tr><td>Education</td><td>Improvement on short comprehension and transfer questions, compared with reading an ordinary summary.</td></tr>
+            <tr><td>Engagement</td><td>Meaningful return visits to followed stories; the rate of useful versus unwanted alerts.</td></tr>
+            <tr><td>Editorial efficiency</td><td>Time saved per approved briefing, including the cost of human review.</td></tr>
+            <tr><td>Cost</td><td>Average inference and retrieval expense per story, question, and active monitoring task.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-family: var(--sans); font-size: 14px; margin-top: 8px">The goal is not to automate every part of journalism, but to automate repetitive research and information processing while preserving source accountability and editorial judgment.</p>
+    </section>
+  </div>
+
+  <aside class="side-stack" aria-label="Data and engines">
+    <section class="panel" aria-labelledby="data-heading">
+      <h2 class="panel-title" id="data-heading">Demo and live data</h2>
+      {% if demo_articles %}
+      <p>{{ m.demo_badge(true) }} This installation includes <strong>{{ demo_articles }}</strong> fictional demo documents. Their organizations, people and figures are invented to show the product; they use reserved <code>.example</code> domains.</p>
+      {% endif %}
+      <p><strong>{{ live_articles }}</strong> document{{ 's' if live_articles != 1 else '' }} from live approved sources.{% if not live_articles %} Run <code>newsren pipeline</code> to fetch them.{% endif %}</p>
+    </section>
+
+    <section class="panel" aria-labelledby="engine-heading">
+      <h2 class="panel-title" id="engine-heading">Which engine drafted the content</h2>
+      {% if mode == 'claude' %}
+      <p>Agents currently run on <strong>Claude</strong> ({{ model }}) with structured outputs and budgets. If Claude is unavailable or declines, the offline evidence engine answers and the item says so.</p>
+      {% else %}
+      <p>Agents currently run on The Newsren's <strong>offline evidence engine</strong>: extractive and rule-based, built from the same evidence and citing only it. With an Anthropic API key, agents use Claude ({{ model }}).</p>
+      {% endif %}
+      <p>Briefs drafted by Claude: <strong>{{ claude_briefs }}</strong><br>Briefs drafted by the offline engine: <strong>{{ offline_briefs }}</strong></p>
+      <p class="muted" style="font-size: 13px">Each brief's footer names the engine that drafted it and when.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="products-about-heading">
+      <h2 class="panel-title" id="products-about-heading">Editorial products</h2>
+      <ul class="side-list">
+        {% for spec in products %}
+        <li><span class="vertical-tag vertical-tag-{{ spec.vertical }}">{{ VERTICAL_LABELS[spec.vertical] }}</span> <strong>{{ spec.name }}</strong><span class="muted">{{ spec.reader_value }}.</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+<section class="tool-content tool-follow" data-tool-root aria-labelledby="tool-h-follow-{{ brief.id }}">
+  <header class="tool-header">
+    <h2 class="tool-title" id="tool-h-follow-{{ brief.id }}">Follow developments</h2>
+    <p class="tool-blurb">Follow This Story asks The Newsren's monitoring agent to revisit approved sources and notify you only when a development meets your criteria — not every time another article appears.</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  <figure class="follow-example">
+    <blockquote>“Tell me when an independent benchmark is published for this model, not whenever someone writes another opinion article about it.”</blockquote>
+    <figcaption class="muted small">Example: the agent turns this into criteria — independent evaluations and benchmarks only, from a non-vendor source, ignoring opinion pieces.</figcaption>
+  </figure>
+
+  {% if not current_user %}
+  <div class="panel follow-signin">
+    <h3 class="panel-title">Sign in to follow this story</h3>
+    <p>Follows and alerts are saved to your My Newsren account, so you can see what the agent found and tell it whether each alert was useful.</p>
+    <p class="follow-signin-actions">
+      <a class="button" href="{{ login_url }}">Sign in to follow</a>
+      <a class="button button-secondary" href="/register">Create an account</a>
+    </p>
+  </div>
+  {% else %}
+    {% if existing %}
+    <div class="panel follow-existing" role="status">
+      <h3 class="panel-title">You're following this story</h3>
+      <ul class="plain-list">
+        {% for e in existing %}
+        <li>
+          <p class="follow-question">“{{ e.follow.question }}”</p>
+          <ul class="check-list">{% for line in e.criteria %}<li class="check-pass">{{ line }}</li>{% endfor %}</ul>
+          <p class="muted small">Checked {{ e.follow.check_count }} time{{ 's' if e.follow.check_count != 1 else '' }}{% if e.follow.last_checked_at %} · last {{ e.follow.last_checked_at | timeago }}{% endif %}</p>
+        </li>
+        {% endfor %}
+      </ul>
+      <p><a href="/me">Manage your follows and alerts in My Newsren</a></p>
+    </div>
+    {% endif %}
+
+    {% set form_open = not existing %}
+    <details class="expandable follow-details"{% if form_open %} open{% endif %}>
+      <summary>{% if existing %}Follow with different criteria{% else %}Set up your follow{% endif %}</summary>
+      <div class="expandable-body">
+        <form class="form follow-form" method="post" action="/follows">
+          {{ m.csrf_field() }}
+          <input type="hidden" name="target_type" value="{{ 'story' if brief.story_id else 'topic' }}">
+          {% if brief.story_id %}<input type="hidden" name="story_id" value="{{ brief.story_id }}">{% endif %}
+          <input type="hidden" name="vertical" value="{{ brief.vertical }}">
+          <input type="hidden" name="next" value="/briefs/{{ brief.id }}">
+
+          <label for="follow-q-{{ brief.id }}">What should the agent watch for?
+            <span class="hint">Write it in your own words. “Not …” phrases exclude things.</span>
+          </label>
+          <textarea id="follow-q-{{ brief.id }}" name="question" required maxlength="2000">{{ question }}</textarea>
+
+          <fieldset class="follow-events">
+            <legend>Alert me only for these kinds of developments</legend>
+            <p class="hint muted">Leave all unchecked to be alerted about any material development.</p>
+            <div class="checkbox-grid">
+              {% for value, text in event_choices %}
+              <label class="checkbox"><input type="checkbox" name="event_types" value="{{ value }}"{% if value in criteria.event_types %} checked{% endif %}> {{ text }}</label>
+              {% endfor %}
+            </div>
+          </fieldset>
+
+          <fieldset class="follow-sources">
+            <legend>Source requirements</legend>
+            <label class="checkbox"><input type="checkbox" name="require_independent" value="1"{% if criteria.require_independent %} checked{% endif %}> Require an independent (non-vendor) source</label>
+            <label class="checkbox"><input type="checkbox" name="require_primary" value="1"{% if criteria.require_primary %} checked{% endif %}> Require a primary source (filing, regulator, research paper, official release)</label>
+            <label class="checkbox"><input type="checkbox" name="include_opinion" value="1"{% if include_opinion %} checked{% endif %}> Include opinion and commentary</label>
+          </fieldset>
+
+          <label for="follow-custom-{{ brief.id }}">Extra condition (optional)
+            <span class="hint">Checked by the monitoring agent for each candidate, e.g. “only if the benchmark uses problems written after the model's training cutoff”.</span>
+          </label>
+          <input type="text" id="follow-custom-{{ brief.id }}" name="custom" maxlength="500" value="{{ criteria.custom }}">
+
+          <div><button class="button" type="submit">Follow this story</button></div>
+          <p class="muted small">You can pause or remove follows at any time in <a href="/me">My Newsren</a>. Alerts arrive on the web, and by email only if you opted in.</p>
+        </form>
+      </div>
+    </details>
+  {% endif %}
+</section>

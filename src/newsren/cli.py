@@ -40,46 +40,94 @@ def _ensure_user(session, email: str, password: str, name: str, role: str):
     return user
 
 
+def _load_sample_earnings(session) -> int:
+    """Build an Earnings Decoder report from a bundled public SEC EDGAR sample (no network)."""
+    from importlib.resources import files
+
+    from newsren.config import get_settings
+    from newsren.finance.edgar import build_earnings_report, earnings_brief, get_or_create_company
+
+    samples = files("newsren.finance") / "data" / "samples"
+    submissions = json.loads((samples / "irmd_submissions.json").read_text())
+    facts = json.loads((samples / "irmd_companyfacts.json").read_text())
+    company = get_or_create_company(
+        session,
+        submissions["name"],
+        ticker=submissions["tickers"][0],
+        cik=submissions["cik"],
+        sector=submissions.get("sicDescription"),
+    )
+    report = build_earnings_report(session, company, get_settings(), facts=facts, submissions=submissions)
+    if report.brief_id is None:
+        earnings_brief(session, report)
+    return 1
+
+
 def cmd_demo(args: argparse.Namespace) -> int:
     """Load fictional demo content, run the full workflow offline, and create demo accounts."""
+    from sqlalchemy import select
+
     from newsren.agents.briefing import build_briefing, deliver_briefing
+    from newsren.agents.monitor import run_monitoring
     from newsren.editorial.workflow import approve, review_queue
-    from newsren.models import Audience
+    from newsren.models import Audience, Story
     from newsren.pipeline import run_pipeline
     from newsren.users.service import add_interest, create_follow, set_preferences
 
     init_db()
     with session_scope() as session:
-        report = run_pipeline(session, network=args.network, demo=True, max_briefs=args.max_briefs)
+        report = run_pipeline(
+            session, network=args.network, demo=True, max_briefs=args.max_briefs, monitor=False, briefings=False
+        )
+        earnings = _load_sample_earnings(session)
         editor = _ensure_user(session, *DEMO_EDITOR, role="editor")
         reader = _ensure_user(session, *DEMO_READER, role="reader")
         published = 0
         if not args.keep_queue:
-            # Demo convenience: an editor signs off the non-finance drafts so the
-            # front page has content; finance and high-risk drafts stay in the
-            # queue to show the human-review gate.
+            # Demo convenience: the demo editor signs off drafts whose automated
+            # checks all passed. Anything flagged (blockers, warnings, or
+            # high-impact claims such as performance figures or earnings
+            # numbers) stays in the review queue to show the human gate.
             for brief in review_queue(session):
-                blockers = [
-                    c for c in brief.check_results if not c.get("passed") and c.get("severity") == "blocker"
-                ]
-                if brief.vertical != "finance" and brief.risk_level != "high" and not blockers:
-                    approve(session, brief, editor, notes="Demo sign-off")
+                if all(c.get("passed") for c in brief.check_results):
+                    approve(session, brief, editor, notes="Demo sign-off: automated checks passed.")
                     published += 1
         if not reader.interests:
             set_preferences(session, reader, audience=Audience.STUDENT, email_opt_in=True)
             add_interest(session, reader, "topic", "AI models for learning mathematics")
             add_interest(session, reader, "organization", "Lumen Labs")
             add_interest(session, reader, "topic", "semiconductor capacity")
+            model_story = session.scalars(
+                select(Story).where(Story.title.contains("Lumen-4")).order_by(Story.id)
+            ).first()
             create_follow(
                 session,
                 reader,
-                "Tell me when an independent benchmark is published for this model, "
+                "Tell me when an independent benchmark is published for Lumen-4, "
                 "not whenever someone writes another opinion article about it.",
+                target_type="story" if model_story else "topic",
+                story=model_story,
             )
+            create_follow(
+                session,
+                reader,
+                "Tell me about Corvane Semiconductor filings, earnings, or enforcement actions.",
+                target_type="company",
+                entity_name="Corvane Semiconductor",
+                vertical="finance",
+            )
+        monitoring = run_monitoring(session)
         briefing = build_briefing(session, reader, force=True)
         if briefing is not None:
             deliver_briefing(session, briefing, reader)
-    _print({"pipeline": report.as_dict(), "demo_published": published})
+    _print(
+        {
+            "pipeline": report.as_dict(),
+            "sample_earnings_reports": earnings,
+            "demo_published": published,
+            "monitoring": monitoring,
+        }
+    )
     print(
         "\nDemo accounts:\n"
         f"  editor: {DEMO_EDITOR[0]} / {DEMO_EDITOR[1]}\n"

@@ -59,3 +59,10 @@ def test_audience_switch_sets_cookie(client):
     assert resp.status_code == 303
     assert resp.headers["location"] == "/about"
     assert "newsren_audience=student" in resp.headers.get("set-cookie", "")
+
+
+def test_auth_forms_render_a_real_csrf_token(client):
+    from conftest import form_csrf
+
+    for path in ("/login", "/register"):
+        assert form_csrf(client.get(path).text) == _csrf(client)

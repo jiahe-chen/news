@@ -21,10 +21,10 @@
   document.addEventListener("click", function (event) {
     const chip = event.target.closest("[data-prompt]");
     if (!chip) return;
-    event.preventDefault();
     const form = chip.closest("form") || document.querySelector("[data-ask-form]");
     const input = form && form.querySelector("textarea, input[name=question]");
     if (input) {
+      event.preventDefault();
       input.value = chip.getAttribute("data-prompt");
       input.focus();
     }

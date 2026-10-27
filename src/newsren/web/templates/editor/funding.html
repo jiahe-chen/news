@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Funding rounds to verify — Editor desk — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+{{ m.finance_notice(FINANCE_DISCLAIMER) }}
+
+<header class="ed-header">
+  <p class="kicker">Funding Round Tracker</p>
+  <h1 class="page-title">Verify funding rounds</h1>
+  <p class="lede">Rounds are extracted automatically from public announcements. Open each announcement and check the company, stage, amount and investors before marking a round verified. The tracker shows trends; it never ranks startups as investments.</p>
+</header>
+
+<p class="ed-small" role="status"><strong>{{ unverified }}</strong> of {{ rounds | length }} round{{ 's' if rounds | length != 1 else '' }} still to verify.</p>
+
+{% if rounds %}
+<div class="table-wrap">
+<table class="data ed-table ed-compact ed-funding">
+  <caption class="sr-only">Logged funding rounds, unverified first</caption>
+  <thead>
+    <tr><th scope="col">Company</th><th scope="col">Stage</th><th scope="col">Amount as reported</th><th scope="col">Investors</th><th scope="col">Announcement</th><th scope="col">Status</th></tr>
+  </thead>
+  <tbody>
+    {% for r in rounds %}
+    <tr id="round-{{ r.id }}">
+      <td data-label="Company" class="ed-wide"><div class="ed-cell"><strong>{{ r.company_name }}</strong>{% if r.sector %}<br><span class="ed-small muted">{{ r.sector }}</span>{% endif %}{% if r.is_demo %}<br>{{ m.demo_badge(r.is_demo) }}{% endif %}</div></td>
+      <td data-label="Stage"><div class="ed-cell">{{ stage_labels.get(r.stage, r.stage | label) }}</div></td>
+      <td data-label="Amount as reported"><div class="ed-cell">{{ r.amount_text or 'Not disclosed' }}{% if r.amount_usd %}<br><span class="ed-small muted">≈ {{ r.amount_usd | money }}</span>{% endif %}</div></td>
+      <td data-label="Investors" class="ed-wide"><div class="ed-cell">
+        {% if r.lead_investors %}<span class="ed-small">Led by {{ r.lead_investors | join(', ') }}</span>{% endif %}
+        {% set others = r.investors | reject('in', r.lead_investors or []) | list %}
+        {% if others %}{% if r.lead_investors %}<br>{% endif %}<span class="ed-small muted">With {{ others | join(', ') }}</span>{% endif %}
+        {% if not r.investors and not r.lead_investors %}<span class="muted">Not named</span>{% endif %}
+      </div></td>
+      <td data-label="Announcement" class="ed-wide"><div class="ed-cell">
+        <a href="{{ r.source_url }}" target="_blank" rel="noopener noreferrer">{{ (r.source_title or r.source_url) | truncate(80) }}<span class="sr-only"> (opens in a new tab)</span></a>
+        <br><span class="ed-small muted">{% if r.announced_at %}announced {{ r.announced_at | fmt_dt }} · {% endif %}retrieved {{ r.retrieved_at | fmt_dt_time }} · extraction confidence {{ (r.extraction_confidence * 100) | round | int }}%</span>
+      </div></td>
+      <td data-label="Status" class="ed-wide"><div class="ed-cell">
+        {% if r.verified %}
+        <span class="badge badge-verified">Verified by an editor</span>
+        {% else %}
+        <span class="badge badge-warning">Auto-extracted</span>
+        <form method="post" action="/editor/funding/{{ r.id }}/verify" class="ed-verify-form">
+          {{ m.csrf_field() }}
+          <input type="hidden" name="next" value="/editor/funding#round-{{ r.id }}">
+          <button type="submit" class="button button-small">Mark verified<span class="sr-only"> — {{ r.company_name }}</span></button>
+        </form>
+        {% endif %}
+      </div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+{{ m.empty_state("No funding rounds logged yet", "The pipeline logs rounds from public funding announcements in approved sources.") }}
+{% endif %}
+{% endblock %}

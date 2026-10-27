@@ -1,0 +1,106 @@
+{# Macros for the public reading pages. Import with:
+   {% import "public/_public.html" as p with context %}
+   (with context: the macros use helpers the public routes put in the context,
+   e.g. plain(), event_label(), story_status_label()). #}
+{% import "_macros.html" as m with context %}
+
+{# Text with inline citation markers ("... [c2][c5].") rendered as links to the
+   matching entries in `citations` (unknown ids are dropped; text is escaped). #}
+{% macro cited(text, citations) -%}
+{%- set parts = (text or '').split('[') -%}
+{%- set ns = namespace(items=[(parts[0], '')]) -%}
+{%- for chunk in parts[1:] -%}
+  {%- set close = chunk.find(']') -%}
+  {%- set cid = chunk[:close] if close > 1 else '' -%}
+  {%- if cid and cid[0] == 'c' and cid[1:].isdigit() -%}
+    {%- set ns.items = ns.items + [('', cid), (chunk[close + 1:], '')] -%}
+  {%- else -%}
+    {%- set ns.items = ns.items + [('[' ~ chunk, '')] -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- for txt, cid in ns.items -%}
+  {%- if cid -%}
+    {{- m.citation_refs([cid], citations) -}}
+  {%- elif not loop.last and ns.items[loop.index][1] -%}
+    {{- txt.rstrip() -}}
+  {%- else -%}
+    {{- txt -}}
+  {%- endif -%}
+{%- endfor -%}
+{%- endmacro %}
+
+{# Inline markers when the text has them, otherwise the explicit citation ids. #}
+{% macro cited_with(text, ids, citations) -%}
+{%- if '[c' in (text or '') -%}{{ cited(text, citations) }}{%- else -%}{{ text }}{{ m.citation_refs(ids, citations) }}{%- endif -%}
+{%- endmacro %}
+
+{% macro event_badge(event_type) -%}
+<span class="badge badge-event badge-{{ event_type or 'other' }}">{{ event_label(event_type) | capitalize }}</span>
+{%- endmacro %}
+
+{% macro story_status(status) -%}
+<span class="badge badge-story-{{ status }}">{{ story_status_label(status) }}</span>
+{%- endmacro %}
+
+{# A brief teaser: kicker, headline, summary without citation markers, source count. #}
+{% macro card(brief, show_vertical=True, size="", summary=True, length=240) -%}
+<article class="brief-card {{ size }}">
+  <div class="card-kicker">
+    {% if show_vertical %}{{ m.vertical_tag(brief.vertical) }}{% endif %}
+    {% if is_opinion_brief(brief) %}<span class="badge badge-opinion">Opinion</span>{% endif %}
+    {{ m.demo_badge(brief.is_demo) }}
+    <span class="muted">{{ (brief.published_at or brief.generated_at) | timeago }}</span>
+  </div>
+  <h3 class="card-headline"><a href="/briefs/{{ brief.id }}">{{ brief.headline }}</a></h3>
+  {% if summary %}<p class="card-summary">{{ plain(brief.summary) | truncate(length) }}</p>{% endif %}
+  {% if brief.citations %}<p class="card-meta muted">{{ brief.citations | length }} source{{ 's' if brief.citations | length != 1 else '' }}{% if brief.story_id %} · <a href="/stories/{{ brief.story_id }}">story timeline</a>{% endif %}</p>{% endif %}
+</article>
+{%- endmacro %}
+
+{# One line in a list of evolving stories. #}
+{% macro story_row(story, count, types=[]) -%}
+<li class="story-row">
+  <div class="card-kicker">
+    {{ m.vertical_tag(story.vertical) }} {{ m.demo_badge(story.is_demo) }}
+    <span class="muted">updated {{ story.last_updated_at | timeago }}</span>
+  </div>
+  <a class="story-row-title" href="/stories/{{ story.id }}">{{ story.title }}</a>
+  <div class="story-row-meta">
+    <span class="muted">{{ count }} sourced development{{ 's' if count != 1 else '' }}</span>
+    {% for t in types %}{{ event_badge(t) }} {% endfor %}
+  </div>
+</li>
+{%- endmacro %}
+
+{# A source document link with publisher, date and evidence badges. #}
+{% macro article_line(article, show_story=False) -%}
+<li class="article-line">
+  <a href="{{ article.url }}" rel="noopener noreferrer" target="_blank">{{ article.title }}<span class="sr-only"> (opens the original source)</span></a>
+  <span class="source-meta">
+    {{ article.source.name if article.source else '' }}{% if article.published_at %} · published {{ article.published_at | fmt_dt }}{% endif %} · retrieved {{ article.retrieved_at | fmt_dt_time }}
+  </span>
+  <span class="article-badges">
+    {{ article.trust_tier | badge }} {{ article.doc_type | badge }} {{ m.demo_badge(article.is_demo) }}
+    {% if show_story and article.story_id %}<a class="story-link" href="/stories/{{ article.story_id }}">Part of a story →</a>{% endif %}
+  </span>
+</li>
+{%- endmacro %}
+
+{# The agent entry point (plan §5): a question box that hands off to Ask Newsren. #}
+{% macro agent_entry(title, text, prompts, input_id="agent-question") -%}
+<section class="agent-entry" aria-labelledby="{{ input_id }}-heading">
+  <h2 id="{{ input_id }}-heading">{{ title }}</h2>
+  <p>{{ text }}</p>
+  <form method="get" action="/ask" data-ask-form>
+    <label class="sr-only" for="{{ input_id }}">Your question for Ask Newsren</label>
+    <input type="text" id="{{ input_id }}" name="question" placeholder="Ask a question — the agent searches approved sources and reports what it could and could not verify" required maxlength="500">
+    <button class="button" type="submit">Investigate</button>
+    <div class="agent-prompts" role="group" aria-label="Suggested questions">
+      <span class="agent-prompts-label">Try:</span>
+      {% for prompt in prompts %}
+        <button type="button" data-prompt="{{ prompt }}">{{ prompt }}</button>
+      {% endfor %}
+    </div>
+  </form>
+</section>
+{%- endmacro %}

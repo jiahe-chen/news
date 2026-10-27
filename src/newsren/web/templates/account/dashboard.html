@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "account/_account.html" as a with context %}
+{% block title %}My Newsren — The Newsren{% endblock %}
+{% block description %}Your personal news research agent: briefings on what changed and why it matters, and alerts when a development meets your criteria.{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/account.css">{% endblock %}
+{% block content %}
+<header class="me-header">
+  <p class="kicker">My Newsren · your personal news research agent</p>
+  <h1 class="page-title">Hello, {{ user.display_name }}</h1>
+  <p class="lede">Tell the agent what you care about. It monitors approved sources, briefs you on what changed and why it matters, and alerts you only when a development meets your criteria.</p>
+  <ul class="me-stats" aria-label="Your account at a glance">
+    <li><a class="stat" href="#alerts"><span class="stat-label">Unread alerts</span><span class="stat-value">{{ unread_total }}</span></a></li>
+    <li><a class="stat" href="#follows"><span class="stat-label">Following</span><span class="stat-value">{{ follows | length }}</span></a></li>
+    <li><a class="stat" href="#interests"><span class="stat-label">Interests</span><span class="stat-value">{{ interests | length }}</span></a></li>
+    <li><a class="stat" href="/me/briefings"><span class="stat-label">Briefings</span><span class="stat-value">{{ briefing_count }}</span></a></li>
+  </ul>
+</header>
+
+{% if show_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<div class="layout-main-side me-layout">
+  <div class="me-main">
+    {# ---------------- Your briefing ---------------- #}
+    <section id="briefing" aria-labelledby="briefing-heading">
+      <h2 class="section-heading" id="briefing-heading">Your briefing</h2>
+      {% if latest %}
+        {{ a.briefing_preview(latest, preview_limit) }}
+        <div class="me-row-actions">
+          {{ a.brief_now_form() }}
+          {% if briefing_count > 1 %}<a href="/me/briefings">All {{ briefing_count }} briefings</a>{% endif %}
+        </div>
+      {% else %}
+        {{ m.empty_state("No briefing yet",
+            "Add a few interests or follow a question, then ask for your first briefing. The agent explains what changed and why it matters, with a source for every item.") }}
+        <div class="me-row-actions">{{ a.brief_now_form(label="Brief me now", secondary=False) }}</div>
+      {% endif %}
+    </section>
+
+    {# ---------------- Alerts inbox ---------------- #}
+    <section id="alerts" aria-labelledby="alerts-heading">
+      <h2 class="section-heading me-heading-row" id="alerts-heading">
+        <span>Alerts{% if unread_total %} <span class="me-count">{{ unread_total }} unread</span>{% endif %}</span>
+        {% if alert_total %}<a href="/me/alerts">All alerts ({{ alert_total }})</a>{% endif %}
+      </h2>
+      {% if alerts %}
+        <p class="me-hint me-section-intro">Each alert says what was published, by whom, and which of your criteria it met. Tell the agent whether it was useful — that is how The Newsren measures useful versus unwanted alerts.</p>
+        <ul class="me-alert-list">
+          {% for alert in alerts %}{% include "account/_alert.html" %}{% endfor %}
+        </ul>
+        {% if unread_total > alerts | length %}<p><a href="/me/alerts?show=unread">See all {{ unread_total }} unread alerts</a></p>{% endif %}
+      {% elif follows %}
+        {{ m.empty_state("No unread alerts",
+            "Nothing has met your criteria since you last looked. The agent will alert you only when a development does — not every time another article appears.") }}
+      {% else %}
+        {{ m.empty_state("No alerts yet", "Follow a question below and the agent will alert you when a development meets your criteria.") }}
+      {% endif %}
+    </section>
+
+    {# ---------------- Follows ---------------- #}
+    <section id="follows" aria-labelledby="follows-heading">
+      <h2 class="section-heading" id="follows-heading">What you're following</h2>
+      {% if follows %}
+        <ul class="me-follow-list">
+          {% for fv in follows %}{% include "account/_follow.html" %}{% endfor %}
+        </ul>
+      {% else %}
+        <div class="me-follow-example">
+          <p class="me-hint">Follow a question over time. For example:</p>
+          <blockquote>“Tell me when an independent benchmark is published for this model, not whenever someone writes another opinion article about it.”</blockquote>
+          <p class="me-hint">You can also follow any story from its page with “Follow this story”.</p>
+        </div>
+      {% endif %}
+      <details class="expandable me-new-follow"{% if not follows %} open{% endif %}>
+        <summary>Follow a new question</summary>
+        <div class="expandable-body">
+          {{ a.follow_form(event_choices, "/me#follows", max_question_length) }}
+        </div>
+      </details>
+    </section>
+  </div>
+
+  <aside class="me-side" aria-label="Interests, preferences and how monitoring works">
+    {{ a.how_monitoring() }}
+
+    {# ---------------- Interests ---------------- #}
+    <section id="interests" aria-labelledby="interests-heading">
+      <h2 class="section-heading" id="interests-heading">Your interests</h2>
+      <p class="me-hint">Your briefing is organized around these.</p>
+      {% for kind, label, hint, items in interest_groups %}
+      <div class="me-interest-group">
+        <h3 class="me-subhead" id="interests-{{ kind }}">{{ label }}</h3>
+        {% if items %}
+        <ul class="me-interest-list" aria-labelledby="interests-{{ kind }}">
+          {% for i in items %}
+          <li>
+            <span class="me-interest-value">{{ i.value }}{% if i.vertical %} {{ m.vertical_tag(i.vertical) }}{% endif %}</span>
+            <form class="inline-form" method="post" action="/me/interests/{{ i.id }}/delete">
+              {{ m.csrf_field() }}
+              <button class="me-link-button" type="submit">Remove<span class="sr-only"> {{ INTEREST_KIND_SINGULAR.get(i.kind, 'interest') | lower }} “{{ i.value }}”</span></button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="me-none">None yet — {{ hint }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <form class="form me-form me-interest-form" method="post" action="/me/interests" aria-labelledby="add-interest-heading">
+        {{ m.csrf_field() }}
+        <h3 class="me-subhead" id="add-interest-heading">Add an interest</h3>
+        <div class="me-field">
+          <label for="interest-kind">Kind</label>
+          <select id="interest-kind" name="kind">
+            {% for kind, label, hint in interest_kinds %}<option value="{{ kind }}">{{ INTEREST_KIND_SINGULAR[kind] }}</option>{% endfor %}
+          </select>
+        </div>
+        <div class="me-field">
+          <label for="interest-value">Topic, question, organization or sector</label>
+          <input type="text" id="interest-value" name="value" required maxlength="{{ max_interest_length }}" placeholder="e.g. AI tutors in high schools">
+        </div>
+        <div class="me-field">
+          <label for="interest-vertical">Section <span class="me-optional">(optional)</span></label>
+          <select id="interest-vertical" name="vertical">
+            <option value="">Any section</option>
+            {% for v in VERTICALS %}<option value="{{ v.slug }}">{{ v.label }}</option>{% endfor %}
+          </select>
+        </div>
+        <div><button class="button button-small" type="submit">Add interest</button></div>
+      </form>
+    </section>
+
+    {# ---------------- Preferences ---------------- #}
+    <section id="preferences" aria-labelledby="preferences-heading">
+      <h2 class="section-heading" id="preferences-heading">Preferences</h2>
+      <form class="form me-form" method="post" action="/me/preferences">
+        {{ m.csrf_field() }}
+        <fieldset>
+          <legend>Explain for</legend>
+          {% for value, label, desc in audience_choices %}
+          <label class="me-choice" for="pref-audience-{{ value }}">
+            <input type="radio" id="pref-audience-{{ value }}" name="audience" value="{{ value }}"{% if user.audience == value %} checked{% endif %}>
+            <span class="me-choice-label">{{ label }}</span>
+            <span class="me-choice-desc">{{ desc }}</span>
+          </label>
+          {% endfor %}
+        </fieldset>
+        <fieldset>
+          <legend>Technical depth</legend>
+          {% for value, label, desc in depth_choices %}
+          <label class="me-choice" for="pref-depth-{{ value }}">
+            <input type="radio" id="pref-depth-{{ value }}" name="depth" value="{{ value }}"{% if user.depth == value %} checked{% endif %}>
+            <span class="me-choice-label">{{ label }}</span>
+            <span class="me-choice-desc">{{ desc }}</span>
+          </label>
+          {% endfor %}
+        </fieldset>
+        <fieldset>
+          <legend>Delivery</legend>
+          <label class="checkbox" for="pref-email"><input type="checkbox" id="pref-email" name="email_opt_in" value="1"{% if user.email_opt_in %} checked{% endif %} aria-describedby="pref-email-hint"> Email me my briefings and alerts</label>
+          <p class="me-hint" id="pref-email-hint">Opt-in only. Briefings always appear here on the web; email is a copy you can switch off at any time.</p>
+          <div class="me-field">
+            <label for="pref-frequency">How often</label>
+            <select id="pref-frequency" name="briefing_frequency" aria-describedby="pref-frequency-hint">
+              {% for value, label in frequency_choices %}<option value="{{ value }}"{% if user.briefing_frequency == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            <span class="me-hint" id="pref-frequency-hint">“Only when it matters” skips a briefing when nothing meaningful changed in what you follow.</span>
+          </div>
+        </fieldset>
+        <div><button class="button" type="submit">Save preferences</button></div>
+      </form>
+    </section>
+  </aside>
+</div>
+{% endblock %}

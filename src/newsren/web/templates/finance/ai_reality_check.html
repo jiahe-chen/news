@@ -1,0 +1,55 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block title %}AI-in-Finance Reality Check — Finance — The Newsren{% endblock %}
+{% block description %}Separating financial firms' AI announcements and backtests from documented live deployments and regulatory findings.{% endblock %}
+{% block finance_content %}
+<header class="fin-page-header">
+  <p class="kicker fin-kicker">Finance · AI-in-Finance Reality Check</p>
+  <h1 class="page-title">AI-in-Finance Reality Check</h1>
+  <p class="lede">Banks, asset managers, and fintechs announce AI projects constantly. This page sorts each claim by the evidence behind it, so an announcement or a backtest is never mistaken for a live track record.</p>
+</header>
+
+{{ f.data_note("Claims come from firms' announcements, research notes, regulators' publications, and news reports in approved sources, plus the documented uses in The Newsren plan's research table (October 2026).", "Claims taken from news reports are classified automatically (rule-based, or by an AI agent when one is configured) and keep a link to the report they came from; the label describes the evidence, not the firm.") }}
+
+<section aria-labelledby="classes-heading" class="fin-classes">
+  <h2 class="section-heading" id="classes-heading">Five kinds of claim</h2>
+  <ol class="fin-class-list">
+    {% for c in classifications %}
+    <li>
+      <p class="fin-class-name"><span class="badge badge-{{ c.key }}">{{ c.label }}</span></p>
+      <p>{{ c.help }}</p>
+    </li>
+    {% endfor %}
+  </ol>
+  <div class="fin-callout">
+    <h3 class="fin-how-title">Why the difference matters</h3>
+    <p>{{ why }}</p>
+    <p class="fin-small">Every performance claim here is labelled backtest, simulated, or live, with its period, benchmark, and costs assumed — or “not stated” when the source leaves them out.</p>
+  </div>
+</section>
+
+<section aria-labelledby="claims-heading">
+  <h2 class="section-heading" id="claims-heading">Claims by classification</h2>
+  {% include "finance/_claims.html" %}
+</section>
+
+<div class="grid grid-2 fin-context">
+  <section aria-labelledby="area-notes-heading">
+    <h2 class="section-heading" id="area-notes-heading">Limits and evidence notes by area</h2>
+    <dl class="glossary">
+      {% for n in area_notes %}<dt>{{ n.label }}</dt><dd>{{ n.note }}</dd>{% endfor %}
+    </dl>
+  </section>
+  <section aria-labelledby="reg-context-heading">
+    <h2 class="section-heading" id="reg-context-heading">Rules that shape AI in finance</h2>
+    <ul class="fin-list">
+      {% for c in regulatory_context %}
+      <li>{{ c.text }} <span class="source-meta">Source: {% if c.source_url %}<a href="{{ c.source_url }}" rel="noopener noreferrer" target="_blank">{{ c.source_title }}</a>{% else %}{{ c.source_title }}{% endif %}, {{ c.published }}.</span></li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+
+{{ f.concept_pills(concepts, "Concepts for checking AI claims") }}
+{% endblock %}

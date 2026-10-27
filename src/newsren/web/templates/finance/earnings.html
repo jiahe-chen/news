@@ -1,0 +1,78 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block title %}Earnings Decoder — Finance — The Newsren{% endblock %}
+{% block description %}Earnings Decoder: reported results from SEC filings compared with prior periods and company guidance, with the filing quoted for every number.{% endblock %}
+{% block finance_content %}
+<header class="fin-page-header">
+  <p class="kicker fin-kicker">Finance · Earnings Decoder</p>
+  <h1 class="page-title">Earnings Decoder</h1>
+  <p class="lede">What a company reported, compared with the same quarter a year earlier, the previous quarter, and — when the company's own release states it — its guidance. Every figure links to the filing it came from.</p>
+</header>
+
+{{ f.data_note("Earnings Decoder figures are read from XBRL company facts on SEC EDGAR; each report shows when it was retrieved.") }}
+
+<section aria-labelledby="earnings-list-heading">
+  <h2 class="section-heading" id="earnings-list-heading">Reports</h2>
+  {% if reports %}
+  <div class="table-wrap">
+    <table class="data fin-table">
+      <caption class="sr-only">Earnings Decoder reports, newest filing first</caption>
+      <thead>
+        <tr>
+          <th scope="col">Company</th>
+          <th scope="col">Ticker</th>
+          <th scope="col">Period</th>
+          <th scope="col">Form</th>
+          <th scope="col">Filed</th>
+          <th scope="col">Retrieved</th>
+          <th scope="col">Brief</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+        <tr>
+          <th scope="row"><a href="/finance/earnings/{{ r.id }}">{{ r.company }}</a> {{ m.demo_badge(r.is_demo) }}{% if r.sector %}<span class="fin-cell-note">{{ r.sector }}</span>{% endif %}</th>
+          <td>{{ r.ticker or '—' }}</td>
+          <td>{{ r.fiscal_label }}</td>
+          <td>{{ r.form }}</td>
+          <td>{{ r.filed_at | fmt_dt if r.filed_at else '—' }}</td>
+          <td>{{ r.retrieved_at | fmt_dt_time }}</td>
+          <td>
+            {% if r.brief and r.brief.approved %}<a href="/briefs/{{ r.brief.id }}">Read the brief</a>
+            {% elif r.brief %}<span class="badge badge-in_review">In editorial review</span>
+            {% else %}<span class="muted">Not yet written</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p class="empty-title">No Earnings Decoder reports yet</p>
+    <p class="muted">Reports are built from public SEC EDGAR filings (XBRL company facts). An administrator can add one for any listed company with <code>newsren finance --ticker XYZ</code>, or refresh every tracked company with <code>newsren finance --network</code>. Each report then gets an Earnings and Filings Brief that an editor reviews before publication.</p>
+  </div>
+  {% endif %}
+</section>
+
+<section aria-labelledby="earnings-how-heading" class="fin-how">
+  <h2 class="section-heading" id="earnings-how-heading">How to read an Earnings Decoder report</h2>
+  <div class="grid grid-3">
+    <div>
+      <h3 class="fin-how-title">Reported, not forecast</h3>
+      <p>Revenue, profit, and earnings per share come from the company's 10-Q or 10-K as filed. The source quote names the XBRL tag, form, filing date, and period for every number.</p>
+    </div>
+    <div>
+      <h3 class="fin-how-title">Like-for-like comparisons</h3>
+      <p>Each quarter is compared with the same quarter a year earlier, which removes seasonal effects, and with the previous quarter. Percentage changes are left out when either figure is a loss or zero.</p>
+    </div>
+    <div>
+      <h3 class="fin-how-title">Guidance is quoted, never inferred</h3>
+      <p>{{ guidance_note }}</p>
+    </div>
+  </div>
+</section>
+
+{{ f.concept_pills(concepts, "Concepts for reading earnings") }}
+{% endblock %}

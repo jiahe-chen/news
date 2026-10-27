@@ -1,0 +1,96 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block title %}Regulation Watch — Finance — The Newsren{% endblock %}
+{% block description %}New SEC, FINRA, and central-bank actions explained: who is affected, what changes, and when — quoted from the regulator's own documents.{% endblock %}
+{% block finance_content %}
+<header class="fin-page-header">
+  <p class="kicker fin-kicker">Finance · Regulation Watch</p>
+  <h1 class="page-title">Regulation Watch</h1>
+  <p class="lede">New actions by securities regulators, self-regulatory organizations, and central banks: who is affected, what changes, and when. Each line is quoted from the regulator's document or a news report of it, never paraphrased.</p>
+</header>
+
+{{ f.data_note(watch_note) }}
+
+<form class="fin-filters fin-filters-inline" method="get" action="/finance/regulation" aria-label="Choose a time window">
+  <label for="reg-days">Actions published in the last
+    <select id="reg-days" name="days">
+      {% for d in day_options %}<option value="{{ d }}"{% if days == d %} selected{% endif %}>{{ d }} days</option>{% endfor %}
+    </select>
+  </label>
+  <button class="button button-small" type="submit">Show</button>
+</form>
+
+<section aria-labelledby="reg-items-heading">
+  <h2 class="section-heading" id="reg-items-heading">{{ items | length }} action{{ 's' if items | length != 1 else '' }} in the last {{ days }} days</h2>
+  {% if items %}
+  <div class="fin-reg-list">
+    {% for item in items %}
+    {% set prefix = 'reg' ~ item.article_id %}
+    <article class="fin-reg" aria-labelledby="{{ prefix }}-title">
+      <div class="card-kicker">
+        <span class="badge badge-{{ item.action_type }}">{{ item.action_label }}</span>
+        <span class="badge{% if item.stage == 'proposed' %} badge-projection{% endif %}">{{ item.stage_label }}</span>
+        <span class="fin-regulator">{{ item.regulator }}</span>
+        <span class="muted">{{ item.regulator_kind }}</span>
+        {{ m.demo_badge(item.is_demo) }}
+      </div>
+      <h3 class="fin-reg-title" id="{{ prefix }}-title">{% if item.url %}<a href="{{ item.url }}" rel="noopener noreferrer" target="_blank">{{ item.title }}<span class="sr-only"> (opens the regulator's document)</span></a>{% else %}{{ item.title }}{% endif %}</h3>
+      <p class="source-meta">{{ item.publisher }} · published {{ item.published_at | fmt_dt }} {{ item.trust_tier | badge }} {{ item.doc_type | badge }}{% if item.story_id %} · <a href="/stories/{{ item.story_id }}">Follow the story timeline</a>{% endif %}</p>
+      <p class="fin-reg-summary">{{ item.summary }}</p>
+
+      <div class="grid grid-3 fin-reg-grid">
+        <section aria-labelledby="{{ prefix }}-who">
+          <h4 class="fin-reg-label" id="{{ prefix }}-who">Who is affected <span class="fin-quoted">quoted</span></h4>
+          {% if item.who_is_affected %}
+          <ul class="fin-quotes">{% for s in item.who_is_affected %}<li>{{ s }}</li>{% endfor %}</ul>
+          {% else %}<p class="muted fin-small">The source does not say.</p>{% endif %}
+        </section>
+        <section aria-labelledby="{{ prefix }}-what">
+          <h4 class="fin-reg-label" id="{{ prefix }}-what">What changes <span class="fin-quoted">quoted</span></h4>
+          {% if item.what_changes %}
+          <ul class="fin-quotes">{% for s in item.what_changes %}<li>{{ s }}</li>{% endfor %}</ul>
+          {% else %}<p class="muted fin-small">The source does not say.</p>{% endif %}
+        </section>
+        <section aria-labelledby="{{ prefix }}-when">
+          <h4 class="fin-reg-label" id="{{ prefix }}-when">When</h4>
+          {% if item.when_view %}
+          <ul class="fin-when">
+            {% for w in item.when_view %}
+            <li>
+              <strong>{{ w.label }}:</strong>
+              {% if w.unknown %}{{ w.phrase }} <span class="badge badge-hypothesis">Date not yet known</span>
+              {% else %}{{ w.date }}{% if w.estimated %} <span class="badge badge-projection" title="Counted from the publication date or stated only as a season; check the regulator's notice for the exact date">Estimated</span> <span class="muted">(“{{ w.phrase }}”)</span>{% endif %}{% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}<p class="muted fin-small">No compliance, effective, or comment dates stated.</p>{% endif %}
+        </section>
+      </div>
+
+      {% if item.caveats %}
+      <div class="uncertainty fin-reg-caveats">
+        <strong>Read with care</strong>
+        <ul>{% for c in item.caveats %}<li>{{ c }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {{ f.sources(item.citations, prefix) }}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+    {{ m.empty_state("No finance regulatory actions in this window", "Regulation Watch lists actions by securities regulators, self-regulatory organizations, and central banks found in approved sources. Try a longer window.") }}
+  {% endif %}
+</section>
+
+<section aria-labelledby="reg-context-heading" class="fin-context-block">
+  <h2 class="section-heading" id="reg-context-heading">Background: rules that shape AI in finance</h2>
+  <ul class="fin-list">
+    {% for c in regulatory_context %}
+    <li>{{ c.text }} <span class="source-meta">Source: {% if c.source_url %}<a href="{{ c.source_url }}" rel="noopener noreferrer" target="_blank">{{ c.source_title }}</a>{% else %}{{ c.source_title }}{% endif %}, {{ c.published }}.</span></li>
+    {% endfor %}
+  </ul>
+</section>
+
+{{ f.concept_pills(concepts, "Concepts behind these rules") }}
+{% endblock %}

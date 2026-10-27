@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "public/_public.html" as p with context %}
+{% set label = VERTICAL_LABELS[vertical] %}
+{% block title %}{{ label }} — The Newsren{% endblock %}
+{% block description %}{{ label }} news intelligence: {{ intro.monitors }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">{% endblock %}
+{% block content %}
+<header class="vertical-intro">
+  <div>
+    <p class="kicker vertical-kicker-{{ vertical }}">{{ label }}</p>
+    <h1 class="page-title">{{ intro.headline }}</h1>
+    <p class="lede">{{ intro.beyond }}</p>
+  </div>
+  <div class="panel">
+    <p class="intro-label">What we monitor</p>
+    <p>{{ intro.monitors }}</p>
+    <p class="intro-label">How we go beyond summarizing</p>
+    <p>Every brief separates what sources documented from what they claim or predict, links each claim to its sources, and shows what is still disputed. Pick an editorial product from a brief's sidebar to dig deeper.</p>
+  </div>
+</header>
+
+{% if demo %}
+<p class="demo-note" role="note"><strong>Fictional demo content.</strong> Items marked {{ m.demo_badge(true) }} use invented organizations to show how The Newsren works.</p>
+{% endif %}
+
+{{ p.agent_entry(intro.entry_title, intro.entry_text, intro.prompts, vertical ~ "-question") }}
+
+<div class="layout-main-side">
+  <section aria-labelledby="latest-heading">
+    <h2 class="section-heading" id="latest-heading">Latest {{ label }} briefs</h2>
+    {% if lead %}
+      {{ p.card(lead, show_vertical=False, size="lead", length=380) }}
+      {% if briefs %}
+      <div class="grid grid-2" style="margin-top: 20px">
+        {% for brief in briefs %}{{ p.card(brief, show_vertical=False, length=180) }}{% endfor %}
+      </div>
+      {% endif %}
+    {% else %}
+      {{ m.empty_state("No published " ~ label ~ " briefs yet", "Briefs appear here once an editor approves them.") }}
+    {% endif %}
+  </section>
+
+  <aside aria-labelledby="stories-heading">
+    <h2 class="section-heading" id="stories-heading">Active stories</h2>
+    {% if stories %}
+      <div class="stack">
+      {% for story in stories %}
+        <article class="story-preview">
+          <div class="card-kicker">{{ p.story_status(story.status) }} {{ m.demo_badge(story.is_demo) }} <span class="muted">{{ counts.get(story.id, 0) }} source{{ 's' if counts.get(story.id, 0) != 1 else '' }} · updated {{ story.last_updated_at | timeago }}</span></div>
+          <h3><a href="/stories/{{ story.id }}">{{ story.title }}</a></h3>
+          {% set preview = previews[story.id] %}
+          {% if preview %}
+          <ol class="mini-timeline" aria-label="Latest developments">
+            {% for event in preview %}
+            <li><span class="timeline-date">{{ event.occurred_at | fmt_dt }}</span>{{ p.event_badge(event.event_type) }}{% if event.is_correction and event.event_type != 'correction' %} <span class="badge badge-correction">Correction</span>{% endif %}<br>{{ event.title }}</li>
+            {% endfor %}
+          </ol>
+          {% endif %}
+        </article>
+      {% endfor %}
+      </div>
+    {% else %}
+      {{ m.empty_state("No active stories", "Stories form when sources report on the same development.") }}
+    {% endif %}
+  </aside>
+</div>
+
+<section aria-labelledby="products-heading">
+  <h2 class="section-heading" id="products-heading">{{ label }} editorial products</h2>
+  <p class="muted" style="font-family: var(--sans); font-size: 15px">Each product is an agent with a defined goal and approved sources. Open any {{ label | lower }} brief and choose a product from its sidebar; it runs on that story's evidence and labels every statement.</p>
+  <ul class="product-list">
+    {% for spec in products %}
+    <li>
+      <p class="product-name">{{ spec.name }}</p>
+      <p class="product-value">{{ spec.reader_value }}.</p>
+      <p class="product-desc">{{ spec.description }}</p>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

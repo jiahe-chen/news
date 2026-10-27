@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}Ask Newsren — research agent — The Newsren{% endblock %}
+{% block description %}Ask The Newsren's research agent: it plans a research task, searches approved sources, and reports what it could and could not verify.{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/tools.css">{% endblock %}
+{% block content %}
+<section class="agent-entry ask-hero" aria-labelledby="ask-heading">
+  <p class="kicker ask-kicker">Ask Newsren · research agent</p>
+  <h1 id="ask-heading">Understand the next technology breakthrough</h1>
+  <p>Compare primary research, product announcements, and independent evaluations. Ask a question and the agent plans a short research task, searches approved sources, and tells you what it could — and could not — verify.</p>
+  {# A question handed over in the URL (?question=, e.g. from the front page) is researched on load with JS;
+     without JS the form is simply prefilled, so a GET never starts an agent run by itself. #}
+  <form id="ask-entry-form" method="post" action="/ask" hx-post="/ask" hx-trigger="submit{% if prefill and not error %}, load{% endif %}" hx-target="#ask-result" hx-swap="innerHTML" hx-indicator="#ask-loading" data-ask-form>
+    {{ m.csrf_field() }}
+    <label class="sr-only" for="ask-question">Your question</label>
+    <input type="text" id="ask-question" name="question" required maxlength="1000" value="{{ prefill }}" placeholder="Ask about a development in the news" autocomplete="off">
+    <button class="button" type="submit">Research</button>
+  </form>
+  <div class="agent-prompts" role="group" aria-label="Example questions">
+    {% for group in examples[:2] %}{% for prompt in group.prompts[:1] %}
+    <button type="submit" form="ask-entry-form" name="prompt" value="{{ prompt }}" data-prompt="{{ prompt }}" formnovalidate>{{ prompt }}</button>
+    {% endfor %}{% endfor %}
+  </div>
+  <span class="loading htmx-indicator ask-loading" id="ask-loading">Researching approved sources…</span>
+</section>
+
+<div id="ask-result" class="ask-result" aria-live="polite">
+  {% if error %}<p class="flash flash-error ask-error" role="alert">{{ error }}</p>{% endif %}
+</div>
+
+<div class="layout-main-side ask-layout">
+  <div>
+    <section aria-labelledby="how-h">
+      <h2 class="section-heading" id="how-h">How the research agent works</h2>
+      <ol class="how-steps">
+        <li><strong>Plans the task.</strong> It identifies what your question needs: the original announcement, primary research or filings, and independent evaluations.</li>
+        <li><strong>Searches approved sources only.</strong> The Newsren's archive of vetted publishers, plus primary sources such as research indexes, SEC EDGAR filings, and regulators. No open web browsing.</li>
+        <li><strong>Reads and cross-checks.</strong> It compares what vendors claim with what independent sources found, and notes corrections, preprints, and opinion pieces.</li>
+        <li><strong>Answers with citations.</strong> Every statement links to its source, with publication and retrieval dates.</li>
+        <li><strong>Reports what it could not verify.</strong> Gaps are listed instead of guessed at.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="limits-h">
+      <h2 class="section-heading" id="limits-h">What it won't do</h2>
+      <ul class="limits-list">
+        <li>Use sources outside The Newsren's approved list.</li>
+        <li>Fill gaps with guesses: unsupported parts of your question are listed as “could not verify”.</li>
+        <li>Give investment advice. Questions about whether to buy, sell, or hold are answered with the news and concepts behind them, never a recommendation.</li>
+        <li>Replace editors: answers are AI-drafted research, not reviewed articles. Published briefs are reviewed before publication.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="examples-h">
+      <h2 class="section-heading" id="examples-h">Questions to try</h2>
+      <div class="grid grid-2 example-grid">
+        {% for group in examples %}
+        <div class="example-group">
+          <p class="card-kicker">{{ m.vertical_tag(group.vertical) }}</p>
+          <ul class="plain-list example-list">
+            {% for prompt in group.prompts %}
+            <li><a href="/ask?{{ {'question': prompt} | urlencode }}" data-prompt="{{ prompt }}">{{ prompt }}</a></li>
+            {% endfor %}
+          </ul>
+          {% if group.vertical == 'finance' %}<p class="muted small">Finance answers are news and education only — not investment advice.</p>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+
+  <aside aria-labelledby="recent-h">
+    <h2 class="section-heading" id="recent-h">Your recent questions</h2>
+    {% if recent %}
+    <ul class="headline-list recent-questions">
+      {% for q in recent %}
+      <li>
+        <a href="/questions/{{ q.id }}">{{ q.question }}</a>
+        <span class="recent-meta muted small">{{ q.created_at | timeago }}{% if q.citations %} · {{ q.citations | length }} source{{ 's' if q.citations | length != 1 else '' }}{% endif %}</span>
+        {% if q.refused %}{{ 'advice_redirected' | badge }}{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="muted small">Only you can see your questions{% if not current_user %} (in this browser){% endif %}.</p>
+    {% else %}
+      {{ m.empty_state("No questions yet", "Questions you ask appear here so you can return to the answers.") }}
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

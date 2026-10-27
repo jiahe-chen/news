@@ -1,0 +1,29 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block title %}Finance concepts for learners — The Newsren{% endblock %}
+{% block description %}Plain-language explainers on backtesting, overfitting, the Sharpe ratio, drawdown, dilution, term sheets, earnings, and the rules for AI in finance.{% endblock %}
+{% block finance_content %}
+<header class="fin-page-header">
+  <p class="kicker fin-kicker">Finance · Concepts for learners</p>
+  <h1 class="page-title">Finance concepts for learners</h1>
+  <p class="lede">The ideas you need to read finance news critically — from backtests and drawdowns to dilution and 10-Qs — each with a worked, made-up example and the mistakes to avoid, linked to the published stories that use them.</p>
+</header>
+
+{{ f.data_note(concepts_disclaimer, "Concept explainers are written by The Newsren's editors; the stories linked to them are published briefs that an editor has approved.") }}
+
+{% for cat in categories %}
+<section class="fin-concept-category" aria-labelledby="cat-{{ cat.key }}">
+  <h2 class="section-heading" id="cat-{{ cat.key }}">{{ cat.label }}</h2>
+  <dl class="glossary fin-glossary">
+    {% for c in cat.concepts %}
+    <div class="fin-glossary-item">
+      <dt><a href="/finance/concepts/{{ c.slug }}">{{ c.term }}</a></dt>
+      <dd>{{ c.short }}{% if usage[c.slug] %} <span class="fin-usage">Used in {{ usage[c.slug] }} published stor{{ 'ies' if usage[c.slug] != 1 else 'y' }}</span>{% endif %}</dd>
+    </div>
+    {% endfor %}
+  </dl>
+</section>
+{% endfor %}
+
+{% endblock %}

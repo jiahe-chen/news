@@ -1,0 +1,45 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block title %}Funding Round Tracker — Finance — The Newsren{% endblock %}
+{% block description %}Venture funding rounds by sector, stage, and investor from public announcements — trends for learning, not an investment ranking.{% endblock %}
+{% block finance_content %}
+<header class="fin-page-header">
+  <p class="kicker fin-kicker">Finance · Funding Round Tracker</p>
+  <h1 class="page-title">Funding Round Tracker</h1>
+  <p class="lede">Venture rounds logged from public announcements: who raised, at what stage, from whom, and how activity is spreading across sectors. News and learning material for aspiring founders — not a list of startups to back.</p>
+</header>
+
+<p class="fin-not-ranking" role="note"><strong>{{ not_a_ranking }}</strong> Rounds appear in the order they were announced. Amounts are as reported by the company or its investors.</p>
+
+{{ f.data_note(trends_note) }}
+
+<form class="fin-filters" method="get" action="/finance/funding" hx-get="/finance/funding" hx-target="#funding-results" hx-swap="outerHTML" hx-push-url="true" hx-trigger="change, submit" aria-label="Filter funding rounds">
+  <label for="fund-sector">Sector
+    <select id="fund-sector" name="sector">
+      <option value="">All sectors</option>
+      {% for s in sector_options %}<option value="{{ s }}"{% if filters.sector == s %} selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+  <label for="fund-stage">Stage
+    <select id="fund-stage" name="stage">
+      <option value="">All stages</option>
+      {% for value, text in stage_options %}<option value="{{ value }}"{% if filters.stage == value %} selected{% endif %}>{{ text }}</option>{% endfor %}
+    </select>
+  </label>
+  <label for="fund-days">Announced in the last
+    <select id="fund-days" name="days">
+      {% for d in day_options %}<option value="{{ d }}"{% if filters.days == d %} selected{% endif %}>{{ d }} days</option>{% endfor %}
+    </select>
+  </label>
+  <div class="fin-filter-actions">
+    <button class="button button-small" type="submit">Apply filters</button>
+    <a href="/finance/funding">Reset</a>
+    <span class="loading htmx-indicator">Updating…</span>
+  </div>
+</form>
+
+{% include "finance/_funding_results.html" %}
+
+{{ f.concept_pills(concepts, "Concepts for founders") }}
+{% endblock %}

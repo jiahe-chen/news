@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Approved sources — Editor desk — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+
+<header class="ed-header">
+  <p class="kicker">Source Discovery</p>
+  <h1 class="page-title">Approved sources</h1>
+  <p class="lede">Agents can only use approved, active sources. This registry is the boundary of what The Newsren's agents may retrieve — no unrestricted browsing and no unapproved scraping.</p>
+</header>
+
+<div class="stat-grid ed-stats" role="list" aria-label="Registry at a glance">
+  <div class="stat" role="listitem"><div class="stat-label">Sources</div><div class="stat-value">{{ stats.total }}</div><div class="stat-note">in the registry</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Approved</div><div class="stat-value">{{ stats.approved }}</div><div class="stat-note">editorially vetted</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Usable by agents</div><div class="stat-value">{{ stats.usable }}</div><div class="stat-note">approved and active</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Last fetch failed</div><div class="stat-value">{{ stats.failing }}</div><div class="stat-note">see the status column</div></div>
+</div>
+
+<div class="ed-explain">
+  <p><strong>Approved</strong> means an editor has vetted the source. Turning approval off removes its domain from what the agents' fetch tool may open and from Ask Newsren's archive search, and the quality gate's <em>approved sources</em> check fails for briefs that cite it.</p>
+  <p><strong>Active</strong> means the pipeline fetches it. Pause a source that is down or noisy without withdrawing its approval. Primary allow-listed domains (for example SEC EDGAR and arXiv) remain reachable for the research tools.</p>
+</div>
+
+{% if sources %}
+<div class="table-wrap">
+<table class="data ed-table ed-compact ed-sources">
+  <caption class="sr-only">Approved source registry with approval and activity toggles</caption>
+  <thead>
+    <tr><th scope="col">Source</th><th scope="col">Section</th><th scope="col">Evidence</th><th scope="col" class="num">Articles</th><th scope="col">Last fetch</th><th scope="col">Approved</th><th scope="col">Active</th></tr>
+  </thead>
+  <tbody>
+    {% for s in sources %}{% include "editor/_source_row.html" %}{% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}
+{{ m.empty_state("No sources registered", "Run the pipeline to sync the approved source registry.") }}
+{% endif %}
+{% endblock %}

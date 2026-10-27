@@ -52,15 +52,23 @@ class LoginRequired(Exception):
         self.next_url = next_url
 
 
+def _return_url(request: Request) -> str:
+    """Where to go after signing in: the same page for GETs, the front page after a POST."""
+    if request.method != "GET":
+        return "/"
+    query = request.url.query
+    return request.url.path + (f"?{query}" if query else "")
+
+
 def require_user(request: Request, user: CurrentUser) -> User:
     if user is None:
-        raise LoginRequired(next_url=str(request.url.path))
+        raise LoginRequired(next_url=_return_url(request))
     return user
 
 
 def require_editor(request: Request, user: CurrentUser) -> User:
     if user is None:
-        raise LoginRequired(next_url=str(request.url.path))
+        raise LoginRequired(next_url=_return_url(request))
     if not user.is_editor:
         raise HTTPException(status_code=403, detail="Editors only")
     return user

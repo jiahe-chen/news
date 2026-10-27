@@ -1,0 +1,70 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+{% set p = "impact-" %}
+{% set impact_url = "/briefs/" ~ brief.id ~ "/tools/impact" %}
+<section class="tool-content tool-impact" data-tool-root aria-labelledby="tool-h-impact-{{ brief.id }}">
+  <header class="tool-header">
+    <h2 class="tool-title" id="tool-h-impact-{{ brief.id }}">Industry impact</h2>
+    <p class="tool-blurb">The impact agent translates this development into implications for industries, occupations, and decisions — and labels which effects the sources support and which are speculative.</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  <form class="impact-form" method="get" action="{{ impact_url }}"{{ t.hx_swap(impact_url) }}>
+    <label for="impact-q-{{ brief.id }}">Ask your own impact question</label>
+    <div class="impact-form-row">
+      <input type="text" id="impact-q-{{ brief.id }}" name="question" maxlength="300" value="{{ asked }}" placeholder="{{ default_question }}">
+      <button class="button" type="submit">Analyze</button>
+    </div>
+    <span class="hint muted">For example: “How could on-device AI affect smartphone makers, chip suppliers, app developers, and privacy?”</span>
+  </form>
+
+  <div class="impact-question">
+    <p class="section-label">Question</p>
+    <p class="impact-question-text">{{ impact.question }}</p>
+    {% if asked %}<p class="small"><a href="{{ impact_url }}"{{ t.hx_swap(impact_url) }}>Back to the default analysis</a></p>{% endif %}
+  </div>
+
+  <p class="impact-summary">{{ impact.summary | cite_markers(citations, p) }}</p>
+
+  <ul class="impact-legend" aria-label="Evidence labels">
+    <li>{{ 'supported' | badge }} stated in a cited source</li>
+    <li>{{ 'speculative' | badge }} a projection or opinion that a source reports</li>
+    <li>{{ 'scenario' | badge }} a labelled hypothesis no source states</li>
+  </ul>
+
+  {% if impact.stakeholders %}
+  <div class="grid grid-2 stakeholders">
+    {% for s in impact.stakeholders %}
+    <section class="panel stakeholder" aria-labelledby="stake-{{ content.id }}-{{ loop.index }}">
+      <h3 class="panel-title" id="stake-{{ content.id }}-{{ loop.index }}">{{ s.name }} <span class="badge badge-kind">{{ s.kind | label }}</span></h3>
+      <ul class="effect-list">
+        {% for e in s.effects %}
+        <li class="effect effect-{{ e.evidence_status }}">
+          <span class="effect-badges">{{ e.evidence_status | badge }}{% if e.time_horizon %} <span class="effect-horizon muted">{{ e.time_horizon }}</span>{% endif %}</span>
+          <span class="effect-text">{{ e.description | cite_markers(citations, p) }}{{ t.refs(e.citation_ids, citations, p) }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+  </div>
+  {% else %}
+    {{ m.empty_state("No affected groups identified", "The sources don't name industries, occupations, or decisions this development affects.") }}
+  {% endif %}
+
+  {% if impact.open_questions %}
+  <h3 class="section-heading">Questions professionals should investigate</h3>
+  <ul class="open-questions">{% for q in impact.open_questions %}<li>{{ q | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+  {% endif %}
+
+  {% if impact.caveats %}
+  <div class="uncertainty impact-caveats">
+    <strong>Caveats</strong>
+    <ul>{% for c in impact.caveats %}<li>{{ c | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  {{ t.source_list(citations, p) }}
+  {{ m.generated_note(content.generated_by, content.generated_at) }}
+  {{ t.feedback_quick("impact", content.id, "Was this impact analysis useful?", impact_url) }}
+</section>

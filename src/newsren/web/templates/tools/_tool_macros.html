@@ -1,0 +1,101 @@
+{# Macros shared by the intelligence tools. Import with:
+   {% import "tools/_tool_macros.html" as t with context %} #}
+{% import "_macros.html" as m with context %}
+
+{# Same markup as m.citation_list, with anchor ids prefixed so several source lists
+   (the brief's own and each tool's) can share one page without colliding. #}
+{% macro source_list(citations, prefix="", heading="Sources") -%}
+{% if citations %}
+<section class="sources tool-sources" aria-label="{{ heading }}">
+  <h3 class="section-label">{{ heading }}</h3>
+  <ol class="source-list">
+    {% for c in citations %}
+    <li id="{{ prefix }}cite-{{ c.id }}">
+      <a href="{{ c.url }}" rel="noopener noreferrer" target="_blank">{{ c.title }}</a>
+      <span class="source-meta">
+        {{ c.publisher }}{% if c.published_at %} · published {{ c.published_at | fmt_dt }}{% endif %}{% if c.retrieved_at %} · retrieved {{ c.retrieved_at | fmt_dt_time }}{% endif %}
+      </span>
+      {{ c.trust_tier | badge }} {{ c.doc_type | badge }}
+      {% if c.snippet %}<blockquote class="source-snippet">{{ c.snippet }}</blockquote>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{# Citation refs for a list of ids, linking into a prefixed source list. #}
+{% macro refs(ids, citations, prefix="") -%}
+{%- for cid in ids or [] -%}
+  {%- set c = (citations | selectattr('id', 'equalto', cid) | first) if citations else None -%}
+  {%- if c -%}<a class="cite" href="#{{ prefix }}cite-{{ c.id }}" title="{{ c.title }} — {{ c.publisher }}">[{{ c.id[1:] if c.id.startswith('c') else c.id }}]</a>{%- endif -%}
+{%- endfor -%}
+{%- endmacro %}
+
+{# Generated text split into headings, paragraphs, and lists, with citation markers resolved. #}
+{% macro blocks(text, citations, prefix="", heading_tag="h4") -%}
+{% for b in text | text_blocks %}
+  {% if b.kind == 'heading' %}<{{ heading_tag }} class="block-heading">{{ b.text }}</{{ heading_tag }}>
+  {% elif b.kind == 'list' %}<ul class="block-list">{% for item in b.entries %}<li>{{ item | cite_markers(citations, prefix) }}</li>{% endfor %}</ul>
+  {% else %}<p>{{ b.text | cite_markers(citations, prefix) }}</p>{% endif %}
+{% endfor %}
+{%- endmacro %}
+
+{# In-place loading inside an embedded tool panel; on a full tool page links navigate normally. #}
+{% macro hx_swap(url) -%}
+{% if not full_page %} hx-get="{{ url }}" hx-target="closest [data-tool-root]" hx-swap="outerHTML" hx-push-url="false"{% endif %}
+{%- endmacro %}
+
+{# Banners a tool partial shows when it is embedded in another page (the full page shows them once at the top). #}
+{% macro partial_notices() -%}
+{% if not full_page %}
+  {# The host page may not link the tools stylesheet; a body-level stylesheet link is valid HTML and cached. #}
+  <link rel="stylesheet" href="/static/css/tools.css">
+  {% if unpublished %}<p class="draft-banner" role="note"><strong>Unpublished draft — in editorial review.</strong> Only editors can see this brief until it is approved.</p>{% endif %}
+  {% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+{% endif %}
+{%- endmacro %}
+
+{# One-click "was this useful?" feedback (usefulness metric). #}
+{% macro feedback_quick(target_type, target_id, prompt, next_url) -%}
+<form class="feedback-quick" method="post" action="/feedback" hx-post="/feedback" hx-target="this" hx-swap="outerHTML">
+  {{ m.csrf_field() }}
+  <input type="hidden" name="target_type" value="{{ target_type }}">
+  <input type="hidden" name="target_id" value="{{ target_id }}">
+  <input type="hidden" name="next" value="{{ next_url }}">
+  <span class="feedback-prompt" id="fb-{{ target_type }}-{{ target_id }}">{{ prompt }}</span>
+  <button class="button button-small button-secondary" type="submit" name="answered_question" value="yes" aria-describedby="fb-{{ target_type }}-{{ target_id }}">Yes</button>
+  <button class="button button-small button-secondary" type="submit" name="answered_question" value="no" aria-describedby="fb-{{ target_type }}-{{ target_id }}">No</button>
+</form>
+{%- endmacro %}
+
+{# Full answer feedback: answered the question? saved time? 1-5 rating. #}
+{% macro feedback_full(target_type, target_id, next_url) -%}
+<form class="feedback-full" method="post" action="/feedback" hx-post="/feedback" hx-target="this" hx-swap="outerHTML">
+  {{ m.csrf_field() }}
+  <input type="hidden" name="target_type" value="{{ target_type }}">
+  <input type="hidden" name="target_id" value="{{ target_id }}">
+  <input type="hidden" name="next" value="{{ next_url }}">
+  <p class="section-label">Was this answer useful?</p>
+  <div class="feedback-grid">
+    <fieldset>
+      <legend>Did it answer your question?</legend>
+      <label class="checkbox"><input type="radio" name="answered_question" value="yes"> Yes</label>
+      <label class="checkbox"><input type="radio" name="answered_question" value="no"> No</label>
+    </fieldset>
+    <fieldset>
+      <legend>Did it save you time searching?</legend>
+      <label class="checkbox"><input type="radio" name="saved_time" value="yes"> Yes</label>
+      <label class="checkbox"><input type="radio" name="saved_time" value="no"> No</label>
+    </fieldset>
+    <fieldset>
+      <legend>Overall rating</legend>
+      <div class="rating-options">
+        {% for n in range(1, 6) %}<label class="checkbox"><input type="radio" name="rating" value="{{ n }}"> {{ n }}</label>{% endfor %}
+      </div>
+      <span class="hint muted">1 = not useful, 5 = very useful</span>
+    </fieldset>
+  </div>
+  <button class="button button-small" type="submit">Send feedback</button>
+</form>
+{%- endmacro %}

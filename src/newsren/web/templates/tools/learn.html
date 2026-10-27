@@ -1,0 +1,131 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+{% set p = "learn-" %}
+<section class="tool-content tool-learn" data-tool-root aria-labelledby="tool-h-learn-{{ brief.id }}">
+  <header class="tool-header">
+    <h2 class="tool-title" id="tool-h-learn-{{ brief.id }}">Learn this topic</h2>
+    <p class="tool-blurb">News-to-Learning turns the verified facts in this story into explanations matched to you. Only cited facts are taught; contested points appear as open questions.</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  <nav class="audience-tabs" aria-label="Explain this for">
+    <span class="section-label">Explain for</span>
+    <ul class="tool-tabs">
+      {% for a in audience_links %}
+      <li><a class="tool-tab{% if a.active %} is-active{% endif %}" href="{{ a.url }}"{{ t.hx_swap(a.url) }}{% if a.active %} aria-current="true"{% endif %}>{{ a.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+
+  <article class="learning" aria-labelledby="learn-title-{{ content.id }}">
+    <h3 class="learning-title" id="learn-title-{{ content.id }}">{{ learning.title }}</h3>
+    <p class="learning-meta muted">{{ learning.reading_time_minutes }}-minute read · written for {{ learning.audience }}s · {{ citations | length }} cited source{{ 's' if citations | length != 1 else '' }}</p>
+
+    <div class="learning-layout">
+    <div class="learning-main explainer">
+      {{ t.blocks(learning.explainer, citations, p) }}
+    </div>
+
+    <aside class="learning-side" aria-label="Key concepts and glossary">
+
+    {% if learning.key_concepts %}
+    <h3 class="section-heading side-heading">Key concepts</h3>
+    <dl class="glossary concepts">
+      {% for item in learning.key_concepts %}
+      <dt>{{ item.term }}</dt>
+      <dd>{{ item.definition | cite_markers(citations, p) }}</dd>
+      {% endfor %}
+    </dl>
+    {% endif %}
+
+    {% if learning.glossary %}
+    <h3 class="section-heading">Glossary</h3>
+    <dl class="glossary glossary-columns">
+      {% for item in learning.glossary %}
+      <div class="glossary-entry">
+        <dt>{{ item.term }}</dt>
+        <dd>{{ item.definition | cite_markers(citations, p) }}</dd>
+      </div>
+      {% endfor %}
+    </dl>
+    {% endif %}
+    </aside>
+
+    <div class="learning-rest">
+    {% if learning.quiz %}
+    <section class="quiz" id="quiz-{{ content.id }}" aria-labelledby="quiz-h-{{ content.id }}">
+      <h3 class="section-heading" id="quiz-h-{{ content.id }}">Check your understanding</h3>
+      <p class="muted quiz-intro"><strong>Comprehension</strong> questions check what the story reported; <strong>transfer</strong> questions apply the same idea to an unfamiliar situation.</p>
+      <form method="post" action="/learning/{{ content.id }}/quiz" hx-post="/learning/{{ content.id }}/quiz" hx-target="#quiz-score-{{ content.id }}" hx-swap="innerHTML">
+        {{ m.csrf_field() }}
+        {% for q in learning.quiz %}
+        {% set qi = loop.index0 %}
+        <fieldset class="quiz-question" data-quiz-question data-answer="{{ q.answer_index }}" data-explanation="{{ q.explanation | strip_cites }}">
+          <legend><span class="quiz-number">{{ loop.index }}.</span> {{ q.question }} <span class="badge badge-quiz-{{ q.kind }}">{{ 'Transfer' if q.kind == 'transfer' else 'Comprehension' }}</span></legend>
+          {% for option in q.options %}
+          <label class="quiz-option"><input type="radio" name="q{{ qi }}" value="{{ loop.index0 }}" data-quiz-option{% if quiz_result and quiz_result.rows[qi].chosen == loop.index0 %} checked{% endif %}> <span>{{ option }}</span></label>
+          {% endfor %}
+          <p class="quiz-result" data-quiz-result aria-live="polite"></p>
+        </fieldset>
+        {% endfor %}
+        <div class="quiz-actions">
+          <button class="button" type="submit">Check my answers</button>
+          <span class="muted small">Only your scores are recorded, to measure how well these explanations teach.</span>
+        </div>
+        <div id="quiz-score-{{ content.id }}" class="quiz-score-slot" aria-live="polite">{% if quiz_result %}{% include "tools/_quiz_result.html" %}{% endif %}</div>
+      </form>
+    </section>
+    {% endif %}
+
+    {% if learning.discussion_questions %}
+    <h3 class="section-heading">Discussion questions</h3>
+    <ol class="discussion-list">
+      {% for item in learning.discussion_questions %}
+      {% set band, _, rest = item.partition(': ') %}
+      {% if rest and band in ('Middle school', 'High school', 'University') %}
+      <li><span class="pill band-pill">{{ band }}</span> {{ rest | cite_markers(citations, p) }}</li>
+      {% else %}
+      <li>{{ item | cite_markers(citations, p) }}</li>
+      {% endif %}
+      {% endfor %}
+    </ol>
+    {% endif %}
+
+    {% if learning.classroom_activities %}
+    <h3 class="section-heading">Classroom activities</h3>
+    <div class="grid grid-2 activities">
+      {% for act in learning.classroom_activities %}
+      <div class="panel activity">
+        <h4 class="panel-title">{{ act.title }} <span class="muted">· {{ act.duration_minutes }} min</span></h4>
+        {% if act.steps %}<ol class="activity-steps">{% for s in act.steps %}<li>{{ s | cite_markers(citations, p) }}</li>{% endfor %}</ol>{% endif %}
+        {% if act.materials %}
+        <details class="materials">
+          <summary>Materials ({{ act.materials | length }})</summary>
+          <ul>{% for mat in act.materials %}<li>{{ mat | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+        </details>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if learning.professional_implications %}
+    <h3 class="section-heading">Implications for professionals</h3>
+    <ul class="implications">
+      {% for item in learning.professional_implications %}<li>{{ item | cite_markers(citations, p) }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if learning.advanced_reading %}
+    {% call m.expandable("Advanced reading", open=(learning.audience == 'professional')) %}
+      {{ t.blocks(learning.advanced_reading, citations, p, "h5") }}
+    {% endcall %}
+    {% endif %}
+    </div>
+    </div>
+  </article>
+
+  {{ t.source_list(citations, p) }}
+  {{ m.generated_note(content.generated_by, content.generated_at) }}
+  {{ t.feedback_quick("learning", content.id, "Was this explanation useful?", "/briefs/" ~ brief.id ~ "/tools/learn?audience=" ~ learning.audience) }}
+</section>

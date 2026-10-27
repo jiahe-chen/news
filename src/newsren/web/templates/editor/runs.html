@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Agent runs — Editor desk — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+
+<header class="ed-header">
+  <p class="kicker">Orchestrator</p>
+  <h1 class="page-title">Agent runs</h1>
+  <p class="lede">Every agent call goes through the orchestrator, which enforces tool-call, time and cost budgets and records what ran, on which engine, and what it cost. {{ '{:,}'.format(all_runs) }} run{{ 's' if all_runs != 1 else '' }} recorded · ${{ '%.4f' | format(all_cost) }} estimated inference cost in total.</p>
+</header>
+
+<form class="ed-run-filters" method="get" action="/editor/runs" aria-label="Filter agent runs">
+  <label>Agent
+    <select name="agent">
+      <option value="">All agents</option>
+      {% for a in agents %}<option value="{{ a }}"{% if a == agent %} selected{% endif %}>{{ a }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Status
+    <select name="status">
+      <option value="">Any status</option>
+      {% for s in statuses %}<option value="{{ s }}"{% if s == status %} selected{% endif %}>{{ run_status_label(s) }} ({{ status_counts.get(s, 0) }})</option>{% endfor %}
+    </select>
+  </label>
+  <label>Per page
+    <select name="limit">
+      {% for n in [25, 50, 100, 200] %}<option value="{{ n }}"{% if n == limit %} selected{% endif %}>{{ n }}</option>{% endfor %}
+    </select>
+  </label>
+  <div class="ed-run-filter-actions">
+    <button type="submit" class="button button-small">Apply</button>
+    {% if agent or status %}<a href="/editor/runs" class="ed-small">Clear filters</a>{% endif %}
+  </div>
+</form>
+
+<details class="ed-status-help">
+  <summary>What the statuses mean</summary>
+  <dl class="ed-dl">
+    {% for s, text in status_help.items() %}<dt>{{ e.run_badge(s) }}</dt><dd>{{ text }}</dd>{% endfor %}
+  </dl>
+</details>
+
+<p class="ed-small muted" role="status">
+  {% if total %}Showing {{ offset + 1 }}–{{ [offset + limit, total] | min }} of {{ '{:,}'.format(total) }}{% if agent %} for <strong>{{ agent }}</strong>{% endif %}{% if status %} with status <strong>{{ run_status_label(status) }}</strong>{% endif %}, newest first.{% endif %}
+</p>
+
+{% if runs %}
+<div class="table-wrap">
+<table class="data ed-table ed-compact ed-runs">
+  <caption class="sr-only">Agent runs, newest first</caption>
+  <thead>
+    <tr>
+      <th scope="col">Started</th><th scope="col">Agent and task</th><th scope="col">Status</th><th scope="col">Engine</th>
+      <th scope="col" class="num">Tool calls</th><th scope="col" class="num">Tokens in / out</th><th scope="col" class="num">Cost</th><th scope="col" class="num">Duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in runs %}
+    <tr>
+      <td data-label="Started" class="ed-wide"><div class="ed-cell"><a href="/editor/runs/{{ r.id }}">{{ r.started_at | fmt_dt_time }}</a></div></td>
+      <td data-label="Agent and task" class="ed-wide"><div class="ed-cell"><strong>{{ r.agent }}</strong><br><span class="ed-small ed-task">{{ r.task | truncate(110) }}</span></div></td>
+      <td data-label="Status" class="ed-nowrap"><div class="ed-cell">{{ e.run_badge(r.status) }}</div></td>
+      <td data-label="Engine" class="ed-nowrap"><div class="ed-cell">{{ r.provider }}{% if r.model %}<br><span class="ed-small muted">{{ r.model }}</span>{% endif %}</div></td>
+      <td data-label="Tool calls" class="num"><div class="ed-cell">{{ r.tool_calls }}</div></td>
+      <td data-label="Tokens in / out" class="num"><div class="ed-cell">{{ '{:,}'.format(r.input_tokens) }} / {{ '{:,}'.format(r.output_tokens) }}</div></td>
+      <td data-label="Cost" class="num"><div class="ed-cell">${{ '%.4f' | format(r.cost_usd or 0) }}</div></td>
+      <td data-label="Duration" class="num"><div class="ed-cell">{% if r.duration_ms is not none %}{{ fmt_duration(r.duration_ms / 1000) if r.duration_ms >= 1000 else r.duration_ms ~ ' ms' }}{% else %}—{% endif %}</div></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if prev_url or next_url %}
+<nav class="ed-pager" aria-label="Pages of agent runs">
+  {% if prev_url %}<a class="button button-secondary button-small" href="{{ prev_url }}" rel="prev">← Newer</a>{% endif %}
+  {% if next_url %}<a class="button button-secondary button-small" href="{{ next_url }}" rel="next">Older →</a>{% endif %}
+</nav>
+{% endif %}
+{% else %}
+{{ m.empty_state("No agent runs match", "Runs are recorded whenever the pipeline, Ask Newsren, or a reader tool calls an agent.") }}
+{% endif %}
+{% endblock %}

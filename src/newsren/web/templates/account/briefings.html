@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "account/_account.html" as a with context %}
+{% block title %}Your briefings — My Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/account.css">{% endblock %}
+{% block content %}
+<nav class="me-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/me">My Newsren</a></li>
+    <li aria-current="page">Briefings</li>
+  </ol>
+</nav>
+<header class="me-header">
+  <p class="kicker">My Newsren</p>
+  <h1 class="page-title">Your briefings</h1>
+  <p class="lede">Each briefing explains what changed in what you follow since the one before, with a source for every item.</p>
+</header>
+
+{% if show_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<div class="me-row-actions">{{ a.brief_now_form(secondary=False) }}</div>
+
+{% if rows %}
+<ol class="me-briefing-list" reversed>
+  {% for row in rows %}
+  {% set b = row.briefing %}
+  <li class="me-briefing-row">
+    <article aria-labelledby="briefing-{{ b.id }}-title">
+      <div class="card-kicker">
+        {% if not b.opened_at %}<span class="badge badge-info">New</span>{% endif %}
+        <time datetime="{{ b.generated_at.isoformat() }}Z">{{ b.generated_at | fmt_dt_time }}</time>
+        <span class="muted">· {{ b.item_count }} update{{ 's' if b.item_count != 1 else '' }}</span>
+        {% if b.delivery_channel %}<span class="muted">· {{ 'web and email' if b.delivery_channel == 'email' else 'web' }}</span>{% endif %}
+        {% if row.is_finance %}<span class="vertical-tag vertical-tag-finance">Includes finance</span>{% endif %}
+      </div>
+      <h2 class="card-headline" id="briefing-{{ b.id }}-title"><a href="/me/briefings/{{ b.id }}">{{ b.title }}</a></h2>
+      {% if b.period_start %}<p class="me-meta"><span>Covers {{ b.period_start | fmt_dt }} – {{ b.period_end | fmt_dt }}</span></p>{% endif %}
+      {% if row.intro %}<p class="card-summary">{{ row.intro | truncate(280) }}</p>{% endif %}
+      {% if row.headings %}
+      <ul class="pill-list" aria-label="Sections">
+        {% for h in row.headings %}<li class="pill">{{ h | truncate(70) }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </article>
+  </li>
+  {% endfor %}
+</ol>
+{% else %}
+  {{ m.empty_state("No briefings yet", "Add interests or follow a question in My Newsren, then choose “Brief me now”.") }}
+{% endif %}
+{% endblock %}

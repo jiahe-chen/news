@@ -1,0 +1,81 @@
+{# Editor desk macros. Import with: {% import "editor/_editor.html" as e with context %} #}
+{% import "_macros.html" as m with context %}
+
+{% macro desk_nav(nav, active) -%}
+<nav class="ed-nav" aria-label="Editor desk">
+  <p class="ed-nav-label">Editor desk</p>
+  <ul>
+    {% for key, label, url in nav %}
+    <li><a href="{{ url }}" class="{% if key == active %}is-active{% endif %}"{% if key == active %} aria-current="page"{% endif %}>{{ label }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+{%- endmacro %}
+
+{% macro risk_badge(level) -%}
+<span class="badge badge-{{ level or 'low' }}" title="Risk assessed by the quality gate">{{ (level or 'low') | capitalize }} risk</span>
+{%- endmacro %}
+
+{% macro status_badge(status) -%}
+{% if status == 'approved' %}<span class="badge badge-approved">Published</span>
+{% elif status == 'in_review' %}<span class="badge badge-in_review">In review</span>
+{% elif status == 'draft' %}<span class="badge badge-draft">Draft</span>
+{% elif status == 'rejected' %}<span class="badge badge-rejected">Rejected</span>
+{% else %}{{ status | badge }}{% endif %}
+{%- endmacro %}
+
+{% macro kind_badge(kind) -%}
+{% if not kind or kind == 'story' %}<span class="badge">AI Story Brief</span>{% else %}<span class="badge">{{ kind | label }} brief</span>{% endif %}
+{%- endmacro %}
+
+{% macro run_badge(status) -%}
+<span class="badge badge-run-{{ status or 'unknown' }}">{{ run_status_label(status) }}</span>
+{%- endmacro %}
+
+{% macro engine(generated_by) -%}
+{% if not generated_by or generated_by == 'offline' %}offline evidence engine{% else %}{{ generated_by }}{% endif %}
+{%- endmacro %}
+
+{# One automated check result. #}
+{% macro check_item(c) -%}
+<li class="ed-check {{ 'check-pass' if c.passed else 'check-fail' }}">
+  <div class="ed-check-body">
+    <span class="ed-check-name"><span class="sr-only">{{ 'Passed' if c.passed else 'Failed' }}: </span>{{ c.name | replace('_', ' ') | capitalize }}</span>
+    {% if not c.passed %}<span class="badge badge-{{ c.severity }}">{{ c.severity | capitalize }}</span>{% else %}<span class="badge badge-ed-muted">{{ c.severity | capitalize }} check</span>{% endif %}
+    <span class="ed-check-message">{{ c.message }}</span>
+    {% if c.details %}
+      {% if c.details | length > 3 %}
+      <details class="ed-check-details">
+        <summary>{{ c.details | length }} details</summary>
+        <ul>{% for d in c.details %}<li>{{ d }}</li>{% endfor %}</ul>
+      </details>
+      {% else %}
+      <ul class="ed-check-detail-list">{% for d in c.details %}<li>{{ d }}</li>{% endfor %}</ul>
+      {% endif %}
+    {% endif %}
+  </div>
+</li>
+{%- endmacro %}
+
+{# A citation (CitationRef dict) as a compact source line that opens in a new tab. #}
+{% macro source_line(c) -%}
+<a href="{{ c.url }}" target="_blank" rel="noopener noreferrer">{{ c.title }}<span class="sr-only"> (opens in a new tab)</span></a>
+<span class="source-meta">
+  [{{ c.id[1:] if c.id and c.id.startswith('c') else c.id }}] {{ c.publisher }}{% if c.published_at %} · published {{ c.published_at | fmt_dt }}{% endif %}{% if c.retrieved_at %} · retrieved {{ c.retrieved_at | fmt_dt_time }}{% endif %}
+</span>
+<span class="ed-source-badges">{{ c.trust_tier | badge }} {{ c.doc_type | badge }}</span>
+{%- endmacro %}
+
+{% macro toggle(s, field, label_on, label_off) -%}
+{% set on = s[field] %}
+<form method="post" action="/editor/sources/{{ s.id }}/toggle" class="inline-form"
+      hx-post="/editor/sources/{{ s.id }}/toggle" hx-target="#source-{{ s.id }}" hx-swap="outerHTML">
+  {{ m.csrf_field() }}
+  <input type="hidden" name="field" value="{{ field }}">
+  <button type="submit" class="ed-toggle{% if on %} is-on{% endif %}" aria-pressed="{{ 'true' if on else 'false' }}"
+          aria-label="{{ label_on if on else label_off }} — {{ s.name }}. Activate to turn {{ 'off' if on else 'on' }}.">
+    <span class="ed-toggle-track" aria-hidden="true"><span class="ed-toggle-knob"></span></span>
+    <span class="ed-toggle-text">{{ label_on if on else label_off }}</span>
+  </button>
+</form>
+{%- endmacro %}

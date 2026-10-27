@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Analytics — success metrics — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+
+<header class="ed-header">
+  <p class="kicker">Success metrics</p>
+  <h1 class="page-title">Is The Newsren trustworthy, useful and worth its cost?</h1>
+  <p class="lede">The goal is to automate repetitive research while preserving source accountability and editorial judgement. These six measures say whether that is working.</p>
+</header>
+
+<aside class="ed-not-metrics" role="note">
+  <strong>Deliberately not primary metrics:</strong> total article output and chatbot usage. More briefs or more questions do not mean readers understood more or trusted us more, so they are not tracked as goals here.
+</aside>
+
+<nav class="ed-filters an-jump" aria-label="Jump to a measure">
+  {% for s in sections %}<a class="pill" href="#{{ s.key }}">{{ s.title }}</a>{% endfor %}
+</nav>
+
+{% for s in sections %}
+<section class="an-section" id="{{ s.key }}" aria-labelledby="{{ s.key }}-heading">
+  <h2 class="section-heading" id="{{ s.key }}-heading">{{ s.title }}</h2>
+  <p class="an-plan"><span class="an-plan-label">Measures</span> {{ s.plan }}</p>
+  <p class="an-def">{{ s.definition }}</p>
+
+  <div class="stat-grid an-tiles">
+    {% for t in s.tiles %}
+    <div class="stat{% if t.value is none %} an-empty{% endif %}">
+      <div class="stat-label">{{ t.label }}</div>
+      {% if t.value is not none %}
+      <div class="stat-value">{{ t.value }}</div>
+      {% if t.bar is not none %}<div class="bar" aria-hidden="true"><span style="width: {{ '%.1f' | format(t.bar * 100) }}%"></span></div>{% endif %}
+      {% else %}
+      <div class="stat-value an-novalue">{{ t.empty }}</div>
+      {% endif %}
+      {% if t.n is not none %}<div class="stat-note an-n"><abbr title="sample size">n</abbr> = {{ '{:,}'.format(t.n) }}{% if t.n_label %} {{ t.n_label }}{% endif %}</div>{% endif %}
+      {% if t.note %}<div class="stat-note">{{ t.note }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if s.empty_hint %}<p class="an-hint">{{ s.empty_hint }}</p>{% endif %}
+
+  {% if s.facts %}
+  <dl class="ed-dl an-facts">
+    {% for k, v in s.facts %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}
+  </dl>
+  {% endif %}
+
+  {% if s.table %}
+  <div class="table-wrap">
+    <table class="data ed-table an-table">
+      <caption>{{ s.table.caption }}</caption>
+      <thead><tr>{% for h in s.table.head %}<th scope="col"{% if not loop.first %} class="num"{% endif %}>{{ h }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in s.table.rows %}
+        <tr>
+          <th scope="row" data-label="{{ s.table.head[0] }}">{{ row.label }}</th>
+          {% for cell in row.cells %}<td class="num" data-label="{{ s.table.head[loop.index] }}">{{ cell }}</td>{% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if s.note %}<p class="an-note">{{ s.note }}</p>{% endif %}
+</section>
+{% endfor %}
+
+<p class="ed-small muted an-footer">Computed {{ generated_at | fmt_dt_time }} from the live database. Rates show their sample size; small samples are visible rather than hidden. The same numbers are available as JSON at <a href="/api/v1/metrics">/api/v1/metrics</a> (editors only).</p>
+{% endblock %}

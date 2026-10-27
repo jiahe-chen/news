@@ -781,11 +781,22 @@ def _evidence_labels(article: Article, event_type: str) -> list[str]:
     return notes
 
 
+# Countable nouns for event types whose label is not one ("an earnings" -> "an earnings report").
+_EVENT_NOUNS: dict[str, str] = {
+    EventType.EARNINGS: "earnings report",
+    EventType.ADOPTION: "adoption decision",
+    EventType.REGULATION: "regulatory action",
+    EventType.POLICY: "policy decision",
+    EventType.OPINION: "opinion piece",
+}
+
+
 def alert_reason(article: Article, event_type: str, criteria_met: Sequence[str], custom_reason: str = "") -> str:
     """Plain-language reason: what was published, by whom, and which of the reader's criteria it met."""
     verb = "published" if event_type in _PUBLISHED_EVENTS else "reported"
     when = _date(article.published_at)
-    lead = f"{_a(event_label(event_type))} was {verb} by {_publisher(article)}" + (f" on {when}" if when else "")
+    noun = _EVENT_NOUNS.get(event_type) or event_label(event_type)
+    lead = f"{_a(noun)} was {verb} by {_publisher(article)}" + (f" on {when}" if when else "")
     reason = f"{lead} (“{truncate(article.title, 140)}”); matched your criteria: {', '.join(criteria_met)}."
     notes = _evidence_labels(article, event_type)
     if custom_reason:

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}Your alerts — My Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/account.css">{% endblock %}
+{% block content %}
+<nav class="me-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/me">My Newsren</a></li>
+    <li aria-current="page">Alerts</li>
+  </ol>
+</nav>
+<header class="me-header">
+  <p class="kicker">Follow This Story</p>
+  <h1 class="page-title">Your alerts</h1>
+  <p class="lede">The monitoring agent alerts you only when a development meets the criteria of something you follow. Rating each one tells it — and us — whether the criteria are right.</p>
+</header>
+
+{% if show_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<div class="me-alerts-bar">
+  <nav aria-label="Filter alerts">
+    <ul class="me-filter">
+      <li><a href="/me/alerts"{% if show == 'all' %} aria-current="page" class="is-active"{% endif %}>All <span class="muted">({{ counts.all }})</span></a></li>
+      <li><a href="/me/alerts?show=unread"{% if show == 'unread' %} aria-current="page" class="is-active"{% endif %}>Unread <span class="muted">({{ counts.unread }})</span></a></li>
+    </ul>
+  </nav>
+  <p class="me-meta"><span>{{ counts.useful }} marked useful</span><span>{{ counts.unwanted }} marked not useful</span></p>
+</div>
+
+{% if alerts %}
+<ul class="me-alert-list">
+  {% for alert in alerts %}{% include "account/_alert.html" %}{% endfor %}
+</ul>
+{% elif show == 'unread' %}
+  {{ m.empty_state("No unread alerts", "You're up to date.") }}
+{% else %}
+  {{ m.empty_state("No alerts yet", "When a development meets the criteria of something you follow, it appears here with the reason and its source.") }}
+{% endif %}
+<p><a href="/me#follows">Manage what you follow</a></p>
+{% endblock %}

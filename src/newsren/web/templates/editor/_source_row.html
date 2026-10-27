@@ -1,0 +1,20 @@
+{# One row of the approved-source registry. Context: s (Source), counts, optional message (htmx). #}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+<tr id="source-{{ s.id }}" class="{% if not (s.approved and s.active) %}ed-row-off{% endif %}">
+  <td data-label="Source" class="ed-wide"><div class="ed-cell">
+    <span class="ed-source-name">{% if s.homepage %}<a href="{{ s.homepage }}" target="_blank" rel="noopener noreferrer">{{ s.name }}<span class="sr-only"> (opens in a new tab)</span></a>{% else %}{{ s.name }}{% endif %}</span>
+    <span class="ed-small muted ed-slug">{{ s.slug }}{% if s.kind == 'demo' %} · <span class="badge badge-demo">Demo source</span>{% endif %}</span>
+    {% if s.license_note %}<details class="ed-license"><summary>Licence note</summary><p>{{ s.license_note }}</p>{% if s.data_delay_note %}<p>{{ s.data_delay_note }}</p>{% endif %}</details>{% endif %}
+    {% if message %}<span class="ed-row-message" role="status">{{ message }}</span>{% endif %}
+  </div></td>
+  <td data-label="Section"><div class="ed-cell">{{ m.vertical_tag(s.vertical) }}<br>{% set kinds = {'rss': 'RSS/Atom feed', 'arxiv': 'arXiv API', 'edgar': 'SEC EDGAR', 'eric': 'ERIC API', 'manual': 'Manual', 'demo': 'Demo feed'} %}<span class="ed-small muted">{{ kinds.get(s.kind, s.kind) }}</span></div></td>
+  <td data-label="Evidence"><div class="ed-cell">{{ s.trust_tier | badge }} {{ s.default_doc_type | badge }}</div></td>
+  <td data-label="Articles" class="num"><div class="ed-cell">{{ counts.get(s.id, 0) }}</div></td>
+  <td data-label="Last fetch"><div class="ed-cell">
+    {% if s.last_fetched_at %}{{ s.last_fetched_at | fmt_dt_time }}{% else %}<span class="muted">Never fetched</span>{% endif %}
+    {% if s.last_status %}<br><span class="ed-small {% if s.last_status.lower().startswith('ok') %}ed-ok-text{% else %}ed-error-text{% endif %}">{{ s.last_status | truncate(120) }}</span>{% endif %}
+  </div></td>
+  <td data-label="Approved"><div class="ed-cell">{{ e.toggle(s, 'approved', 'Approved', 'Not approved') }}</div></td>
+  <td data-label="Active"><div class="ed-cell">{{ e.toggle(s, 'active', 'Active', 'Paused') }}</div></td>
+</tr>

@@ -1,0 +1,18 @@
+{% set r = quiz_result %}
+<div class="quiz-score" role="status">
+  <p class="quiz-score-line"><strong>Your result:</strong>
+    comprehension <strong>{{ r.comprehension_correct }}/{{ r.comprehension_total }}</strong>{% if r.transfer_total %} · transfer <strong>{{ r.transfer_correct }}/{{ r.transfer_total }}</strong>{% endif %}
+  </p>
+  <ol class="quiz-review">
+    {% for row in r.rows %}
+    <li class="{{ 'correct' if row.correct else 'incorrect' }}">
+      <span class="quiz-mark" aria-hidden="true">{{ '✓' if row.correct else '✕' }}</span>
+      <span><strong>{{ 'Correct' if row.correct else ('Not quite' if row.answered else 'Not answered') }}</strong>
+      ({{ 'transfer' if row.question.kind == 'transfer' else 'comprehension' }}).
+      Answer: {{ row.answer_text }}.
+      {% if row.question.explanation %}<span class="muted">{{ row.question.explanation | cite_markers(citations, 'learn-') }}</span>{% endif %}</span>
+    </li>
+    {% endfor %}
+  </ol>
+  <p class="muted small">Your attempt was recorded (scores only) to measure how well these explanations teach.</p>
+</div>

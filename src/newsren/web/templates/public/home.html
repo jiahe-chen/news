@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "public/_public.html" as p with context %}
+{% block title %}The Newsren — Technology, education, industry and finance news intelligence{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">{% endblock %}
+{% block content %}
+<h1 class="sr-only">The Newsren front page</h1>
+
+{% if demo %}
+<p class="demo-note" role="note">
+  <strong>You're viewing fictional demo content.</strong>
+  The organizations, people, and figures in stories marked {{ m.demo_badge(true) }} are invented to show how The Newsren works.
+  To read live coverage, run <code>newsren pipeline</code> (or <code>newsren ingest</code>) to fetch the <a href="/sources">approved sources</a>.
+</p>
+{% endif %}
+
+<div class="layout-main-side front-lead">
+  <section aria-label="Lead story">
+    {% if lead %}
+      {{ p.card(lead, size="lead", length=420) }}
+      {% if lead.key_points %}
+      <ul class="lead-points">
+        {% for point in lead.key_points[:3] %}<li>{{ plain(point) }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+      <p class="lead-extras"><a href="/briefs/{{ lead.id }}">Read the AI Story Brief</a> — what happened, the evidence for each claim, what is disputed, and what to watch next.</p>
+    {% else %}
+      {{ m.empty_state("No published briefs yet", "Briefs appear here once an editor approves them. Every brief cites its sources and passes the editorial quality gate.") }}
+    {% endif %}
+  </section>
+
+  <aside aria-labelledby="developing-heading">
+    <h2 class="section-heading side-heading" id="developing-heading">Developing stories</h2>
+    {% if stories %}
+      <ul class="story-list">
+        {% for story in stories %}{{ p.story_row(story, counts.get(story.id, 0), story_types[story.id]) }}{% endfor %}
+      </ul>
+      <p class="card-meta muted">Stories group related reports, filings, studies and evaluations into one evolving timeline.</p>
+    {% else %}
+      {{ m.empty_state("No developing stories yet", "When several sources report on the same development, The Newsren connects them into a story timeline.") }}
+    {% endif %}
+  </aside>
+</div>
+
+{{ p.agent_entry("Understand the next technology breakthrough",
+                 "Compare primary research, product announcements, and independent evaluations. Ask a question and the research agent plans a search of approved sources, reads them, and tells you what it could and could not verify.",
+                 prompts | map(attribute=1) | list, "home-question") }}
+
+<div class="grid grid-2 front-sections">
+  {% for section in sections %}
+  <section class="vertical-block vertical-block-{{ section.vertical }}" aria-labelledby="sec-{{ section.vertical }}">
+    <h2 class="section-heading" id="sec-{{ section.vertical }}">
+      <span>{{ VERTICAL_LABELS[section.vertical] }}</span>
+      <a href="{{ section.url }}">All {{ VERTICAL_LABELS[section.vertical] }} →</a>
+    </h2>
+    {% if section.vertical == 'finance' %}
+      <p class="finance-line" role="note"><strong>Not investment advice.</strong> Finance coverage is news and education only; every finance story is reviewed by a human editor before publication.</p>
+    {% endif %}
+    {% if section.briefs %}
+      {{ p.card(section.briefs[0], show_vertical=False) }}
+      {% if section.briefs | length > 1 %}
+      <ul class="headline-list">
+        {% for brief in section.briefs[1:] %}
+        <li>
+          <a href="/briefs/{{ brief.id }}">{{ brief.headline }}</a>
+          {% if is_opinion_brief(brief) %}<span class="badge badge-opinion">Opinion</span>{% endif %}
+          {{ m.demo_badge(brief.is_demo) }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% elif section.vertical == 'finance' %}
+      {{ m.empty_state("Finance briefs are in editorial review", "A human editor checks every finance story — performance labels, sources, and the no-advice rules — before it is published. Explore the earnings, funding and AI-in-finance trackers on the Finance page meanwhile.") }}
+    {% else %}
+      {{ m.empty_state("No published " ~ VERTICAL_LABELS[section.vertical] ~ " briefs yet", "Briefs appear here after editorial review.") }}
+    {% endif %}
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

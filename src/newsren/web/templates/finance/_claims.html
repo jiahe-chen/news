@@ -1,0 +1,30 @@
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+<div id="claims-results" class="fin-results" aria-live="polite">
+  <nav class="fin-area-filter" aria-label="Filter claims by area">
+    <span class="section-label">Area</span>
+    <ul class="pill-list">
+      <li><a class="pill{% if not area %} is-active{% endif %}" href="/finance/ai-reality-check" hx-get="/finance/ai-reality-check" hx-target="#claims-results" hx-swap="outerHTML" hx-push-url="true"{% if not area %} aria-current="true"{% endif %}>All areas ({{ all_count }})</a></li>
+      {% for opt in area_options %}
+      <li><a class="pill{% if area == opt.key %} is-active{% endif %}" href="{{ opt.url }}" hx-get="{{ opt.url }}" hx-target="#claims-results" hx-swap="outerHTML" hx-push-url="true"{% if area == opt.key %} aria-current="true"{% endif %}>{{ opt.label }} ({{ opt.count }})</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% if area %}
+  <p class="fin-filter-summary">Showing {{ shown_count }} claim{{ 's' if shown_count != 1 else '' }} about <strong>{{ area_label }}</strong>.{% if area_note %} <span class="muted">{{ area_note }}</span>{% endif %}</p>
+  {% endif %}
+
+  {% for g in groups %}
+  <section class="fin-claim-group" aria-labelledby="group-{{ g.classification }}">
+    <h3 class="fin-group-title" id="group-{{ g.classification }}"><span class="fin-swatch badge-{{ g.classification }}" aria-hidden="true"></span>{{ g.label }} <span class="fin-count">{{ g.claims | length }}{% if area %} of {{ g.total }}{% endif %}</span></h3>
+    <p class="fin-group-help muted">{{ g.help }}</p>
+    {% if g.claims %}
+    <div class="fin-claims">
+      {% for c in g.claims %}{{ f.claim_card(c) }}{% endfor %}
+    </div>
+    {% else %}
+    <p class="fin-none muted">No {{ g.label | lower }} claims{% if area %} in this area{% endif %} yet.</p>
+    {% endif %}
+  </section>
+  {% endfor %}
+</div>

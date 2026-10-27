@@ -1,0 +1,42 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+<section class="tool-content tool-ask" data-tool-root aria-labelledby="tool-h-ask-{{ brief.id }}">
+  <header class="tool-header">
+    <h2 class="tool-title" id="tool-h-ask-{{ brief.id }}">Ask about this story</h2>
+    <p class="tool-blurb">The research agent starts from this brief, searches The Newsren's archive of approved sources (and primary sources such as filings and research papers when relevant), and reports what it could and could not verify.</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  <form class="ask-box" method="post" action="/briefs/{{ brief.id }}/ask" hx-post="/briefs/{{ brief.id }}/ask" hx-trigger="submit{% if prefill %}, load{% endif %}" hx-target="#ask-answer-{{ brief.id }}" hx-swap="innerHTML" hx-indicator="#ask-loading-{{ brief.id }}" data-ask-form>
+    {{ m.csrf_field() }}
+    <input type="hidden" name="audience" value="{{ audience }}">
+    <label class="ask-label" for="ask-q-{{ brief.id }}">Your question about “{{ brief.headline | truncate(90) }}”</label>
+    <textarea id="ask-q-{{ brief.id }}" name="question" required maxlength="1000" placeholder="For example: What evidence supports the main claim?">{{ prefill }}</textarea>
+    {% if prompts %}
+    <div class="prompt-chips" role="group" aria-label="Suggested questions">
+      <span class="section-label">Suggested</span>
+      {% for prompt in prompts %}
+      <button class="prompt-chip" type="submit" name="prompt" value="{{ prompt }}" data-prompt="{{ prompt }}" formnovalidate>{{ prompt }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="ask-actions">
+      <button class="button" type="submit">Research this</button>
+      <span class="loading htmx-indicator" id="ask-loading-{{ brief.id }}">Researching approved sources…</span>
+    </div>
+    <p class="muted small">Answers are drafted by an AI research agent from approved sources and are not reviewed by an editor. {% if brief.vertical == 'finance' %}Finance questions are answered as news and education only — never investment advice.{% endif %}</p>
+  </form>
+
+  <div id="ask-answer-{{ brief.id }}" class="ask-answer-slot" aria-live="polite"></div>
+
+  {% if earlier %}
+  <section class="earlier-questions" aria-labelledby="earlier-h-{{ brief.id }}">
+    <h3 class="section-heading" id="earlier-h-{{ brief.id }}">Your earlier questions about this story</h3>
+    <ul class="headline-list">
+      {% for q in earlier %}
+      <li><a href="/questions/{{ q.id }}">{{ q.question }}</a> <span class="muted small">{{ q.created_at | timeago }}</span>{% if q.refused %} {{ 'advice_redirected' | badge }}{% endif %}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+</section>

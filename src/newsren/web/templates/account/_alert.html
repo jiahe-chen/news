@@ -1,0 +1,74 @@
+{#- One Follow This Story alert. Context: alert, next_url, optional status_message (after an htmx action). -#}
+{% import "_macros.html" as m with context %}
+{% set art = alert.article %}
+{% set unread = alert.read_at is none %}
+{% set first = alert.citations[0] if alert.citations else none %}
+<li class="me-alert{% if unread %} is-unread{% endif %}" id="alert-{{ alert.id }}">
+  <article aria-labelledby="alert-{{ alert.id }}-title">
+    <div class="card-kicker">
+      {% if unread %}<span class="badge badge-info me-new">New</span>{% endif %}
+      {{ alert.event_type | badge }}
+      {% if art %}{{ m.vertical_tag(art.vertical) }}{{ m.demo_badge(art.is_demo) }}{% endif %}
+      <span class="muted">Found <time datetime="{{ alert.created_at.isoformat() }}Z" title="{{ alert.created_at | fmt_dt_time }}">{{ alert.created_at | timeago }}</time></span>
+    </div>
+    <h3 class="me-alert-title" id="alert-{{ alert.id }}-title">
+      {%- if first and first.url -%}
+        <a href="{{ first.url }}" rel="noopener noreferrer" target="_blank">{{ alert.title }}</a>
+      {%- else -%}{{ alert.title }}{%- endif -%}
+    </h3>
+    <p class="me-alert-reason">{{ alert.reason }}</p>
+
+    {% if alert.matched_criteria %}
+    <div class="me-alert-criteria">
+      <span class="section-label" id="alert-{{ alert.id }}-crit">Your criteria it met</span>
+      <ul class="pill-list" aria-labelledby="alert-{{ alert.id }}-crit">
+        {% for c in alert.matched_criteria %}<li class="pill">{{ c }}</li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if alert.citations %}
+    <ul class="me-sources" aria-label="Source">
+      {% for c in alert.citations %}
+      <li>
+        <a href="{{ c.url }}" rel="noopener noreferrer" target="_blank">{{ c.publisher or c.title }}</a>
+        <span class="me-source-meta">{% if c.published_at %}published {{ c.published_at | fmt_dt }}{% endif %}{% if c.published_at and c.retrieved_at %} · {% endif %}{% if c.retrieved_at %}retrieved {{ c.retrieved_at | fmt_dt_time }}{% endif %}</span>
+        <span class="me-source-badges">{{ c.trust_tier | badge }} {{ c.doc_type | badge }}</span>
+        {% if c.snippet %}<blockquote class="me-snippet">{{ c.snippet }}</blockquote>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <p class="me-alert-follow">
+      {% if alert.follow %}From your follow “{{ alert.follow.question | truncate(150) }}”{% endif %}
+      {% if alert.story_id %}{% if alert.follow %} · {% endif %}<a href="/stories/{{ alert.story_id }}">See the story timeline</a>{% endif %}
+    </p>
+
+    <div class="me-actions">
+      <form class="me-feedback" method="post" action="/alerts/{{ alert.id }}/feedback"
+            hx-post="/alerts/{{ alert.id }}/feedback" hx-target="#alert-{{ alert.id }}" hx-swap="outerHTML">
+        {{ m.csrf_field() }}
+        <input type="hidden" name="next" value="{{ next_url or '/me' }}">
+        <span class="me-feedback-prompt" id="alert-{{ alert.id }}-fb">Was this alert useful?</span>
+        <button class="button button-small button-secondary" type="submit" name="feedback" value="useful"
+                aria-describedby="alert-{{ alert.id }}-fb" aria-pressed="{{ 'true' if alert.feedback == 'useful' else 'false' }}">Useful</button>
+        <button class="button button-small button-secondary" type="submit" name="feedback" value="unwanted"
+                aria-describedby="alert-{{ alert.id }}-fb" aria-pressed="{{ 'true' if alert.feedback == 'unwanted' else 'false' }}">Not useful</button>
+      </form>
+      <form class="inline-form" method="post" action="/alerts/{{ alert.id }}/read"
+            hx-post="/alerts/{{ alert.id }}/read" hx-target="#alert-{{ alert.id }}" hx-swap="outerHTML">
+        {{ m.csrf_field() }}
+        <input type="hidden" name="next" value="{{ next_url or '/me' }}">
+        {% if unread %}
+          <input type="hidden" name="read" value="1">
+          <button class="me-link-button" type="submit">Mark read<span class="sr-only">: {{ alert.title }}</span></button>
+        {% else %}
+          <input type="hidden" name="read" value="0">
+          <button class="me-link-button" type="submit">Mark unread<span class="sr-only">: {{ alert.title }}</span></button>
+        {% endif %}
+      </form>
+    </div>
+    {% if status_message %}<p class="me-status" role="status">{{ status_message }}</p>{% endif %}
+  </article>
+</li>

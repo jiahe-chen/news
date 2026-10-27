@@ -1,0 +1,131 @@
+{#- Shared pieces for the My Newsren pages. Import with: {% import "account/_account.html" as a with context %} -#}
+{% import "_macros.html" as m with context %}
+
+{% macro brief_now_form(label="Brief me now", secondary=True) -%}
+<form class="me-brief-now" method="post" action="/me/briefings/generate">
+  {{ m.csrf_field() }}
+  <button class="button{% if secondary %} button-secondary{% endif %}" type="submit">{{ label }}</button>
+  <span class="me-hint">The agent gathers published briefs and your alerts since your last briefing and explains what changed.</span>
+</form>
+{%- endmacro %}
+
+{% macro briefing_meta(view) -%}
+{% set b = view.briefing %}
+<p class="me-meta">
+  {% if b.period_start %}<span>Covers {{ b.period_start | fmt_dt }} – {{ b.period_end | fmt_dt }}</span>{% endif %}
+  <span>{{ view.item_total }} update{{ 's' if view.item_total != 1 else '' }}</span>
+  {% if b.delivered_at %}<span>Delivered {{ b.delivered_at | fmt_dt_time }}{% if b.delivery_channel == 'email' %} on the web and by email{% else %} on the web{% endif %}</span>{% endif %}
+  {% if view.audience %}<span>Written for a{{ 'n' if view.audience == 'educator' else '' }} {{ view.audience }}{% if view.depth %}, {{ view.depth }} depth{% endif %}</span>{% endif %}
+</p>
+{%- endmacro %}
+
+{#- Latest briefing summary card on the dashboard. -#}
+{% macro briefing_preview(view, limit=6) -%}
+{% set b = view.briefing %}
+<article class="me-briefing-card panel" aria-labelledby="latest-briefing-title">
+  <div class="card-kicker">
+    {% if not b.opened_at %}<span class="badge badge-info">New</span>{% endif %}
+    <span class="section-label me-inline-label">Latest briefing</span>
+    {{ m.demo_badge(view.is_demo) }}
+    <span class="muted">{{ b.generated_at | timeago }}</span>
+  </div>
+  <h3 class="card-headline me-briefing-card-title" id="latest-briefing-title"><a href="/me/briefings/{{ b.id }}">{{ view.content.title }}</a></h3>
+  {{ briefing_meta(view) }}
+  {% if view.content.intro %}<p class="card-summary">{{ view.content.intro }}</p>{% endif %}
+  {% set ns = namespace(shown=0) %}
+  {% for section in view.sections if ns.shown < limit %}
+  <div class="me-preview-section">
+    <h4 class="me-preview-heading">{{ section.heading }}</h4>
+    <ul class="me-preview-list">
+      {% for row in section.rows[:2] if ns.shown < limit %}
+      {% set ns.shown = ns.shown + 1 %}
+      <li>
+        {% if row.vertical %}{{ m.vertical_tag(row.vertical) }} {% endif %}
+        {% if row.brief_url %}<a href="{{ row.brief_url }}">{{ row.item.headline }}</a>
+        {% elif row.story %}<a href="/stories/{{ row.story.id }}">{{ row.item.headline }}</a>
+        {% else %}{{ row.item.headline }}{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+  <p class="me-card-actions">
+    <a class="button" href="/me/briefings/{{ b.id }}">Read your briefing</a>
+    <span class="muted">{{ view.citations | length }} source{{ 's' if view.citations | length != 1 else '' }} cited</span>
+  </p>
+  {{ m.generated_note(b.generated_by, b.generated_at) }}
+</article>
+{%- endmacro %}
+
+{#- How Follow This Story / My Newsren monitoring works (plan §2.6, §6). -#}
+{% macro how_monitoring() -%}
+<section class="panel me-how" aria-labelledby="how-heading" id="how">
+  <h2 class="panel-title" id="how-heading">How monitoring works</h2>
+  <ul class="me-how-list">
+    <li><strong>Only material developments that meet your criteria.</strong> The agent alerts you when a new evaluation, filing, study, decision or correction matches what you asked for — not every time another article appears. Near-duplicate copies never alert twice.</li>
+    <li><strong>Opinion is excluded unless you opt in.</strong> Columns and commentary don't trigger alerts unless your question asks for them or you tick “Include opinion”.</li>
+    <li><strong>Approved sources only.</strong> The agent revisits <a href="/sources">approved sources</a> — regulators, filings, research indexes and vetted newsrooms — never the open web.</li>
+    <li><strong>Automatic delivery is limited to low-risk personal briefings.</strong> Your briefing and alerts are the only things sent automatically; published briefs pass editorial review first, and every finance story has a human editor.</li>
+    <li><strong>New follows look forward.</strong> A follow alerts on developments from now on, and you can stop it at any time; alerts it already found are kept.</li>
+  </ul>
+</section>
+{%- endmacro %}
+
+{#- "Follow a question" form (posts to /follows; criteria are optional and derived from the wording when left alone). -#}
+{% macro follow_form(event_choices, next_url="/me#follows", max_length=2000, open_criteria=False) -%}
+<form class="form me-form me-follow-form" method="post" action="/follows">
+  {{ m.csrf_field() }}
+  <input type="hidden" name="next" value="{{ next_url }}">
+  <div class="me-field">
+    <label for="follow-question">What should the agent watch for?</label>
+    <span class="me-hint" id="follow-question-hint">Write it in your own words. “Not …” phrases exclude things, e.g. “not opinion pieces”.</span>
+    <textarea id="follow-question" name="question" required maxlength="{{ max_length }}" rows="3" aria-describedby="follow-question-hint"
+              placeholder="e.g. Tell me when an independent benchmark is published for Lumen-4, not opinion pieces."></textarea>
+  </div>
+  <div class="me-form-row">
+    <div class="me-field">
+      <label for="follow-target">It's about</label>
+      <select id="follow-target" name="target_type">
+        <option value="topic">A topic or question</option>
+        <option value="company">A company or organization</option>
+        <option value="sector">A sector</option>
+      </select>
+    </div>
+    <div class="me-field">
+      <label for="follow-entity">Organization <span class="me-optional">(optional)</span></label>
+      <input type="text" id="follow-entity" name="entity_name" maxlength="200" autocomplete="off">
+    </div>
+    <div class="me-field">
+      <label for="follow-vertical">Section</label>
+      <select id="follow-vertical" name="vertical">
+        <option value="">Any section</option>
+        {% for v in VERTICALS %}<option value="{{ v.slug }}">{{ v.label }}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+  <details class="me-criteria-details"{% if open_criteria %} open{% endif %}>
+    <summary>Set the alert criteria yourself <span class="me-optional">(optional)</span></summary>
+    <p class="me-hint">Leave these alone and the agent derives criteria from your wording — “independent”, “peer-reviewed”, “filing”, “not opinion” and so on. You'll see the criteria it chose under “What you're following”.</p>
+    <fieldset>
+      <legend>Alert me only for these kinds of developments</legend>
+      <div class="me-check-grid">
+        {% for value, text in event_choices %}
+        <label class="checkbox"><input type="checkbox" name="event_types" value="{{ value }}"> {{ text }}</label>
+        {% endfor %}
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Source requirements</legend>
+      <label class="checkbox"><input type="checkbox" name="require_independent" value="1"> Require an independent (non-vendor) source</label>
+      <label class="checkbox"><input type="checkbox" name="require_primary" value="1"> Require a primary source (filing, regulator, paper, official release)</label>
+      <label class="checkbox"><input type="checkbox" name="include_opinion" value="1"> Include opinion and commentary</label>
+    </fieldset>
+    <div class="me-field">
+      <label for="follow-custom">Extra condition <span class="me-optional">(optional)</span></label>
+      <span class="me-hint" id="follow-custom-hint">Checked by the monitoring agent for each candidate, e.g. “only if the benchmark uses problems written after the training cutoff”.</span>
+      <input type="text" id="follow-custom" name="custom" maxlength="500" aria-describedby="follow-custom-hint">
+    </div>
+  </details>
+  <div><button class="button" type="submit">Follow</button></div>
+</form>
+{%- endmacro %}

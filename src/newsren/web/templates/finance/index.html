@@ -1,0 +1,154 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block title %}Finance — The Newsren{% endblock %}
+{% block description %}Finance news intelligence: earnings, filings, funding rounds, AI in finance, and regulation — sourced facts, labelled forecasts, and no investment advice.{% endblock %}
+{% block finance_content %}
+<header class="fin-intro">
+  <div>
+    <p class="kicker fin-kicker">Finance</p>
+    <h1 class="page-title">From market headlines to evidence-based understanding</h1>
+    <p class="lede">The Newsren explains what a development means for investors, founders, and finance professionals, separates reported facts from forecasts, and teaches the underlying concepts. Every number links to the filing, release, or announcement it came from.</p>
+    {{ f.data_note() }}
+    {% if demo %}
+    <p class="fin-demo-note" role="note"><strong>Fictional demo content.</strong> Items marked {{ m.demo_badge(true) }} use invented companies, investors, and regulators to show how the finance section works.</p>
+    {% endif %}
+  </div>
+  <div class="panel fin-scope">
+    <h2 class="panel-title">What we track</h2>
+    <ul class="fin-list">
+      {% for line in tracks %}<li>{{ line }}</li>{% endfor %}
+    </ul>
+    <h2 class="panel-title">What we never do</h2>
+    <ul class="fin-list fin-never">
+      {% for line in never %}<li>{{ line }}</li>{% endfor %}
+    </ul>
+    <p class="muted fin-small">Every finance story is reviewed by a human editor before publication.</p>
+  </div>
+</header>
+
+<div class="layout-main-side fin-front">
+  <div class="fin-front-main">
+  <section aria-labelledby="fin-briefs-heading">
+    <h2 class="section-heading" id="fin-briefs-heading">Latest finance briefs</h2>
+    {% if in_review %}
+    <p class="fin-editor-note" role="status"><strong>Editor view:</strong> {{ in_review }} finance brief{{ 's' if in_review != 1 else '' }} awaiting human review. Readers see them only after approval — <a href="/editor">open the editor desk</a>.</p>
+    {% endif %}
+    {% if briefs %}
+      <div class="grid grid-2 fin-brief-grid">
+        {% for brief in briefs %}{{ f.brief_card(brief) }}{% endfor %}
+      </div>
+    {% else %}
+      {{ m.empty_state("No finance briefs published yet", "Every finance brief goes to a human editor before publication. Meanwhile, the trackers below show the sourced data the briefs are built from.") }}
+    {% endif %}
+  </section>
+
+  <section aria-labelledby="fin-modules-heading" class="fin-modules">
+    <h2 class="section-heading" id="fin-modules-heading">Finance trackers and explainers</h2>
+    <div class="grid grid-2">
+      <article class="fin-module">
+        <h3><a href="/finance/earnings">Earnings Decoder</a></h3>
+        <p class="fin-module-value">Compares reported results with company guidance and prior quarters, quoting the filing for every number.</p>
+        {% if latest_report %}
+        <p class="fin-module-stat"><strong>{{ report_count }}</strong> report{{ 's' if report_count != 1 else '' }} · latest: <a href="/finance/earnings/{{ latest_report.report_id }}">{{ latest_report.company }} {{ latest_report.form }}, {{ latest_report.fiscal_label }}</a></p>
+        {% else %}
+        <p class="fin-module-stat muted">No reports yet — built from SEC EDGAR filings.</p>
+        {% endif %}
+      </article>
+      <article class="fin-module">
+        <h3><a href="/finance/funding">Funding Round Tracker</a></h3>
+        <p class="fin-module-value">Venture rounds by sector, stage, and investor from public announcements — trends, never a ranking of startups as investments.</p>
+        {% set fund = overview.funding %}
+        <p class="fin-module-stat"><strong>{{ fund.total_rounds }}</strong> round{{ 's' if fund.total_rounds != 1 else '' }} in the last {{ fund.window_days }} days{% if fund.rounds_with_disclosed_usd %} · {{ fund.total_disclosed_usd | money }} disclosed in US dollars{% endif %}</p>
+      </article>
+      <article class="fin-module">
+        <h3><a href="/finance/ai-reality-check">AI-in-Finance Reality Check</a></h3>
+        <p class="fin-module-value">Separates firms' AI announcements and backtests from documented live deployments and regulatory findings.</p>
+        <ul class="fin-mini-counts">
+          {% for g in claim_counts %}<li>{{ g.classification | badge }} <span>{{ g.count }}</span></li>{% endfor %}
+        </ul>
+      </article>
+      <article class="fin-module">
+        <h3><a href="/finance/regulation">Regulation Watch</a></h3>
+        <p class="fin-module-value">New SEC, FINRA, and central-bank actions: who is affected, what changes, and when.</p>
+        {% if regulation %}
+        <ul class="fin-mini-list">
+          {% for item in regulation %}<li><span class="badge">{{ item.action_label }}</span> {{ item.title }} {{ m.demo_badge(item.is_demo) }}</li>{% endfor %}
+        </ul>
+        {% else %}
+        <p class="fin-module-stat muted">No finance regulatory actions in the last {{ regulation_days }} days.</p>
+        {% endif %}
+      </article>
+      <article class="fin-module">
+        <h3><a href="/finance/concepts">Finance concepts for learners</a></h3>
+        <p class="fin-module-value">Explainers on backtesting, overfitting, the Sharpe ratio, drawdown, dilution, term sheets, and more — linked to the stories that use them.</p>
+        <ul class="pill-list">
+          {% for slug in ['backtesting', 'overfitting', 'sharpe-ratio', 'maximum-drawdown', 'dilution', 'term-sheet'] %}
+            {% set c = (overview.concepts | selectattr('slug', 'equalto', slug) | first) %}
+            {% if c %}<li><a class="pill" href="/finance/concepts/{{ c.slug }}">{{ c.term }}</a></li>{% endif %}
+          {% endfor %}
+        </ul>
+      </article>
+      <article class="fin-module">
+        <h3><a href="#follow">Follow a company or sector</a></h3>
+        <p class="fin-module-value">Alerts on material events — filings, earnings, funding rounds, enforcement actions — not price moves.</p>
+        <p class="fin-module-stat muted">{% if current_user %}Set one up with the follow form on this page.{% else %}<a href="{{ login_url }}">Sign in</a> to set one up.{% endif %}</p>
+      </article>
+    </div>
+  </section>
+  </div>
+
+  <aside aria-labelledby="fin-follow-heading" id="follow" class="fin-follow">
+    <div class="panel">
+      <h2 class="panel-title" id="fin-follow-heading">Follow a company or sector</h2>
+      <p class="fin-small">Get an alert when something material happens — a new filing, an earnings release, a funding round, or an enforcement action. Not price moves: The Newsren does not track or alert on market prices.</p>
+      {% if current_user %}
+      <form class="form fin-follow-form" method="post" action="/follows">
+        {{ m.csrf_field() }}
+        <input type="hidden" name="vertical" value="finance">
+        <input type="hidden" name="next" value="/finance#follow">
+        <fieldset>
+          <legend>Follow a</legend>
+          <label class="checkbox"><input type="radio" name="target_type" value="company" checked> Company</label>
+          <label class="checkbox"><input type="radio" name="target_type" value="sector"> Sector</label>
+        </fieldset>
+        <label for="fin-follow-entity">Company or sector name
+          <span class="hint">For example “Corvane Semiconductor” or “Semiconductors”.</span>
+          <input type="text" id="fin-follow-entity" name="entity_name" required maxlength="200" autocomplete="off">
+        </label>
+        <fieldset>
+          <legend>Alert me about</legend>
+          {% for value, text in follow_events %}
+          <label class="checkbox"><input type="checkbox" name="event_types" value="{{ value }}" checked> {{ text }}</label>
+          {% endfor %}
+        </fieldset>
+        <label for="fin-follow-question">What should the agent watch for?
+          <span class="hint">Edit in your own words; “not …” phrases exclude things.</span>
+          <textarea id="fin-follow-question" name="question" rows="4" required maxlength="2000">{{ follow_question }}</textarea>
+        </label>
+        <div><button class="button" type="submit">Follow</button></div>
+        <p class="hint muted">Manage follows and alerts in <a href="/me">My Newsren</a>.</p>
+      </form>
+      {% else %}
+      <p><a class="button" href="{{ login_url }}">Sign in to follow</a> <a class="button button-secondary" href="/register">Create an account</a></p>
+      <p class="hint muted fin-small">Follows are saved to your My Newsren account so you can rate each alert as useful or unwanted.</p>
+      {% endif %}
+    </div>
+  </aside>
+</div>
+
+
+<section class="agent-entry fin-agent" aria-labelledby="fin-agent-heading">
+  <h2 id="fin-agent-heading">Investigate a finance question</h2>
+  <p>Ask Newsren searches approved sources and filings, and reports what it could and could not verify. It explains; it does not give investment advice.</p>
+  <form method="get" action="/ask" data-ask-form>
+    <label class="sr-only" for="fin-agent-question">Your finance question for Ask Newsren</label>
+    <input type="text" id="fin-agent-question" name="question" placeholder="Ask about a filing, a funding round, or a concept" required maxlength="500">
+    <button class="button" type="submit">Investigate</button>
+    <div class="agent-prompts" role="group" aria-label="Suggested questions">
+      <span class="agent-prompts-label">Try:</span>
+      {% for prompt in prompts %}<button type="button" data-prompt="{{ prompt }}">{{ prompt }}</button>{% endfor %}
+    </div>
+  </form>
+</section>
+{% endblock %}

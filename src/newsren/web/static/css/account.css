@@ -1,0 +1,210 @@
+/* My Newsren (account pages): dashboard, briefings, alerts, follows.
+   Builds on newsren.css tokens; every class here is prefixed "me-". */
+
+/* ---------- Page header ---------- */
+.me-header { margin-bottom: 4px; }
+.me-header .lede { max-width: 780px; }
+.me-breadcrumb { font-family: var(--sans); font-size: 13px; margin-bottom: 12px; }
+.me-breadcrumb ol { list-style: none; display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; color: var(--muted); }
+.me-breadcrumb li + li::before { content: "›"; margin-right: 4px; color: var(--muted); }
+
+.me-stats {
+  list-style: none; padding: 0; margin: 4px 0 8px;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;
+}
+.me-stats .stat { display: grid; gap: 2px; height: 100%; text-decoration: none; color: var(--ink); padding: 10px 14px; }
+.me-stats .stat:hover .stat-label { text-decoration: underline; }
+.me-stats .stat-value { font-size: 26px; }
+
+.me-layout { margin-top: 8px; }
+.me-main > section:first-child > .section-heading,
+.me-side > :first-child { margin-top: 24px; }
+.me-side { min-width: 0; }
+.me-main { min-width: 0; }
+
+.me-heading-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.me-heading-row a { font-size: 12px; letter-spacing: .04em; text-transform: none; font-weight: 600; }
+.me-count {
+  display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 999px; font-size: 11px;
+  letter-spacing: .04em; background: var(--accent); color: var(--accent-ink); vertical-align: 1px;
+}
+
+/* ---------- Shared text ---------- */
+.me-hint { display: block; font-family: var(--sans); font-size: 13.5px; color: var(--muted); margin: 0 0 8px; }
+.me-optional { font-weight: 400; color: var(--muted); font-size: 13px; }
+.me-meta {
+  display: flex; flex-wrap: wrap; gap: 2px 14px; font-family: var(--sans); font-size: 13px; color: var(--muted); margin: 0 0 10px;
+}
+.me-inline-label { margin: 0; }
+.me-section-intro { max-width: 680px; }
+.me-status {
+  font-family: var(--sans); font-size: 14px; background: var(--ok-bg); color: var(--ok-ink);
+  border-radius: var(--radius); padding: 8px 12px; margin: 10px 0 0;
+}
+.me-link-button {
+  background: none; border: 0; padding: 2px 0; font: inherit; font-family: var(--sans); font-size: 14px;
+  color: var(--link); text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+}
+.me-link-button:hover { text-decoration-thickness: 2px; }
+
+/* newsren.css's `button.button` outranks `.button-secondary`, so secondary <button>s rendered as primary. */
+button.button.button-secondary { background: transparent; color: var(--ink); border-color: var(--rule-strong); }
+button.button.button-secondary:hover { background: var(--paper-raised); filter: none; }
+
+/* ---------- Forms ---------- */
+.me-form { max-width: none; }
+.me-field { display: grid; gap: 4px; min-width: 0; }
+.me-field > label, .form .me-field > label { display: block; font-weight: 600; }
+.me-field .me-hint { margin: 0; }
+.me-form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.me-form fieldset { display: grid; gap: 6px; margin: 0; min-width: 0; }
+.me-choice {
+  display: grid !important; grid-template-columns: auto minmax(0, 1fr); gap: 0 8px; align-items: baseline;
+  font-weight: 400 !important; padding: 3px 0; cursor: pointer;
+}
+.me-choice input { margin: 0; }
+.me-choice-label { font-weight: 600; }
+.me-choice-desc { grid-column: 2; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.me-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px 14px; }
+.me-criteria-details { border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 10px; }
+.me-criteria-details[open] { padding-bottom: 14px; }
+.me-criteria-details > summary { cursor: pointer; font-weight: 600; }
+.me-criteria-details > * + * { margin-top: 10px; }
+.me-rating { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+
+/* ---------- Briefing ---------- */
+.me-briefing-card { margin-bottom: 12px; }
+.me-briefing-card-title { font-size: 24px; }
+.me-preview-section { margin: 10px 0 0; }
+.me-preview-heading {
+  font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 4px;
+}
+.me-preview-list { list-style: none; padding: 0; margin: 0; }
+.me-preview-list li { padding: 6px 0; border-bottom: 1px dotted var(--rule); font-size: 16.5px; line-height: 1.35; }
+.me-preview-list li:last-child { border-bottom: 0; }
+.me-preview-list a { color: var(--ink); text-decoration: none; font-weight: 600; }
+.me-preview-list a:hover { text-decoration: underline; }
+.me-preview-list .vertical-tag { margin-right: 4px; }
+.me-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 14px 0 6px; font-family: var(--sans); font-size: 14px; }
+.me-row-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; font-family: var(--sans); font-size: 14px; margin: 12px 0 0; }
+.me-brief-now { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0; }
+.me-brief-now .me-hint { margin: 0; flex: 1 1 240px; max-width: 460px; }
+
+.me-briefing-header { border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 18px; }
+.me-briefing-header .page-title { font-size: clamp(27px, 3.4vw, 38px); }
+.me-briefing-main { min-width: 0; }
+.me-briefing-section .section-heading { margin-top: 26px; }
+.me-item { padding: 12px 0 14px; border-bottom: 1px solid var(--rule); }
+.me-item:last-child { border-bottom: 0; }
+.me-item-headline { font-size: 22px; margin: 2px 0 8px; }
+.me-item-headline a { color: var(--ink); text-decoration: none; }
+.me-item-headline a:hover { text-decoration: underline; }
+.me-item-body { margin: 0; }
+.me-item-body dt {
+  font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
+.me-item-body dd { margin: 2px 0 10px; font-size: 17px; color: var(--ink-soft); overflow-wrap: anywhere; }
+.me-item-links { display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--sans); font-size: 14px; margin: 0; }
+.me-closing {
+  margin-top: 24px; background: var(--neutral-bg); color: var(--neutral-ink); border-radius: var(--radius);
+  padding: 12px 16px; font-family: var(--sans); font-size: 14.5px;
+}
+.me-closing p { margin: 0; }
+.me-feedback-panel { margin-top: 24px; }
+.me-feedback-form { display: grid; gap: 10px; font-family: var(--sans); font-size: 15px; }
+.me-feedback-form fieldset { display: grid; gap: 4px; margin: 0; }
+.me-next-list { font-family: var(--sans); font-size: 15px; margin-bottom: 14px; }
+
+.me-briefing-list { list-style: none; padding: 0; margin: 18px 0 0; }
+.me-briefing-row { border-top: 1px solid var(--rule); padding: 14px 0; }
+.me-briefing-row .card-headline { font-size: 22px; }
+
+/* ---------- Alerts ---------- */
+.me-alert-list { list-style: none; padding: 0; margin: 0; }
+.me-alert { border-top: 1px solid var(--rule); padding: 14px 0 16px; }
+.me-alert.is-unread { box-shadow: inset 4px 0 0 var(--accent); padding-left: 16px; }
+.me-alert-title { font-size: 20px; margin: 4px 0 6px; overflow-wrap: anywhere; }
+.me-alert-title a { color: var(--ink); text-decoration: none; }
+.me-alert-title a:hover { text-decoration: underline; }
+.me-alert-reason { font-size: 16.5px; color: var(--ink-soft); margin: 0 0 10px; }
+.me-alert-criteria { margin: 0 0 10px; }
+.me-alert-criteria .section-label { display: block; margin-bottom: 4px; }
+.me-alert-criteria .pill { border-radius: 12px; line-height: 1.4; }
+.me-sources { list-style: none; padding: 0; margin: 0 0 8px; font-family: var(--sans); font-size: 14px; }
+.me-sources li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.me-source-meta { color: var(--muted); font-size: 13px; }
+.me-source-badges { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.me-snippet { flex-basis: 100%; font-family: var(--serif); font-size: 15px; margin: 6px 0 0; }
+.me-alert-follow { font-family: var(--sans); font-size: 13.5px; color: var(--muted); margin: 0 0 4px; }
+.me-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; font-family: var(--sans); font-size: 14px; margin-top: 8px; }
+.me-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; }
+.me-feedback-prompt { color: var(--ink-soft); margin-right: 2px; }
+.me-feedback button.button[aria-pressed="true"],
+.me-feedback button.button[aria-pressed="true"]:hover { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.me-new { letter-spacing: .04em; }
+.me-alerts-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; margin: 16px 0 6px; border-bottom: 2px solid var(--rule-strong); }
+.me-filter { list-style: none; display: flex; gap: 0; margin: 0; padding: 0; font-family: var(--sans); font-size: 15px; }
+.me-filter a {
+  display: inline-block; padding: 8px 14px; margin-bottom: -2px; font-weight: 700; color: var(--muted);
+  text-decoration: none; border-bottom: 3px solid transparent;
+}
+.me-filter a:hover { color: var(--ink); }
+.me-filter a.is-active { color: var(--ink); border-bottom-color: var(--accent); }
+.me-alerts-bar .me-meta { margin: 0; }
+
+/* ---------- Follows ---------- */
+.me-follow-list { list-style: none; padding: 0; margin: 0 0 12px; }
+.me-follow { border-top: 1px solid var(--rule); padding: 14px 0; }
+.me-follow.is-stopped { padding: 10px 0; }
+.me-target { font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .06em; font-size: 11px; }
+.me-follow-question { font-family: var(--serif); font-size: 19px; line-height: 1.35; margin: 0 0 6px; overflow-wrap: anywhere; }
+.me-follow-subject { font-family: var(--sans); font-size: 14px; margin: 0 0 8px; }
+.me-follow .section-label { margin-top: 8px; }
+.me-criteria { list-style: none; padding: 0; margin: 0 0 6px; font-family: var(--sans); font-size: 14px; }
+.me-criteria li { position: relative; padding: 2px 0 2px 16px; }
+.me-criteria li::before { content: ""; position: absolute; left: 3px; top: .72em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.me-keywords { font-family: var(--sans); font-size: 13px; margin: 0 0 6px; overflow-wrap: anywhere; }
+.me-follow-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; }
+.me-follow-meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-family: var(--sans); font-size: 13px; color: var(--muted); margin: 0; }
+.me-follow-example { margin-bottom: 12px; }
+.me-follow-example blockquote { font-size: 17px; margin: 0 0 8px; }
+.me-new-follow > summary { font-size: 18px; }
+.me-follow-form { padding-top: 4px; }
+
+/* ---------- Interests ---------- */
+.me-interest-group { margin-bottom: 4px; }
+.me-subhead { font-family: var(--sans); font-size: 14px; font-weight: 700; margin: 14px 0 4px; }
+.me-interest-list { list-style: none; padding: 0; margin: 0; }
+.me-interest-list li {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+  padding: 6px 0; border-bottom: 1px dotted var(--rule); font-family: var(--sans); font-size: 15px;
+}
+.me-interest-value { min-width: 0; overflow-wrap: anywhere; }
+.me-interest-value .vertical-tag { margin-left: 4px; }
+.me-interest-list .me-link-button { font-size: 13px; flex: none; }
+.me-none { font-family: var(--sans); font-size: 13.5px; color: var(--muted); margin: 0; }
+.me-interest-form { margin-top: 16px; padding-top: 4px; border-top: 1px solid var(--rule); gap: 10px; }
+.me-interest-form .me-subhead { margin-top: 10px; }
+
+/* ---------- How monitoring works ---------- */
+.me-how { font-family: var(--sans); }
+.me-how-list { margin: 0; padding-left: 18px; font-size: 14px; color: var(--ink-soft); }
+.me-how-list li { margin-bottom: 8px; }
+.me-how-list li:last-child { margin-bottom: 0; }
+.me-how-list strong { color: var(--ink); }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 900px) {
+  .me-side { border-top: 0; }
+}
+@media (max-width: 620px) {
+  .me-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .me-stats .stat { padding: 8px 12px; }
+  .me-stats .stat-value { font-size: 22px; }
+  .me-alert.is-unread { padding-left: 12px; }
+  .me-item-headline { font-size: 20px; }
+  .me-briefing-card { padding: 14px 14px; }
+  .me-briefing-card-title { font-size: 21px; }
+  .me-follow-foot { align-items: flex-start; }
+}

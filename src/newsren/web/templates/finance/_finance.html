@@ -1,0 +1,109 @@
+{# Finance section macros. Import with:
+   {% import "finance/_finance.html" as f with context %}
+   (with context: the macros use plain(), DATA_NOTE and page_generated_at from the finance routes). #}
+{% import "_macros.html" as m with context %}
+
+{# The section's own navigation; aria-current marks the page. #}
+{% macro section_nav(items) -%}
+<nav class="fin-nav" aria-label="Finance section">
+  <ul>
+    {% for item in items %}
+    <li><a href="{{ item.url }}"{% if item.active %} class="is-active" aria-current="page"{% endif %}>{{ item.label }}</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+{%- endmacro %}
+
+{# Where the figures come from, how fresh they are, and what they never include. #}
+{% macro data_note(extra="", extra2="") -%}
+<aside class="fin-data-note" role="note" aria-label="About this data">
+  <p><strong>About the data.</strong> {{ DATA_NOTE }}{% if extra %} {{ extra }}{% endif %}</p>
+  {% if extra2 %}<p>{{ extra2 }}</p>{% endif %}
+  <p class="fin-data-time">Page generated <time datetime="{{ page_generated_at.isoformat() }}Z">{{ page_generated_at | fmt_dt_time }}</time> from public sources only (SEC EDGAR, regulators' releases, company announcements, approved news sources). No live market prices.</p>
+</aside>
+{%- endmacro %}
+
+{# A published brief teaser (citation markers stripped from the summary). #}
+{% macro brief_card(brief, length=220) -%}
+<article class="brief-card">
+  <div class="card-kicker">
+    {{ m.vertical_tag(brief.vertical) }}
+    {% if brief.kind and brief.kind != 'story' %}<span class="badge">{{ brief.kind | label }} brief</span>{% endif %}
+    {{ m.demo_badge(brief.is_demo) }}
+    <span class="muted">{{ (brief.published_at or brief.generated_at) | timeago }}</span>
+  </div>
+  <h3 class="card-headline"><a href="/briefs/{{ brief.id }}">{{ brief.headline }}</a></h3>
+  <p class="card-summary">{{ plain(brief.summary) | truncate(length) }}</p>
+  <p class="card-meta muted">{{ brief.citations | length }} source{{ 's' if brief.citations | length != 1 else '' }} · reviewed by an editor before publication{% if brief.story_id %} · <a href="/stories/{{ brief.story_id }}">story timeline</a>{% endif %}</p>
+</article>
+{%- endmacro %}
+
+{# A percentage change with direction styling and a screen-reader word; no verdicts. #}
+{% macro change(c, label="") -%}
+{%- if c -%}
+<span class="fin-change change-{{ c.direction }}"><span aria-hidden="true">{{ '▲' if c.direction == 'up' else '▼' if c.direction == 'down' else '■' }}</span> {{ c.text }}<span class="sr-only"> {{ c.word }}{% if label %} versus {{ label }}{% endif %}</span></span>
+{%- else -%}
+<span class="muted" title="Not meaningful when either figure is a loss or zero">n/m</span>
+{%- endif -%}
+{%- endmacro %}
+
+{# Citations with ids unique on the page (several items each have a "c1"). #}
+{% macro sources(citations, prefix, heading="Sources") -%}
+{% if citations %}
+<div class="fin-sources">
+  <p class="section-label">{{ heading }}</p>
+  <ol class="source-list">
+    {% for c in citations %}
+    <li id="{{ prefix }}-{{ c.id }}">
+      {% if c.url %}<a href="{{ c.url }}" rel="noopener noreferrer" target="_blank">{{ c.title }}<span class="sr-only"> (opens the original source)</span></a>{% else %}{{ c.title }}{% endif %}
+      <span class="source-meta">{{ c.publisher }}{% if c.published_at %} · published {{ c.published_at | fmt_dt }}{% endif %}{% if c.retrieved_at %} · retrieved {{ c.retrieved_at | fmt_dt_time }}{% endif %}</span>
+      {{ c.trust_tier | badge }} {{ c.doc_type | badge }}
+      {% if c.snippet %}<blockquote class="source-snippet">{{ c.snippet }}</blockquote>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endif %}
+{%- endmacro %}
+
+{# Related concept chips. #}
+{% macro concept_pills(concepts, heading="Concepts behind this page") -%}
+{% if concepts %}
+<section class="fin-concepts" aria-label="{{ heading }}">
+  <h2 class="section-label">{{ heading }}</h2>
+  <ul class="pill-list">
+    {% for c in concepts %}<li><a class="pill" href="/finance/concepts/{{ c.slug }}" title="{{ c.short }}">{{ c.term }}</a></li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{%- endmacro %}
+
+{# One AI-in-finance claim with its labels, performance details, caveats and source. #}
+{% macro claim_card(c) -%}
+<article class="fin-claim" aria-labelledby="claim-{{ c.id }}-firm">
+  <div class="card-kicker">
+    <span class="badge badge-{{ c.classification }}">{{ c.classification_label }}</span>
+    {% if c.performance_label and c.performance_label != c.classification %}{{ c.performance_label | badge }}{% endif %}
+    <span class="pill">{{ c.area_label }}</span>
+    {% if c.is_seed %}<span class="badge badge-seed" title="Documented in The Newsren plan's research table (October 2026), with the plan's source">From the plan's research table</span>{% else %}<span class="badge badge-auto" title="Classified by The Newsren's AI-in-finance classifier from an article in an approved source">Auto-classified from a news report</span>{% endif %}
+    {{ m.demo_badge(c.is_demo) }}
+  </div>
+  <h4 class="fin-claim-firm" id="claim-{{ c.id }}-firm">{{ c.firm }}</h4>
+  <p class="fin-claim-text">{{ c.claim_text }}</p>
+  {% if c.performance %}
+  <dl class="fin-perf">
+    <div><dt>Result type</dt><dd>{{ c.performance_label | label if c.performance_label else 'Backtest (no live record cited)' }}</dd></div>
+    <div><dt>Period</dt><dd>{{ c.period or 'Not stated in the source' }}</dd></div>
+    <div><dt>Benchmark</dt><dd>{{ c.benchmark or 'Not stated in the source' }}</dd></div>
+    <div><dt>Costs assumed</dt><dd>{{ c.costs_assumed or 'Not stated in the source' }}</dd></div>
+  </dl>
+  {% endif %}
+  {% if c.authors_caveats %}<p class="fin-caveat"><strong>What the authors cautioned:</strong> {{ c.authors_caveats }}</p>{% endif %}
+  {% if c.evidence_note %}<p class="fin-evidence"><strong>Evidence note:</strong> {{ c.evidence_note }}</p>{% endif %}
+  <p class="source-meta">
+    Source: {% if c.source_url %}<a href="{{ c.source_url }}" rel="noopener noreferrer" target="_blank">{{ c.source_title }}<span class="sr-only"> (opens the original source)</span></a>{% else %}{{ c.source_title }}{% endif %}
+    · {% if c.published_at %}published {{ c.published_at | fmt_dt }}{% else %}publication date not given{% endif %}
+    · retrieved {{ c.retrieved_at | fmt_dt_time }}
+  </p>
+</article>
+{%- endmacro %}

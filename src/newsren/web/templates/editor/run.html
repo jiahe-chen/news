@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Agent run #{{ run.id }} — Editor desk — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+<p class="ed-back"><a href="/editor/runs">← All agent runs</a></p>
+
+<header class="ed-header">
+  <p class="kicker">Agent run #{{ run.id }} · {{ run.agent }}</p>
+  <h1 class="page-title ed-run-title">{{ run.task }}</h1>
+  <p>{{ e.run_badge(run.status) }} <span class="ed-small muted">{{ status_help.get(run.status, '') }}</span></p>
+</header>
+
+<div class="layout-main-side">
+  <div>
+    <section aria-labelledby="trace-heading">
+      <h2 class="section-heading" id="trace-heading">Tool trace</h2>
+      {% if run.trace %}
+      <ol class="ed-trace">
+        {% for t in run.trace %}
+        <li class="{% if t.is_error %}is-error{% endif %}">
+          <p><strong>{{ t.tool or 'step' }}</strong>{% if t.is_error %} <span class="badge badge-blocker">Error</span>{% endif %}</p>
+          {% if t.input %}<p class="ed-small"><span class="muted">Input:</span> <code>{{ t.input | tojson }}</code></p>{% endif %}
+          {% if t.result_preview %}<p class="ed-small ed-preview">{{ t.result_preview }}</p>{% endif %}
+          {% if t.citations %}
+          <ul class="ed-small plain-list">{% for url in t.citations %}<li><a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ url | truncate(90) }}</a></li>{% endfor %}</ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="ed-small muted">This run made no tool calls (structured tasks receive their evidence pack up front).</p>
+      {% endif %}
+      {% if run.error %}
+      <h2 class="section-heading">Error</h2>
+      <p class="ed-error-text">{{ run.error }}</p>
+      {% endif %}
+    </section>
+    {% if briefs %}
+    <section aria-labelledby="briefs-heading">
+      <h2 class="section-heading" id="briefs-heading">Briefs from this run</h2>
+      <ul class="headline-list">
+        {% for b in briefs %}<li>{{ e.status_badge(b.status) }} <a href="/editor/briefs/{{ b.id }}">{{ b.headline }}</a></li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </div>
+  <aside>
+    <section class="panel" aria-labelledby="facts-heading">
+      <h2 class="panel-title" id="facts-heading">Run record</h2>
+      <dl class="ed-dl">
+        <dt>Engine</dt><dd>{{ run.provider }}{% if run.model %} · {{ run.model }}{% endif %}</dd>
+        <dt>Subject</dt><dd>{% if run.subject_type == 'story' and run.subject_id %}<a href="/stories/{{ run.subject_id }}">story #{{ run.subject_id }}</a>{% elif run.subject_type == 'brief' and run.subject_id %}<a href="/editor/briefs/{{ run.subject_id }}">brief #{{ run.subject_id }}</a>{% elif run.subject_type %}{{ run.subject_type }} #{{ run.subject_id }}{% else %}—{% endif %}</dd>
+        <dt>Started</dt><dd>{{ run.started_at | fmt_dt_time }}</dd>
+        <dt>Finished</dt><dd>{{ run.finished_at | fmt_dt_time if run.finished_at else '—' }}</dd>
+        <dt>Duration</dt><dd>{% if run.duration_ms is not none %}{{ run.duration_ms }} ms{% else %}—{% endif %}</dd>
+        <dt>Model calls</dt><dd>{{ run.llm_calls }}</dd>
+        <dt>Tool calls</dt><dd>{{ run.tool_calls }} · {{ run.retrieval_requests }} retrieval request{{ 's' if run.retrieval_requests != 1 else '' }}</dd>
+        <dt>Tokens</dt><dd>{{ '{:,}'.format(run.input_tokens) }} in · {{ '{:,}'.format(run.output_tokens) }} out</dd>
+        <dt>Cache</dt><dd>{{ '{:,}'.format(run.cache_read_tokens) }} read · {{ '{:,}'.format(run.cache_write_tokens) }} written</dd>
+        <dt>Cost</dt><dd>${{ '%.6f' | format(run.cost_usd or 0) }}</dd>
+      </dl>
+    </section>
+    {% if run.budget %}
+    <section class="panel" aria-labelledby="budget-heading">
+      <h2 class="panel-title" id="budget-heading">Budget enforced</h2>
+      <dl class="ed-dl">
+        {% for k, v in run.budget.items() %}<dt>{{ humanize(k) }}</dt><dd>{{ v }}</dd>{% endfor %}
+      </dl>
+    </section>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

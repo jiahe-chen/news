@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Pipeline — Editor desk — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+
+<header class="ed-header">
+  <p class="kicker">Orchestrator</p>
+  <h1 class="page-title">Run the news-intelligence pipeline</h1>
+  <p class="lede">One editorially controlled workflow — discover, connect, explain, verify, output — with each step in its own savepoint, so a failing source or agent never blocks the rest. Nothing it drafts is published without passing this desk's quality gate.</p>
+</header>
+
+<div class="layout-main-side">
+  <div>
+    <section aria-labelledby="steps-heading">
+      <h2 class="section-heading" id="steps-heading">What each step does</h2>
+      <ol class="ed-steps">
+        {% for step in steps %}
+        <li>
+          <p class="ed-step-name">{{ step.name }} <span class="ed-small muted">· {{ step.component }}</span></p>
+          <p class="ed-step-text">{{ step.text }}</p>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    <section aria-labelledby="report-heading" id="report">
+      <h2 class="section-heading" id="report-heading">Last run from this desk</h2>
+      {% if last %}
+      {% set r = last.report %}
+      <p class="ed-small">Started {{ last.started_at | fmt_dt_time }} by {{ last.by }} · {{ last.seconds }}s · network {{ 'on' if last.network else 'off' }} · up to {{ last.max_briefs }} brief{{ 's' if last.max_briefs != 1 else '' }}</p>
+      <div class="stat-grid ed-stats" role="list" aria-label="Pipeline report">
+        <div class="stat" role="listitem"><div class="stat-label">New articles</div><div class="stat-value">{{ r.new_articles }}</div><div class="stat-note">{{ r.duplicates }} duplicate{{ 's' if r.duplicates != 1 else '' }} · {{ r.sources_ok }} ok / {{ r.sources_failed }} failed sources</div></div>
+        <div class="stat" role="listitem"><div class="stat-label">Stories changed</div><div class="stat-value">{{ r.stories_changed }}</div><div class="stat-note">{{ r.stories_refreshed }} refreshed · {{ r.entities_tagged }} articles tagged</div></div>
+        <div class="stat" role="listitem"><div class="stat-label">Briefs drafted</div><div class="stat-value">{{ r.briefs_generated }}</div><div class="stat-note">{{ r.briefs_in_review }} to review · {{ r.briefs_published }} auto-published</div></div>
+        <div class="stat" role="listitem"><div class="stat-label">Step errors</div><div class="stat-value">{{ r.errors_total or 0 }}</div><div class="stat-note">contained; other steps still ran</div></div>
+      </div>
+      <div class="grid grid-3 ed-report-blocks">
+        {% for key, title in [('finance', 'Finance trackers'), ('monitoring', 'Follow This Story monitoring'), ('briefings', 'Personal briefings')] %}
+        <section class="panel" aria-label="{{ title }}">
+          <h3 class="panel-title">{{ title }}</h3>
+          {% if r[key] %}
+          <dl class="ed-dl ed-dl-compact">
+            {% for k, v in r[key].items() %}<dt>{{ humanize(k) }}</dt><dd>{% if v is sameas true %}yes{% elif v is sameas false %}no{% elif v is iterable and v is not string %}{{ v | length }}{% else %}{{ v }}{% endif %}</dd>{% endfor %}
+          </dl>
+          {% else %}<p class="ed-small muted">Skipped or nothing to report.</p>{% endif %}
+        </section>
+        {% endfor %}
+      </div>
+      {% if r.errors %}
+      <div class="ed-blockers" role="note">
+        <p><strong>Contained errors{% if r.errors_total > r.errors | length %} (first {{ r.errors | length }} of {{ r.errors_total }}){% endif %}</strong></p>
+        <ul>{% for err in r.errors %}<li><code>{{ err }}</code></li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      <p class="ed-small"><a href="/editor">Go to the review queue</a> · <a href="/editor/runs">See the agent runs it recorded</a></p>
+      {% else %}
+      {{ m.empty_state("No run from this desk yet", "Run the pipeline to see what it discovered, connected and drafted. Scheduled runs and the command line (newsren pipeline) record their agent runs too.") }}
+      {% endif %}
+    </section>
+  </div>
+
+  <aside>
+    <section class="panel" aria-labelledby="run-form-heading">
+      <h2 class="panel-title" id="run-form-heading">Run now</h2>
+      <form class="form ed-form" method="post" action="/editor/pipeline">
+        {{ m.csrf_field() }}
+        <label class="checkbox"><input type="checkbox" name="network" value="1"> Fetch from approved sources over the network</label>
+        <p class="hint">Off by default: the workflow then only reprocesses what is already in the archive (no outbound requests).</p>
+        <label for="max-briefs">Most briefs to draft <span class="hint">(0–{{ max_briefs_limit }})</span></label>
+        <input id="max-briefs" type="number" name="max_briefs" value="10" min="0" max="{{ max_briefs_limit }}" step="1" inputmode="numeric">
+        <button type="submit" class="button">Run pipeline</button>
+        <p class="hint">Runs in this request and may take a while with the network on. Agent budgets (tool calls, time, cost) still apply to every step.</p>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="recent-runs-heading">
+      <h2 class="panel-title" id="recent-runs-heading">Latest agent runs</h2>
+      {% if recent_runs %}
+      <ul class="plain-list ed-small">
+        {% for run in recent_runs %}<li>{{ e.run_badge(run.status) }} <a href="/editor/runs/{{ run.id }}">{{ run.agent }}</a> <span class="muted">{{ run.started_at | timeago }}</span></li>{% endfor %}
+      </ul>
+      {% else %}<p class="ed-small muted">No runs recorded yet.</p>{% endif %}
+    </section>
+  </aside>
+</div>
+{% endblock %}

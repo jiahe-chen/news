@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}{{ tool_title }}: {{ brief.headline }} — The Newsren{% endblock %}
+{% block description %}{{ tool_title }} for “{{ brief.headline }}” — sourced intelligence from The Newsren.{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/tools.css">{% endblock %}
+{% block content %}
+<nav class="tool-breadcrumb" aria-label="Breadcrumb">
+  <a href="/briefs/{{ brief.id }}">← Back to the brief</a>
+</nav>
+<header class="tool-page-header">
+  <div class="card-kicker">
+    {{ m.vertical_tag(brief.vertical) }}
+    {{ m.demo_badge(brief.is_demo) }}
+    <span class="muted">AI Story Brief · intelligence tools</span>
+  </div>
+  <h1 class="tool-page-title"><a href="/briefs/{{ brief.id }}">{{ brief.headline }}</a></h1>
+</header>
+
+{% if unpublished %}
+<p class="draft-banner" role="note"><strong>Unpublished draft — in editorial review.</strong> You are previewing as an editor; readers can't see this brief or its tools until it is approved.</p>
+{% endif %}
+{% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<nav class="tool-nav" aria-label="Intelligence tools">
+  <ul class="tool-tabs">
+    {% for t in nav.tools %}
+    <li><a class="tool-tab{% if t.active %} is-active{% endif %}" href="{{ t.url }}"{% if t.active %} aria-current="page"{% endif %}>{{ t.label }}</a></li>
+    {% endfor %}
+  </ul>
+  {% if nav.products %}
+  <div class="product-nav">
+    <span class="section-label">Editorial products</span>
+    <ul class="pill-list">
+      {% for p in nav.products %}
+      <li><a class="pill{% if p.active %} is-active{% endif %}" href="{{ p.url }}"{% if p.active %} aria-current="page"{% endif %}>{{ p.label }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</nav>
+
+<div id="tool-panel" class="tool-panel">
+  {% include tool_template %}
+</div>
+{% endblock %}

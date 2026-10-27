@@ -1,0 +1,116 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+{% set p = "evidence-" %}
+<section class="tool-content tool-evidence" data-tool-root aria-labelledby="tool-h-evidence-{{ brief.id }}">
+  <header class="tool-header">
+    <h2 class="tool-title" id="tool-h-evidence-{{ brief.id }}">Inspect evidence</h2>
+    <p class="tool-blurb">The evidence agent identifies the original sources, compares each claim across independent reporting, separates facts from interpretations, and shows what remains uncertain.</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  {% if report.original_sources %}
+  <section aria-labelledby="ev-sources-h-{{ brief.id }}">
+    <h3 class="section-heading" id="ev-sources-h-{{ brief.id }}">Where the evidence comes from</h3>
+    <ul class="role-list">
+      {% for role in report.original_sources %}
+      {% set c = cite_by_id.get(role.citation_id) %}
+      <li class="role-item">
+        <span class="badge badge-{{ role.role }} role-badge">{{ role_labels.get(role.role, role.role | label) }}</span>
+        <div class="role-body">
+          {% if c %}<a href="{{ c.url }}" rel="noopener noreferrer" target="_blank">{{ c.title }}</a>{{ t.refs([role.citation_id], citations, p) }}
+          <span class="source-meta">{{ c.publisher }}{% if c.published_at %} · published {{ c.published_at | fmt_dt }}{% endif %} {{ c.doc_type | badge }}</span>
+          {% else %}<span>Source {{ role.citation_id }}</span>{% endif %}
+          {% if role.note %}<p class="role-note">{{ role.note | cite_markers(citations, p) }}</p>{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if report.claim_comparisons %}
+  <section aria-labelledby="ev-claims-h-{{ brief.id }}">
+    <h3 class="section-heading" id="ev-claims-h-{{ brief.id }}">Claims compared across sources</h3>
+    <ul class="claims comparison-list">
+      {% for cmp in report.claim_comparisons %}
+      <li class="claim claim-{{ cmp.status }}">
+        <span class="claim-text">{{ cmp.claim | cite_markers(citations, p) }}</span>
+        <span class="claim-badges">{{ cmp.status | badge }}</span>
+        <span class="comparison-sources">
+          <span class="agree">Supported by: {% if cmp.agreeing_citation_ids %}{{ t.refs(cmp.agreeing_citation_ids, citations, p) }}{% else %}<span class="muted">no source in hand</span>{% endif %}</span>
+          {% if cmp.disagreeing_citation_ids %}<span class="disagree">Disputed by: {{ t.refs(cmp.disagreeing_citation_ids, citations, p) }}</span>{% endif %}
+        </span>
+        {% if cmp.note %}<span class="claim-notes muted">{{ cmp.note | cite_markers(citations, p) }}</span>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if report.facts or report.interpretations %}
+  <section aria-labelledby="ev-fi-h-{{ brief.id }}">
+    <h3 class="section-heading" id="ev-fi-h-{{ brief.id }}">Facts and interpretations</h3>
+    <div class="grid grid-2 fact-columns">
+      <div class="fact-column">
+        <h4 class="section-label">Reported facts</h4>
+        {% if report.facts %}
+        <ul class="statement-list">
+          {% for s in report.facts %}<li>{{ s.text | cite_markers(citations, p) }}{{ t.refs(s.citation_ids, citations, p) }}</li>{% endfor %}
+        </ul>
+        {% else %}<p class="muted">No reported facts were identified.</p>{% endif %}
+      </div>
+      <div class="fact-column interpretation-column">
+        <h4 class="section-label">Interpretations and claims of significance</h4>
+        {% if report.interpretations %}
+        <ul class="statement-list">
+          {% for s in report.interpretations %}<li>{{ s.text | cite_markers(citations, p) }}{{ t.refs(s.citation_ids, citations, p) }}</li>{% endfor %}
+        </ul>
+        {% else %}<p class="muted">No interpretive statements were identified.</p>{% endif %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if report.study_design %}
+  {% set sd = report.study_design %}
+  <section class="panel study-card" aria-labelledby="ev-study-h-{{ brief.id }}">
+    <h3 class="panel-title" id="ev-study-h-{{ brief.id }}">Study design</h3>
+    <dl class="study-grid">
+      {% if sd.design %}<div><dt>Design</dt><dd>{{ sd.design }}</dd></div>{% endif %}
+      {% if sd.participants %}<div><dt>Participants</dt><dd>{{ sd.participants }}</dd></div>{% endif %}
+      {% if sd.comparison_groups %}<div><dt>Comparison group</dt><dd>{{ sd.comparison_groups }}</dd></div>{% endif %}
+      <div><dt>Peer reviewed?</dt><dd>{% if sd.peer_reviewed is none %}Not stated{% elif sd.peer_reviewed %}{{ 'research_peer_reviewed' | badge }} Yes{% else %}{{ 'research_preprint' | badge }} No — a preprint{% endif %}</dd></div>
+      <div><dt>Measures transfer to unfamiliar problems?</dt><dd>{% if sd.measures_transfer is none %}Not stated{% elif sd.measures_transfer %}Yes — not just speed or completion{% else %}No — speed or completion only{% endif %}</dd></div>
+      {% if sd.outcome_measures %}<div class="span-2"><dt>Outcome measures</dt><dd><ul>{% for o in sd.outcome_measures %}<li>{{ o }}</li>{% endfor %}</ul></dd></div>{% endif %}
+      {% if sd.limitations %}<div class="span-2"><dt>Limitations</dt><dd><ul>{% for l in sd.limitations %}<li>{{ l }}</li>{% endfor %}</ul></dd></div>{% endif %}
+    </dl>
+    <p class="muted small">Completing exercises faster and transferring learning to new problems are different measures; check which one a headline is about.</p>
+  </section>
+  {% endif %}
+
+  {% if report.uncertainties %}
+  <div class="uncertainty evidence-uncertainty">
+    <strong>What remains uncertain</strong>
+    <ul>{% for u in report.uncertainties %}<li>{{ u | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  {% if report.missing_evidence %}
+  <section aria-labelledby="ev-missing-h-{{ brief.id }}">
+    <h3 class="section-heading" id="ev-missing-h-{{ brief.id }}">Evidence we don't have yet</h3>
+    <ul class="missing-list">{% for item in report.missing_evidence %}<li>{{ item | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  {% if report.framing_notes %}
+  <section aria-labelledby="ev-framing-h-{{ brief.id }}">
+    <h3 class="section-heading" id="ev-framing-h-{{ brief.id }}">How sources frame the story</h3>
+    <p class="framing-explainer">We describe differences in emphasis and evidence between sources. We don't label a source “biased” for holding a different view — an organization's own announcement naturally highlights favorable results, which is why independent and original sources matter for checking it.</p>
+    <ul class="framing-list">{% for note in report.framing_notes %}<li>{{ note | cite_markers(citations, p) }}</li>{% endfor %}</ul>
+  </section>
+  {% endif %}
+
+  {{ t.source_list(citations, p) }}
+  {{ m.generated_note(content.generated_by, content.generated_at) }}
+  {{ t.feedback_quick("evidence", content.id, "Did this help you judge the evidence?", "/briefs/" ~ brief.id ~ "/tools/evidence") }}
+</section>

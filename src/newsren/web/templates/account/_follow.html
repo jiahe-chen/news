@@ -1,0 +1,39 @@
+{#- One active follow. Context: fv (dict from _follow_view), next_url. -#}
+{% import "_macros.html" as m with context %}
+{% set f = fv.follow %}
+<li class="me-follow" id="follow-{{ f.id }}">
+  <div class="card-kicker">
+    <span class="me-target">{{ FOLLOW_TARGET_LABELS.get(f.target_type, f.target_type | label) }}</span>
+    {% if f.vertical %}{{ m.vertical_tag(f.vertical) }}{% endif %}
+    {% if f.story %}{{ m.demo_badge(f.story.is_demo) }}{% endif %}
+  </div>
+  <p class="me-follow-question">“{{ f.question }}”</p>
+  {% if f.story %}
+    <p class="me-follow-subject">Story: <a href="/stories/{{ f.story_id }}">{{ f.story.title }}</a></p>
+  {% elif f.entity_name %}
+    <p class="me-follow-subject">Organization: <strong>{{ f.entity_name }}</strong></p>
+  {% endif %}
+
+  <p class="section-label" id="follow-{{ f.id }}-crit">When the agent will alert you</p>
+  <ul class="me-criteria" aria-labelledby="follow-{{ f.id }}-crit">
+    {% for line in fv.criteria_lines %}<li>{{ line }}</li>{% endfor %}
+  </ul>
+  {% if f.keywords %}
+  <p class="me-keywords"><span class="muted">Subject keywords:</span> {{ f.keywords[:8] | join(", ") }}</p>
+  {% endif %}
+
+  <div class="me-follow-foot">
+    <p class="me-follow-meta">
+      <span>{% if f.last_checked_at %}Last checked <time datetime="{{ f.last_checked_at.isoformat() }}Z" title="{{ f.last_checked_at | fmt_dt_time }}">{{ f.last_checked_at | timeago }}</time>{% else %}Not checked yet — the agent checks on its next monitoring run{% endif %}</span>
+      <span>{{ f.check_count }} check{{ 's' if f.check_count != 1 else '' }}</span>
+      <span>{{ fv.alert_count }} alert{{ 's' if fv.alert_count != 1 else '' }}{% if fv.unread_count %} ({{ fv.unread_count }} unread){% endif %}</span>
+      <span>Following since {{ f.created_at | fmt_dt }}</span>
+    </p>
+    <form class="inline-form" method="post" action="/follows/{{ f.id }}/delete"
+          hx-post="/follows/{{ f.id }}/delete" hx-target="#follow-{{ f.id }}" hx-swap="outerHTML">
+      {{ m.csrf_field() }}
+      <input type="hidden" name="next" value="{{ next_url or '/me' }}#follows">
+      <button class="button button-small button-secondary" type="submit">Stop following<span class="sr-only">: {{ f.question }}</span></button>
+    </form>
+  </div>
+</li>

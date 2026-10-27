@@ -1,0 +1,72 @@
+{% extends "finance/_layout.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% set c = concept %}
+{% block title %}{{ c.term }} — Finance concepts — The Newsren{% endblock %}
+{% block description %}{{ c.short }}{% endblock %}
+{% block finance_content %}
+<nav class="fin-breadcrumb" aria-label="Breadcrumb"><a href="/finance/concepts">← All finance concepts</a></nav>
+
+<div class="layout-main-side fin-concept">
+  <article aria-labelledby="concept-title">
+    <header class="fin-page-header">
+      <p class="kicker fin-kicker">Finance concept · {{ category_label }}</p>
+      <h1 class="page-title" id="concept-title">{{ c.term }}</h1>
+      <p class="lede">{{ c.short }}</p>
+    </header>
+
+    <section aria-labelledby="concept-explainer" class="fin-explainer">
+      <h2 class="section-heading" id="concept-explainer">What it means</h2>
+      {% for para in c.paragraphs %}<p>{{ para }}</p>{% endfor %}
+    </section>
+
+    <section aria-labelledby="concept-example" class="fin-example">
+      <h2 class="section-heading" id="concept-example">Worked example <span class="badge badge-hypothesis">Hypothetical</span></h2>
+      <p>{{ c.example }}</p>
+      <p class="muted fin-small">The numbers are made up to show how the idea works; they describe no real company, fund, or strategy.</p>
+    </section>
+
+    {% if c.pitfalls %}
+    <section aria-labelledby="concept-pitfalls" class="fin-pitfalls">
+      <h2 class="section-heading" id="concept-pitfalls">Common pitfalls</h2>
+      <ul class="fin-list">{% for p in c.pitfalls %}<li>{{ p }}</li>{% endfor %}</ul>
+    </section>
+    {% endif %}
+
+    <section aria-labelledby="concept-stories">
+      <h2 class="section-heading" id="concept-stories">Stories that use this concept</h2>
+      {% if stories %}
+      <ul class="headline-list fin-story-list">
+        {% for s in stories %}
+        <li>
+          <div class="card-kicker">{{ m.vertical_tag(s.brief.vertical) }} {{ m.demo_badge(s.brief.is_demo) }} <span class="muted">published {{ (s.brief.published_at or s.brief.generated_at) | fmt_dt }}</span></div>
+          <a href="/briefs/{{ s.brief.id }}">{{ s.brief.headline }}</a>
+          <p class="fin-story-match muted">Mentions “{{ s.phrase }}”</p>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+        {{ m.empty_state("No published stories use this concept yet", "When an editor publishes a brief that mentions " ~ c.term ~ ", it will be linked here.") }}
+      {% endif %}
+    </section>
+  </article>
+
+  <aside aria-label="Related concepts and notes">
+    {% if related %}
+    <div class="panel">
+      <h2 class="panel-title">Related concepts</h2>
+      <ul class="plain-list fin-related">
+        {% for r in related %}<li><a href="/finance/concepts/{{ r.slug }}">{{ r.term }}</a><span class="fin-cell-note">{{ r.short }}</span></li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <div class="panel">
+      <h2 class="panel-title">Learning, not advice</h2>
+      <p class="fin-small">{{ concepts_disclaimer }}</p>
+      <p class="fin-small"><a href="/ask?question={{ ('Explain ' ~ c.term ~ ' with a recent example from the news') | urlencode }}">Ask Newsren to explain {{ c.term }} with a recent example</a></p>
+    </div>
+  </aside>
+</div>
+
+{{ f.data_note("Explainers are written by The Newsren's editors; linked stories are published briefs approved by an editor.") }}
+{% endblock %}

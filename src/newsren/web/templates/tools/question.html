@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}{{ question.question | truncate(80) }} — Ask Newsren — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/tools.css"><meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<nav class="tool-breadcrumb" aria-label="Breadcrumb">
+  {% if answer_brief %}<a href="/briefs/{{ answer_brief.id }}">← Back to the brief</a> · {% endif %}<a href="/ask">Ask Newsren</a>
+</nav>
+<div class="question-page">
+  <p class="muted small">Asked {{ question.created_at | fmt_dt_time }}{% if question.audience %} · explained for {{ question.audience }}s{% endif %}</p>
+  {% include "tools/_answer.html" %}
+  <p class="ask-again"><a class="button button-secondary" href="{{ ask_url }}">Ask another question</a></p>
+</div>
+{% endblock %}

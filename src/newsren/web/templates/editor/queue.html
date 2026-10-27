@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Editor desk — review queue — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+{% if vertical == 'finance' %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<header class="ed-header">
+  <p class="kicker">Editorial quality gate</p>
+  <h1 class="page-title">Review queue</h1>
+  <p class="lede">AI agents research and draft. Nothing reaches readers until it passes the automated checks and a human editor approves it — finance stories always, without exception.</p>
+</header>
+
+<div class="stat-grid ed-stats" role="list" aria-label="Queue at a glance">
+  <div class="stat" role="listitem"><div class="stat-label">Awaiting review</div><div class="stat-value">{{ stats.awaiting }}</div><div class="stat-note">briefs in review or draft</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Finance in queue</div><div class="stat-value">{{ stats.finance }}</div><div class="stat-note">always reviewed by a human</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">High risk</div><div class="stat-value">{{ stats.high_risk }}</div><div class="stat-note">finance, high-impact claims, or blockers</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Blocked by checks</div><div class="stat-value">{{ stats.with_blockers }}</div><div class="stat-note">need a fix or an explicit override</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Published, last 7 days</div><div class="stat-value">{{ stats.published_week }}</div><div class="stat-note">{{ stats.published_total }} published in total</div></div>
+  <div class="stat" role="listitem"><div class="stat-label">Funding rounds to verify</div><div class="stat-value">{{ stats.unverified_rounds }}</div><div class="stat-note"><a href="/editor/funding">Check against announcements</a></div></div>
+</div>
+
+{% call m.expandable("How the quality gate works") %}
+<ol class="ed-gate-steps">
+  <li><strong>Automated checks on every brief.</strong> Citation coverage and unknown citation ids, approved sources only, well-formed links, retrieval timestamps and licensing notes, disagreements described, preprints and forecasts labelled, studied populations named, finance guardrails (no buy/sell/hold calls, price targets or personal advice) and performance claims labelled backtest, simulated or live.</li>
+  <li><strong>Routing.</strong> Finance stories always come to this desk (plan §4: human editorial review for any finance story). So do briefs with high-impact claims, failed blockers or warnings.
+    {% if require_human_approval %}Human approval is currently required for <em>every</em> brief before publication (plan §6: require human approval for publishing initially).{% else %}Only low-risk, non-finance briefs with no failed blockers publish automatically.{% endif %}</li>
+  <li><strong>Blockers stop publication.</strong> Fix the brief (regenerate it from the story's sources) or approve with notes that start with <code>{{ override_prefix }}</code> followed by your justification; the override and the checks it overrode are logged.</li>
+  <li><strong>Your judgement is measured.</strong> Accurate/Inaccurate verdicts on claims are the sample behind the Trust metric, review time feeds Editorial efficiency, and corrections are published with the brief. See <a href="/analytics">Analytics</a>.</li>
+</ol>
+{% endcall %}
+
+<section aria-labelledby="queue-heading">
+  <h2 class="section-heading" id="queue-heading">Awaiting a decision</h2>
+  <nav class="ed-filters" aria-label="Filter the queue by section">
+    <a href="/editor" class="pill{% if not vertical %} is-active{% endif %}"{% if not vertical %} aria-current="true"{% endif %}>All <span class="muted">{{ stats.awaiting }}</span></a>
+    {% for v in VERTICALS %}
+    <a href="/editor?vertical={{ v.slug }}" class="pill{% if vertical == v.slug %} is-active{% endif %}"{% if vertical == v.slug %} aria-current="true"{% endif %}>{{ v.label }} <span class="muted">{{ by_vertical.get(v.slug, 0) }}</span></a>
+    {% endfor %}
+  </nav>
+  <p class="ed-small muted">High-risk briefs first, then oldest first.</p>
+
+  {% if items %}
+  <ol class="ed-queue">
+    {% for item in items %}
+    {% set b = item.brief %}
+    <li class="ed-item{% if item.checks.blockers %} has-blockers{% endif %}">
+      <div class="ed-item-main">
+        <div class="card-kicker">
+          {{ m.vertical_tag(b.vertical) }} {{ e.kind_badge(b.kind) }} {{ e.risk_badge(b.risk_level) }} {{ e.status_badge(b.status) }} {{ m.demo_badge(b.is_demo) }}
+        </div>
+        <h3 class="card-headline"><a href="/editor/briefs/{{ b.id }}">{{ b.headline }}</a></h3>
+        <p class="ed-item-meta">
+          <span>#{{ b.id }}</span>
+          <span>Drafted {{ b.generated_at | timeago }} by {{ e.engine(b.generated_by) }}</span>
+          <span>{{ item.claims }} claim{{ 's' if item.claims != 1 else '' }}</span>
+          <span>{{ item.sources }} source{{ 's' if item.sources != 1 else '' }}</span>
+          {% if item.reviewer %}<span>Review opened by {{ item.reviewer }} {{ b.review_started_at | timeago }}</span>{% endif %}
+        </p>
+        <p class="ed-item-checks">
+          <span>{{ item.checks.passed }}/{{ item.checks.total }} checks passed</span>
+          {% if item.checks.blockers %}<span class="badge badge-blocker">{{ item.checks.blockers }} blocker{{ 's' if item.checks.blockers != 1 else '' }}</span>{% endif %}
+          {% if item.checks.warnings %}<span class="badge badge-warning">{{ item.checks.warnings }} warning{{ 's' if item.checks.warnings != 1 else '' }}</span>{% endif %}
+          {% if item.checks.info %}<span class="badge badge-info">{{ item.checks.info }} flag{{ 's' if item.checks.info != 1 else '' }}</span>{% endif %}
+          {% if not item.checks.blockers and not item.checks.warnings %}<span class="badge badge-ed-ok">No blockers or warnings</span>{% endif %}
+        </p>
+        {% if item.reasons %}
+        <div class="ed-reasons">
+          <span class="ed-reasons-label">Needs a human because:</span>
+          <ul>{% for r in item.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+      </div>
+      <div class="ed-item-action">
+        <a class="button button-small" href="/editor/briefs/{{ b.id }}">Review<span class="sr-only"> “{{ b.headline }}”</span></a>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+    {% if vertical %}
+      {{ m.empty_state("Nothing from " ~ VERTICAL_LABELS[vertical] ~ " is waiting", "Every brief in this section has been decided.") }}
+    {% else %}
+      {{ m.empty_state("The queue is clear", "Every drafted brief has been decided. New drafts arrive when the pipeline runs and stories change.") }}
+    {% endif %}
+  {% endif %}
+</section>
+
+<div class="grid grid-2 ed-recent">
+  <section aria-labelledby="published-heading">
+    <h2 class="section-heading" id="published-heading">Recently published</h2>
+    {% if published %}
+    <ul class="headline-list">
+      {% for b in published %}
+      <li>
+        <div class="card-kicker">{{ m.vertical_tag(b.vertical) }} {{ m.demo_badge(b.is_demo) }} <span class="muted">{{ b.published_at | timeago }}</span></div>
+        <a href="/briefs/{{ b.id }}">{{ b.headline }}</a>
+        <p class="ed-small muted">
+          {% if b.reviewer_id %}Approved by {{ names.get(b.reviewer_id, 'an editor') }}{% else %}Published automatically (low risk, no blockers){% endif %}
+          · <a href="/editor/briefs/{{ b.id }}">review record</a>
+        </p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    {{ m.empty_state("Nothing published yet", "Approved briefs appear here and on the front page.") }}
+    {% endif %}
+  </section>
+  <section aria-labelledby="rejected-heading">
+    <h2 class="section-heading" id="rejected-heading">Recently rejected</h2>
+    {% if rejected %}
+    <ul class="headline-list">
+      {% for b in rejected %}
+      <li>
+        <div class="card-kicker">{{ m.vertical_tag(b.vertical) }} <span class="muted">{{ b.reviewed_at | timeago }}</span></div>
+        <a href="/editor/briefs/{{ b.id }}">{{ b.headline }}</a>
+        <p class="ed-small muted">Rejected by {{ names.get(b.reviewer_id, 'an editor') }}{% if b.review_notes %}: “{{ b.review_notes | truncate(160) }}”{% endif %}</p>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    {{ m.empty_state("No rejections", "Rejected briefs are never published; the reason is kept in the audit trail.") }}
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

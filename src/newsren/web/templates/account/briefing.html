@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "account/_account.html" as a with context %}
+{% block title %}{{ content.title }} — My Newsren{% endblock %}
+{% block description %}Your personal Newsren briefing: what changed and why it matters, with sources.{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/account.css">
+<link rel="stylesheet" href="/static/css/tools.css">{% endblock %}
+{% block content %}
+<nav class="me-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/me">My Newsren</a></li>
+    <li><a href="/me/briefings">Briefings</a></li>
+    <li aria-current="page">{{ briefing.generated_at | fmt_dt }}</li>
+  </ol>
+</nav>
+
+<article class="me-briefing" aria-labelledby="briefing-title">
+  <header class="me-briefing-header">
+    <div class="card-kicker">
+      <span class="section-label me-inline-label">Personal briefing</span>
+      {{ m.demo_badge(is_demo) }}
+      {% for v in verticals %}{{ m.vertical_tag(v) }}{% endfor %}
+    </div>
+    <h1 class="page-title" id="briefing-title">{{ content.title }}</h1>
+    <p class="me-meta">
+      {% if briefing.period_start %}<span>Covers {{ briefing.period_start | fmt_dt }} – {{ briefing.period_end | fmt_dt }}</span>{% endif %}
+      <span>{{ item_total }} update{{ 's' if item_total != 1 else '' }}</span>
+      {% if briefing.delivered_at %}<span>Delivered {{ briefing.delivered_at | fmt_dt_time }}{% if briefing.delivery_channel == 'email' %} on the web and by email{% else %} on the web{% endif %}</span>{% endif %}
+      {% if audience %}<span>Written for a{{ 'n' if audience == 'educator' else '' }} {{ audience }}{% if depth %}, {{ depth }} depth{% endif %}</span>{% endif %}
+    </p>
+  </header>
+
+  {% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+  <div class="layout-main-side">
+    <div class="me-briefing-main">
+      {% if content.intro %}<p class="lede">{{ content.intro }}</p>{% endif %}
+      {{ m.generated_note(briefing.generated_by, briefing.generated_at) }}
+
+      {% for section in sections %}
+      <section class="me-briefing-section" aria-labelledby="bs-{{ loop.index }}">
+        <h2 class="section-heading" id="bs-{{ loop.index }}">{{ section.heading }}</h2>
+        {% set si = loop.index %}
+        {% for row in section.rows %}
+        {% set item = row.item %}
+        <article class="me-item" aria-labelledby="bi-{{ si }}-{{ loop.index }}">
+          <div class="card-kicker">
+            {% if row.vertical %}{{ m.vertical_tag(row.vertical) }}{% endif %}
+            {{ m.demo_badge(row.is_demo) }}
+            {% if row.brief_unpublished and current_user and current_user.is_editor %}<span class="badge badge-in_review">Unpublished draft</span>{% endif %}
+          </div>
+          <h3 class="me-item-headline" id="bi-{{ si }}-{{ loop.index }}">
+            {%- if row.brief_url %}<a href="{{ row.brief_url }}">{{ item.headline }}</a>
+            {%- elif row.story %}<a href="/stories/{{ row.story.id }}">{{ item.headline }}</a>
+            {%- else %}{{ item.headline }}{% endif -%}
+          </h3>
+          <dl class="me-item-body">
+            <dt>What changed</dt>
+            <dd>{{ item.what_changed }}{{ m.citation_refs(item.citation_ids, citations) }}</dd>
+            <dt>Why it matters</dt>
+            <dd>{{ item.why_it_matters }}</dd>
+          </dl>
+          <p class="me-item-links">
+            {% if row.brief_url %}<a href="{{ row.brief_url }}">Read the AI Story Brief</a>{% endif %}
+            {% if row.story %}<a href="/stories/{{ row.story.id }}">Story timeline</a>{% endif %}
+            {% if item.interest %}<span class="muted">Matched your interest: {{ item.interest }}</span>{% endif %}
+          </p>
+        </article>
+        {% endfor %}
+      </section>
+      {% else %}
+        {{ m.empty_state("This briefing has no items", "Nothing in it matched your interests.") }}
+      {% endfor %}
+
+      {% if content.closing_note %}
+      <aside class="me-closing" aria-labelledby="closing-heading">
+        <h2 class="section-label" id="closing-heading">Before you rely on this</h2>
+        <p>{{ content.closing_note }}</p>
+      </aside>
+      {% endif %}
+
+      {{ m.citation_list(citations, "Sources in this briefing") }}
+    </div>
+
+    <aside class="me-side" aria-label="Rate this briefing and next steps">
+      <section class="panel me-feedback-panel" aria-labelledby="fb-heading">
+        <h2 class="panel-title" id="fb-heading">Was this briefing useful?</h2>
+        <form class="me-feedback-form" method="post" action="/feedback" hx-post="/feedback" hx-target="this" hx-swap="outerHTML">
+          {{ m.csrf_field() }}
+          <input type="hidden" name="target_type" value="briefing">
+          <input type="hidden" name="target_id" value="{{ briefing.id }}">
+          <input type="hidden" name="next" value="{{ next_url }}">
+          <fieldset>
+            <legend>Did it answer your question?</legend>
+            <label class="checkbox"><input type="radio" name="answered_question" value="yes"> Yes</label>
+            <label class="checkbox"><input type="radio" name="answered_question" value="no"> No</label>
+          </fieldset>
+          <fieldset>
+            <legend>Did it save you time searching?</legend>
+            <label class="checkbox"><input type="radio" name="saved_time" value="yes"> Yes</label>
+            <label class="checkbox"><input type="radio" name="saved_time" value="no"> No</label>
+          </fieldset>
+          <fieldset>
+            <legend>Overall rating</legend>
+            <div class="me-rating">
+              {% for n in range(1, 6) %}<label class="checkbox"><input type="radio" name="rating" value="{{ n }}"> {{ n }}</label>{% endfor %}
+            </div>
+            <span class="me-hint">1 = not useful, 5 = very useful</span>
+          </fieldset>
+          <div class="me-field">
+            <label for="fb-comment">Anything missing? <span class="me-optional">(optional)</span></label>
+            <textarea id="fb-comment" name="comment" rows="2" maxlength="2000"></textarea>
+          </div>
+          <div><button class="button button-small" type="submit">Send feedback</button></div>
+        </form>
+      </section>
+
+      <section class="me-next" aria-labelledby="next-heading">
+        <h2 class="section-heading" id="next-heading">Next</h2>
+        {% if interests %}
+        <p class="me-hint">Built around: {{ interests | join("; ") }}.</p>
+        {% endif %}
+        <ul class="plain-list me-next-list">
+          <li><a href="/me#interests">Change your interests</a></li>
+          <li><a href="/me#preferences">Change audience, depth or email</a></li>
+          <li><a href="/me#follows">Manage what you follow</a></li>
+          {% if previous %}<li><a href="/me/briefings/{{ previous.id }}">Previous briefing ({{ previous.generated_at | fmt_dt }})</a></li>{% endif %}
+        </ul>
+        {{ a.brief_now_form() }}
+      </section>
+    </aside>
+  </div>
+</article>
+{% endblock %}

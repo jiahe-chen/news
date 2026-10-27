@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "finance/_finance.html" as f with context %}
+{% block head %}<link rel="stylesheet" href="/static/css/finance.css">{% endblock %}
+{% block content %}
+{{ m.finance_notice(FINANCE_DISCLAIMER) }}
+{{ f.section_nav(finance_nav) }}
+{% block finance_content %}{% endblock %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{# One claim under review, with its cited sources and the Accurate / Inaccurate verdict form.
+   Context: claim, brief, cite_map (citation id -> CitationRef dict), optional claim_error. #}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+<li class="claim ed-claim claim-{{ claim.support_status }}" id="claim-{{ claim.id }}">
+  <div class="ed-claim-main">
+    <p class="claim-text">{{ claim.text }}</p>
+    <div class="claim-badges">
+      {{ claim.claim_type | badge }} {{ claim.support_status | badge }}
+      {% if claim.performance_label %}{{ claim.performance_label | badge }}{% elif claim.claim_type == 'performance' %}<span class="badge badge-blocker">No performance label</span>{% endif %}
+      {% if claim.high_impact %}<span class="badge badge-high">High impact</span>{% endif %}
+    </div>
+    {% if claim.claim_type == 'performance' or claim.performance_period or claim.benchmark %}
+    <p class="claim-perf muted">Period: {{ claim.performance_period or 'not stated' }} · Benchmark: {{ claim.benchmark or 'not stated' }}</p>
+    {% endif %}
+    {% if claim.notes %}<p class="claim-notes muted">{{ claim.notes }}</p>{% endif %}
+    <ul class="ed-claim-sources" aria-label="Sources cited for this claim">
+      {% for cid in claim.citation_ids or [] %}
+        {% set c = cite_map.get(cid) %}
+        {% if c %}
+        <li>
+          {{ e.source_line(c) }}
+          {% if c.snippet %}<blockquote class="source-snippet">{{ c.snippet }}</blockquote>{% endif %}
+        </li>
+        {% else %}
+        <li class="ed-missing-source">Citation “{{ cid }}” does not match any source in this brief.</li>
+        {% endif %}
+      {% else %}
+        <li class="ed-missing-source">No source is cited for this claim.</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <form class="ed-verdict" method="post" action="/editor/claims/{{ claim.id }}/verdict"
+        hx-post="/editor/claims/{{ claim.id }}/verdict" hx-target="#claim-{{ claim.id }}" hx-swap="outerHTML">
+    {{ m.csrf_field() }}
+    <fieldset>
+      <legend class="ed-verdict-q">Do the linked sources support this claim?</legend>
+      <div class="ed-verdict-buttons">
+        <button type="submit" name="verdict" value="accurate" class="button button-small ed-verdict-accurate{% if claim.editor_verdict == 'accurate' %} is-chosen{% endif %}" aria-pressed="{{ 'true' if claim.editor_verdict == 'accurate' else 'false' }}">Accurate</button>
+        <button type="submit" name="verdict" value="inaccurate" class="button button-small ed-verdict-inaccurate{% if claim.editor_verdict == 'inaccurate' %} is-chosen{% endif %}" aria-pressed="{{ 'true' if claim.editor_verdict == 'inaccurate' else 'false' }}">Inaccurate</button>
+      </div>
+    </fieldset>
+    <p class="ed-verdict-state" role="status">
+      {% if claim.editor_verdict %}
+        <span class="badge badge-verdict-{{ claim.editor_verdict }}">Judged {{ claim.editor_verdict }}</span>
+        {% if claim.verdict_at %}<span class="muted">{{ claim.verdict_at | fmt_dt_time }}</span>{% endif %}
+      {% else %}
+        <span class="muted">Not yet sampled</span>
+      {% endif %}
+    </p>
+    {% if claim_error %}<p class="flash flash-error ed-inline-error" role="alert">{{ claim_error }}</p>{% endif %}
+  </form>
+</li>

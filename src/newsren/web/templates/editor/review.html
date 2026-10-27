@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "editor/_editor.html" as e with context %}
+{% block title %}Review: {{ brief.headline }} — Editor desk — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/editor.css">{% endblock %}
+{% block content %}
+{{ e.desk_nav(desk_nav, desk_active) }}
+{% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<p class="ed-back"><a href="/editor">← Back to the review queue</a></p>
+
+{% if brief.status == 'approved' %}
+<div class="ed-banner ed-banner-published" role="status">
+  <strong>Published</strong> {{ brief.published_at | fmt_dt_time }}{% if brief.reviewer_id %} · approved by {{ names.get(brief.reviewer_id, 'an editor') }}{% else %} · published automatically by the quality gate{% endif %}.
+  Readers see it at <a href="/briefs/{{ brief.id }}">/briefs/{{ brief.id }}</a>.
+</div>
+{% elif brief.status == 'rejected' %}
+<div class="ed-banner ed-banner-rejected" role="status">
+  <strong>Rejected — not published.</strong> {% if brief.reviewed_at %}{{ brief.reviewed_at | fmt_dt_time }}{% endif %}{% if brief.reviewer_id %} by {{ names.get(brief.reviewer_id, 'an editor') }}{% endif %}{% if brief.review_notes %}: “{{ brief.review_notes }}”{% endif %}
+</div>
+{% else %}
+<div class="ed-banner ed-banner-draft" role="status">
+  <strong>Unpublished draft — in editorial review.</strong> Readers cannot see this brief until an editor approves it.
+  {% if brief.review_started_at %}Review opened {{ brief.review_started_at | timeago }}{% if brief.reviewer_id %} by {{ names.get(brief.reviewer_id, 'an editor') }}{% endif %}; the review-time clock is running.{% endif %}
+</div>
+{% endif %}
+
+<header class="brief-header ed-review-header">
+  <div class="card-kicker">
+    {{ m.vertical_tag(brief.vertical) }} {{ e.kind_badge(brief.kind) }} {{ e.status_badge(brief.status) }} {{ e.risk_badge(brief.risk_level) }} {{ m.demo_badge(brief.is_demo) }}
+  </div>
+  <h1 class="page-title">{{ brief.headline }}</h1>
+  <p class="brief-meta">
+    <span>Brief #{{ brief.id }} · version {{ brief.version }}</span>
+    <span>Drafted <time datetime="{{ brief.generated_at.isoformat() }}">{{ brief.generated_at | fmt_dt_time }}</time> by {{ e.engine(brief.generated_by) }}</span>
+    <span>{{ cites | length }} source{{ 's' if cites | length != 1 else '' }} · {{ claims | length }} claim{{ 's' if claims | length != 1 else '' }}</span>
+    {% if story %}<span><a href="/stories/{{ story.id }}">Story timeline</a></span>{% endif %}
+    <span><a href="/briefs/{{ brief.id }}">Reader view{% if unpublished %} (editor preview){% endif %}</a></span>
+    <span><a href="#decision">Jump to the decision</a></span>
+  </p>
+</header>
+
+<div class="layout-main-side ed-review">
+  <div class="ed-review-main">
+
+    <section aria-labelledby="gate-heading">
+      <h2 class="section-heading" id="gate-heading">Automated checks</h2>
+      <p class="ed-gate-summary">
+        <strong>{{ summary.passed }} of {{ summary.total }} passed.</strong>
+        {% if summary.blockers %}<span class="badge badge-blocker">{{ summary.blockers }} blocker{{ 's' if summary.blockers != 1 else '' }}</span>{% endif %}
+        {% if summary.warnings %}<span class="badge badge-warning">{{ summary.warnings }} warning{{ 's' if summary.warnings != 1 else '' }}</span>{% endif %}
+        {% if summary.info %}<span class="badge badge-info">{{ summary.info }} flag{{ 's' if summary.info != 1 else '' }} for the reviewer</span>{% endif %}
+        {% if not summary.blockers and not summary.warnings %}<span class="badge badge-ed-ok">No blockers or warnings</span>{% endif %}
+      </p>
+      {% if reasons and brief.status != 'approved' %}
+      <div class="uncertainty ed-why-human">
+        <p class="ed-why-title"><strong>Why a human must review this</strong></p>
+        <ul>{% for r in reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {% set failed_checks = checks | rejectattr('passed') | list %}
+      {% set passed_checks = checks | selectattr('passed') | list %}
+      {% if failed_checks %}
+      <ul class="check-list ed-checks" aria-label="Failed checks">
+        {% for c in failed_checks %}{{ e.check_item(c) }}{% endfor %}
+      </ul>
+      {% endif %}
+      {% if passed_checks %}
+      <details class="ed-passed"{% if not failed_checks %} open{% endif %}>
+        <summary>{{ passed_checks | length }} passed check{{ 's' if passed_checks | length != 1 else '' }}</summary>
+        <ul class="check-list ed-checks" aria-label="Passed checks">
+          {% for c in passed_checks %}{{ e.check_item(c) }}{% endfor %}
+        </ul>
+      </details>
+      {% endif %}
+      <p class="ed-small muted">The checks run again when you open this page and when you approve, so this list is what approval will evaluate.{% if stored_summary.total and (stored_summary.blockers != summary.blockers or stored_summary.warnings != summary.warnings) %} At submission they reported {{ stored_summary.blockers }} blocker(s) and {{ stored_summary.warnings }} warning(s); something has changed since (for example a source's approval).{% endif %}</p>
+    </section>
+
+    <section aria-labelledby="claims-heading" id="claims">
+      <h2 class="section-heading" id="claims-heading">Verify the claims</h2>
+      <p class="ed-small">Open each source (they open in a new tab) and record whether it actually supports the claim. These verdicts are the sample behind the <a href="/analytics#trust">Trust metric</a> — the share of claims accurately supported by their linked sources.</p>
+      {% if claims %}
+      <p class="ed-small muted">{{ claims_judged }} of {{ claims | length }} claim{{ 's' if claims | length != 1 else '' }} sampled{% if claims_judged %}; {{ claims_accurate }} judged accurate{% endif %}.</p>
+      <ul class="claims ed-claims">
+        {% for claim in claims %}{% include "editor/_claim.html" %}{% endfor %}
+      </ul>
+      {% else %}
+      {{ m.empty_state("This brief records no claims", "The claims_recorded check flags briefs without a claim list; consider regenerating it.") }}
+      {% endif %}
+    </section>
+
+    <section aria-labelledby="content-heading" class="ed-content">
+      <h2 class="section-heading" id="content-heading">The brief as readers will see it</h2>
+      <p class="lede">{{ cited(brief.summary, cites) }}</p>
+      {% if brief.why_it_matters %}
+      <section class="why-box" aria-label="Why it matters">
+        <h3>Why it matters</h3>
+        <p>{{ cited(brief.why_it_matters, cites) }}</p>
+      </section>
+      {% endif %}
+      {% if brief.what_changed %}
+      <h3 class="ed-subhead">What changed</h3>
+      <p>{{ cited(brief.what_changed, cites) }}</p>
+      {% endif %}
+      {% if brief.key_points %}
+      <h3 class="ed-subhead">Key points</h3>
+      <ul class="key-points">{% for point in brief.key_points %}<li>{{ cited(point, cites) }}</li>{% endfor %}</ul>
+      {% endif %}
+      {% if brief.sections %}
+      <h3 class="ed-subhead">Expandable sections</h3>
+      {% for section in brief.sections %}
+        {% call m.expandable(section.title, open=loop.first) %}
+          {% for para in (section.body or '').split('\n') if para.strip() %}<p>{{ cited(para, cites) }}</p>{% endfor %}
+          {% if section.citation_ids and '[c' not in (section.body or '') %}<p class="ed-small">Sources: {{ m.citation_refs(section.citation_ids, cites) }}</p>{% endif %}
+        {% endcall %}
+      {% endfor %}
+      {% endif %}
+      {% if brief.uncertainty %}
+      <div class="uncertainty ed-block">
+        <p class="ed-why-title"><strong>What remains uncertain</strong></p>
+        <ul>{% for item in brief.uncertainty %}<li>{{ cited(item, cites) }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {% if brief.disagreements %}
+      <h3 class="ed-subhead">Where credible sources disagree</h3>
+      {% for d in brief.disagreements %}
+      <div class="disagreement">
+        <p><strong>{{ d.topic }}</strong></p>
+        <div class="disagreement-positions">
+          {% for pos in d.positions %}
+          <div class="position">{{ cited(pos.position, cites) }} {{ m.citation_refs(pos.citation_ids, cites) }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% if brief.watch_next %}
+      <h3 class="ed-subhead">What to watch next</h3>
+      <ul>{% for item in brief.watch_next %}<li>{{ cited(item, cites) }}</li>{% endfor %}</ul>
+      {% endif %}
+      {{ m.citation_list(cites, "Sources in the evidence pack") }}
+      {{ m.generated_note(brief.generated_by, brief.generated_at) }}
+    </section>
+  </div>
+
+  <aside class="ed-side" aria-label="Editorial decision and audit trail">
+    <section class="panel ed-decision" id="decision" aria-labelledby="decision-heading">
+      <h2 class="panel-title" id="decision-heading">Decision</h2>
+
+      {% if brief.status in ['in_review', 'draft'] %}
+        {% if blockers %}
+        <div class="ed-blockers" role="note">
+          <p><strong>{{ blockers | length }} blocking check{{ 's' if blockers | length != 1 else '' }} failed:</strong></p>
+          <ul>{% for c in blockers %}<li>{{ c.name | replace('_', ' ') | capitalize }} — {{ c.message }}</li>{% endfor %}</ul>
+          <p>Fix the brief (regenerate it), or approve with notes that start with <code>{{ override_prefix }}</code> followed by why publishing is justified. The override and the checks it overrides are logged.</p>
+        </div>
+        {% endif %}
+        {% if is_finance %}
+        <p class="ed-small ed-finance-reminder">Finance: check every figure against its filing or transcript; no buy/sell/hold language, price targets or personal advice; performance claims labelled backtest, simulated or live with period, benchmark and source.</p>
+        {% endif %}
+        <form class="form ed-form" method="post" action="/editor/briefs/{{ brief.id }}/approve">
+          {{ m.csrf_field() }}
+          <label for="approve-notes">{% if blockers %}Override justification <span class="hint">(required: start with “{{ override_prefix }}”)</span>{% else %}Review notes <span class="hint">(optional, kept in the audit trail)</span>{% endif %}</label>
+          <textarea id="approve-notes" name="notes" rows="3"{% if blockers %} required placeholder="{{ override_prefix }} why publishing is justified despite the failed checks" aria-describedby="override-hint"{% endif %}></textarea>
+          {% if blockers %}<p class="hint" id="override-hint">Without the prefix and a reason, approval is refused.</p>{% endif %}
+          <button type="submit" class="button">{% if blockers %}Override and publish{% else %}Approve and publish{% endif %}</button>
+        </form>
+
+        <form class="form ed-form ed-reject" method="post" action="/editor/briefs/{{ brief.id }}/reject">
+          {{ m.csrf_field() }}
+          <label for="reject-notes">Reason for rejecting <span class="hint">(required)</span></label>
+          <textarea id="reject-notes" name="notes" rows="3" required placeholder="What is wrong, and what a new draft must do differently"></textarea>
+          <button type="submit" class="button button-danger">Reject</button>
+        </form>
+      {% elif brief.status == 'approved' %}
+        <p class="ed-small">Published {{ brief.published_at | fmt_dt_time }}.{% if brief.review_notes %} Review notes: “{{ brief.review_notes }}”{% endif %}</p>
+        <form class="form ed-form" method="post" action="/editor/briefs/{{ brief.id }}/corrections">
+          {{ m.csrf_field() }}
+          <label for="correction-description">Correction <span class="hint">(shown to readers on the brief)</span></label>
+          <textarea id="correction-description" name="description" rows="3" required placeholder="What was wrong and what is correct now"></textarea>
+          <label class="checkbox"><input type="checkbox" name="material" value="1"> Material correction — it changes a fact a reader could have relied on</label>
+          <p class="hint">Recording a correction bumps the brief's version. Material corrections count in the Trust metric.</p>
+          <button type="submit" class="button">Record correction</button>
+        </form>
+      {% else %}
+        <p class="ed-small">This brief was rejected and will not be published.{% if brief.review_notes %} Notes: “{{ brief.review_notes }}”{% endif %}</p>
+      {% endif %}
+
+      {% if can_regenerate %}
+      <form class="ed-regenerate" method="post" action="/editor/briefs/{{ brief.id }}/regenerate">
+        {{ m.csrf_field() }}
+        <p class="ed-small">{% if brief.status == 'approved' %}Ask the agent for a new version from the current sources. This version stays published until you approve the replacement.{% else %}Ask the agent for a fresh draft from the {{ 'story' if brief.kind == 'story' else 'report' }}'s current sources. The new draft goes through the checks; this one leaves the queue as superseded.{% endif %}</p>
+        <button type="submit" class="button button-secondary button-small">Regenerate draft</button>
+      </form>
+      {% endif %}
+    </section>
+
+    <section class="panel ed-run" aria-labelledby="run-heading">
+      <h2 class="panel-title" id="run-heading">Agent run</h2>
+      {% if run %}
+      <dl class="ed-dl">
+        <dt>Agent</dt><dd>{{ run.agent }}</dd>
+        <dt>Status</dt><dd>{{ e.run_badge(run.status) }}</dd>
+        <dt>Engine</dt><dd>{{ run.provider }}{% if run.model %} · {{ run.model }}{% endif %}</dd>
+        <dt>Started</dt><dd>{{ run.started_at | fmt_dt_time }}</dd>
+        <dt>Duration</dt><dd>{% if run.duration_ms is not none %}{{ fmt_duration(run.duration_ms / 1000) if run.duration_ms >= 1000 else run.duration_ms ~ ' ms' }}{% else %}—{% endif %}</dd>
+        <dt>Model calls</dt><dd>{{ run.llm_calls }} · {{ run.tool_calls }} tool call{{ 's' if run.tool_calls != 1 else '' }}</dd>
+        <dt>Tokens</dt><dd>{{ '{:,}'.format(run.input_tokens) }} in · {{ '{:,}'.format(run.output_tokens) }} out{% if run.cache_read_tokens %} · {{ '{:,}'.format(run.cache_read_tokens) }} cached{% endif %}</dd>
+        <dt>Cost</dt><dd>${{ '%.4f' | format(run.cost_usd or 0) }}</dd>
+      </dl>
+      {% if run.error %}<p class="ed-small ed-error-text">{{ run.error }}</p>{% endif %}
+      <p class="ed-small"><a href="/editor/runs/{{ run.id }}">Full run record and tool trace</a></p>
+      {% else %}
+      <p class="ed-small muted">No agent run is linked to this brief.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel ed-history" id="history" aria-labelledby="history-heading">
+      <h2 class="panel-title" id="history-heading">Editorial history</h2>
+      {% if history %}
+      <ol class="timeline ed-timeline">
+        {% for a in history %}
+        <li class="timeline-item{% if a.action in ['reject', 'correct'] %} is-correction{% endif %}">
+          <div class="timeline-date">{{ a.created_at | fmt_dt_time }}</div>
+          <div class="timeline-title">{{ a.action | replace('_', ' ') | capitalize }} <span class="muted">· {{ names.get(a.actor_id, 'an editor') if a.actor_id else 'system' }}</span></div>
+          {% if a.duration_seconds is not none %}<div class="ed-small">Review time {{ fmt_duration(a.duration_seconds) }}</div>{% endif %}
+          {% if a.notes %}<div class="ed-small ed-note">{{ a.notes }}</div>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="ed-small muted">No editorial actions yet.</p>
+      {% endif %}
+      {% if corrections %}
+      <h3 class="ed-panel-sub">Corrections</h3>
+      <ul class="plain-list ed-corrections">
+        {% for c in corrections %}
+        <li><span class="muted">{{ c.created_at | fmt_dt_time }}</span>{% if c.material %} <span class="badge badge-high">Material</span>{% endif %}<br>{{ c.description }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </section>
+  </aside>
+</div>
+{% endblock %}

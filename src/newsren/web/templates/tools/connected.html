@@ -1,0 +1,123 @@
+{% import "_macros.html" as m with context %}
+{% import "tools/_tool_macros.html" as t with context %}
+{% set p = "connected-" %}
+<section class="tool-content tool-connected" data-tool-root aria-labelledby="tool-h-connected-{{ brief.id }}">
+  <header class="tool-header">
+    <h2 class="tool-title" id="tool-h-connected-{{ brief.id }}">Connected stories</h2>
+    <p class="tool-blurb">Story Intelligence groups related developments into evolving stories and connects them across sections, so you can follow the progression from an announcement to evaluations, launches, adoption, and regulation.</p>
+  </header>
+  {{ t.partial_notices() }}
+
+  {% if story is none %}
+    {{ m.empty_state("No connected story yet", "This brief isn't linked to an evolving story, so there is no timeline to show.") }}
+  {% else %}
+  <div class="layout-main-side connected-layout">
+    <div class="connected-main">
+      {% if show_intel %}
+      <section class="story-intel" aria-labelledby="intel-h-{{ brief.id }}">
+        <h3 class="section-heading" id="intel-h-{{ brief.id }}">Story intelligence</h3>
+        <div class="intel-stack">
+          <div class="intel-cell">
+            <h4 class="section-label">What happened first</h4>
+            <p>{{ story.what_happened_first | cite_markers(story_cites, p) if story.what_happened_first else "Not yet summarized." }}</p>
+          </div>
+          <div class="intel-cell">
+            <h4 class="section-label">What's new</h4>
+            <p>{{ story.whats_new | cite_markers(story_cites, p) if story.whats_new else "No new developments since the first report." }}</p>
+          </div>
+        </div>
+        {% if story.disputed %}
+        <div class="disagreement intel-disputed">
+          <h4 class="section-label">What remains disputed</h4>
+          <ul>
+            {% for item in story.disputed %}<li>{{ item | cite_markers(story_cites, p) }}</li>{% endfor %}
+          </ul>
+          <p class="muted small">Where credible sources disagree we describe the disagreement rather than pick a side.</p>
+        </div>
+        {% endif %}
+        {% if story.evidence_changes %}
+        <div class="intel-evidence">
+          <h4 class="section-label">How the evidence changed</h4>
+          <ul>
+            {% for item in story.evidence_changes %}<li>{{ item | cite_markers(story_cites, p) }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        {{ m.generated_note(intel_generated_by, intel_generated_at) }}
+      </section>
+      {% else %}
+      <p class="intel-pending muted">The AI story-intelligence summary (what happened first, what's new, what is disputed) appears once an editor approves a brief for this story. The sourced timeline below is public.</p>
+      {% endif %}
+
+      <section aria-labelledby="storyline-h-{{ brief.id }}">
+        <h3 class="section-heading" id="storyline-h-{{ brief.id }}">Storyline</h3>
+        {% if brief.vertical == 'technology' %}
+        <div class="evolution-note">
+          <p><strong>Technology Evolution Timeline.</strong> Releases, evaluations, corrections, and adoption milestones in date order — vendor claims are labelled so you can see when independent evidence arrived.
+          {% if timeline_product %}<a href="/briefs/{{ brief.id }}/tools/products/technology_timeline">Open the full Technology Evolution Timeline</a>.{% endif %}</p>
+        </div>
+        {% endif %}
+        {% if related %}
+        <p class="storyline-legend muted">
+          <span class="legend-dot legend-own" aria-hidden="true"></span> This story
+          <span class="legend-dot legend-related" aria-hidden="true"></span> Connected stories{% if verticals_in_storyline | length > 1 %}, across {{ verticals_in_storyline | map('label') | join(', ') }}{% endif %}
+        </p>
+        {% endif %}
+        {% if items %}
+        <ol class="timeline storyline">
+          {% for i in items %}
+          {% set ev = i.event %}
+          <li class="timeline-item{% if ev.is_correction %} is-correction{% endif %}{% if not i.own %} is-related{% endif %}">
+            <div class="timeline-date">
+              <time datetime="{{ ev.occurred_at.isoformat() }}">{{ ev.occurred_at | fmt_dt }}</time>
+              {{ ev.event_type | badge }}
+              {% if ev.is_correction and ev.event_type != 'correction' %}{{ 'correction' | badge }}{% endif %}
+              {% if i.article %}
+                {% if i.article.doc_type not in ('news', ev.event_type) %}{{ i.article.doc_type | badge }}{% endif %}
+                {% if i.article.trust_tier in ('vendor', 'primary') %}{{ i.article.trust_tier | badge }}{% endif %}
+              {% endif %}
+              {% if i.cross_vertical %}{{ m.vertical_tag(i.story.vertical) }}{% endif %}
+            </div>
+            <div class="timeline-title">
+              {% if i.article %}<a href="{{ i.article.url }}" rel="noopener noreferrer" target="_blank">{{ ev.title }}</a>{% else %}{{ ev.title }}{% endif %}
+            </div>
+            {% if ev.description %}<p class="timeline-desc">{{ ev.description | truncate(240) }}</p>{% endif %}
+            <p class="timeline-meta">
+              {% if i.article %}{{ i.article.source.name }} · {% endif %}
+              {% if i.own %}<a href="/stories/{{ i.story.id }}">This story</a>{% else %}Connected story: <a href="/stories/{{ i.story.id }}">{{ i.story.title }}</a>{% endif %}
+            </p>
+          </li>
+          {% endfor %}
+        </ol>
+        {% else %}
+          {{ m.empty_state("No timeline events yet", "Events appear as sourced articles join the story.") }}
+        {% endif %}
+      </section>
+    </div>
+
+    <aside class="connected-side" aria-labelledby="related-h-{{ brief.id }}">
+      <h3 class="section-heading" id="related-h-{{ brief.id }}">Stories in this storyline</h3>
+      <ul class="headline-list related-list">
+        <li class="is-own">
+          <div class="card-kicker">{{ m.vertical_tag(story.vertical) }} <span class="muted">This story</span></div>
+          <a href="/stories/{{ story.id }}">{{ story.title }}</a>
+          <span class="related-meta muted">{{ story.events | length }} event{{ 's' if story.events | length != 1 else '' }} · updated {{ story.last_updated_at | timeago }}</span>
+        </li>
+        {% for s in related %}
+        <li>
+          <div class="card-kicker">{{ m.vertical_tag(s.vertical) }}</div>
+          <a href="/stories/{{ s.id }}">{{ s.title }}</a>
+          <span class="related-meta muted">{{ s.events | length }} event{{ 's' if s.events | length != 1 else '' }} · updated {{ s.last_updated_at | timeago }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% if related %}
+      <p class="muted small">Stories are connected by the organizations, products, and topics they share — across Technology, Education, Industry, and Finance.</p>
+      {% else %}
+      <p class="muted small">No connected stories yet. Connections appear when other stories share organizations, products, or topics with this one.</p>
+      {% endif %}
+    </aside>
+  </div>
+  {% if show_intel %}{{ t.source_list(story_cites, p, "Sources for the story-intelligence summary") }}{% endif %}
+  {% endif %}
+</section>

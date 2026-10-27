@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "public/_public.html" as p with context %}
+{% block title %}{{ story.title }} — Story timeline — The Newsren{% endblock %}
+{% block description %}How this story developed: {{ events | length }} sourced developments, from the first report to the latest evidence.{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">{% endblock %}
+{% block content %}
+{% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+<header class="story-header">
+  <div class="brief-kicker">
+    {{ m.vertical_tag(story.vertical) }}
+    <span class="badge">Story</span>
+    {{ p.story_status(story.status) }}
+    {{ m.demo_badge(story.is_demo) }}
+  </div>
+  <h1 class="page-title">{{ story.title }}</h1>
+  <p class="brief-meta">
+    <span>First seen <time datetime="{{ story.first_seen_at.isoformat() }}">{{ story.first_seen_at | fmt_dt_time }}</time></span>
+    <span>Last updated <time datetime="{{ story.last_updated_at.isoformat() }}">{{ story.last_updated_at | fmt_dt_time }}</time></span>
+    <span>{{ members | length }} source document{{ 's' if members | length != 1 else '' }}</span>
+    <span>Version {{ story.version }}</span>
+  </p>
+  {% if story.key_entities %}
+  <div style="margin-top: 10px">
+    <h2 class="sr-only">Key entities</h2>
+    <ul class="pill-list" aria-label="Key entities">
+      {% for name in story.key_entities[:10] %}<li class="pill">{{ name }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+  <div class="story-actions">
+    {% if current_user %}
+    <form method="post" action="/follows" class="inline-form">
+      {{ m.csrf_field() }}
+      <input type="hidden" name="question" value="Tell me about material developments in: {{ story.title }}">
+      <input type="hidden" name="target_type" value="story">
+      <input type="hidden" name="story_id" value="{{ story.id }}">
+      <input type="hidden" name="vertical" value="{{ story.vertical }}">
+      <input type="hidden" name="next" value="/stories/{{ story.id }}">
+      <button class="button" type="submit">Follow this story</button>
+    </form>
+    {% else %}
+    <a class="button" href="/login?next=/stories/{{ story.id }}">Sign in to follow this story</a>
+    {% endif %}
+    <span class="muted">Alerts arrive only for material developments — new evidence, filings, evaluations or corrections, not more opinion pieces.</span>
+  </div>
+</header>
+
+<div class="layout-main-side">
+  <div>
+    <section aria-labelledby="intel-heading">
+      <h2 class="section-heading" id="intel-heading">Story intelligence</h2>
+      {% if show_intel %}
+        {% if intel_preview %}
+        <div class="preview-banner" role="status"><strong>Editor preview</strong> This summary is hidden from readers until the story's brief is approved.</div>
+        {% endif %}
+        <div class="intel">
+          {% if story.what_happened_first %}
+          <div class="intel-block"><h3>What happened first</h3><p>{{ p.cited(story.what_happened_first, intel_citations) }}</p></div>
+          {% endif %}
+          {% if story.whats_new %}
+          <div class="intel-block"><h3>What's new</h3><p>{{ p.cited(story.whats_new, intel_citations) }}</p></div>
+          {% endif %}
+          <div class="intel-block">
+            <h3>What remains disputed</h3>
+            {% if story.disputed %}
+            <ul>{% for item in story.disputed %}<li>{{ p.cited(item, intel_citations) }}</li>{% endfor %}</ul>
+            {% else %}<p class="muted">No disputes recorded among the sources so far.</p>{% endif %}
+          </div>
+          <div class="intel-block">
+            <h3>How the evidence changed</h3>
+            {% if story.evidence_changes %}
+            <ul>{% for item in story.evidence_changes %}<li>{{ p.cited(item, intel_citations) }}</li>{% endfor %}</ul>
+            {% else %}<p class="muted">No change in the evidence yet.</p>{% endif %}
+          </div>
+        </div>
+        {{ m.citation_list(intel_citations, "Sources for this summary") }}
+        {{ m.generated_note(intel_engine, intel_run.finished_at if intel_run else None) }}
+      {% else %}
+        <div class="panel intel-locked">
+          <p><strong>{% if latest_brief %}This story's brief is in editorial review.{% else %}No brief has been written for this story yet.{% endif %}</strong>
+          The AI summary of what happened first, what's new, what is disputed and how the evidence changed appears once an editor approves the story's brief{% if is_finance %} — every finance story is reviewed by a human editor{% endif %}.
+          The sourced timeline below is available now.</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <section aria-labelledby="timeline-heading">
+      <h2 class="section-heading" id="timeline-heading">Timeline</h2>
+      {% if events %}
+      <ol class="timeline">
+        {% for event in events %}
+        {% set art = event.article %}
+        <li class="timeline-item{% if event.is_correction %} is-correction{% endif %}">
+          <div class="timeline-head">
+            <time class="timeline-date" datetime="{{ event.occurred_at.isoformat() }}">{{ event.occurred_at | fmt_dt }}</time>
+            {{ p.event_badge(event.event_type) }}
+            {% if event.is_correction and event.event_type != 'correction' %}<span class="badge badge-correction">Correction</span>{% endif %}
+          </div>
+          <div class="timeline-title">
+            {% if art %}<a href="{{ art.url }}" rel="noopener noreferrer" target="_blank">{{ event.title }}<span class="sr-only"> (opens the original source)</span></a>{% else %}{{ event.title }}{% endif %}
+          </div>
+          {% if event.description %}<p class="timeline-desc">{{ plain(event.description) | truncate(260) }}</p>{% endif %}
+          {% if art %}
+          <div class="timeline-source">
+            <span>{{ art.source.name if art.source else '' }}</span>
+            {{ art.trust_tier | badge }} {{ art.doc_type | badge }} {{ m.demo_badge(art.is_demo) }}
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+        {{ m.empty_state("No timeline yet", "Developments appear here as sources report them.") }}
+      {% endif %}
+    </section>
+
+    <section aria-labelledby="members-heading">
+      <h2 class="section-heading" id="members-heading">Source documents by type</h2>
+      {% for doc_type, articles in grouped %}
+      <div class="article-group">
+        <h3>{{ doc_type | badge }} <span class="muted">{{ articles | length }}</span></h3>
+        <ul class="article-lines">
+          {% for article in articles %}{{ p.article_line(article) }}{% endfor %}
+        </ul>
+      </div>
+      {% else %}
+        {{ m.empty_state("No source documents") }}
+      {% endfor %}
+    </section>
+  </div>
+
+  <aside class="side-stack" aria-label="About this story">
+    <section class="panel" aria-labelledby="brief-heading">
+      <h2 class="panel-title" id="brief-heading">AI Story Brief</h2>
+      {% if approved_brief %}
+        <p><a href="/briefs/{{ approved_brief.id }}"><strong>{{ approved_brief.headline }}</strong></a></p>
+        <p class="muted">Published {{ approved_brief.published_at | fmt_dt }} · {{ approved_brief.citations | length }} sources. The brief explains what happened, the evidence behind each claim, and opens the intelligence tools.</p>
+      {% elif latest_brief %}
+        <p><span class="badge badge-in_review">Brief in editorial review</span></p>
+        <p class="muted">An editor checks citations, labels and sources before publication.</p>
+        {% if current_user and current_user.is_editor %}<p><a href="/briefs/{{ latest_brief.id }}">Preview the draft (editors)</a></p>{% endif %}
+      {% else %}
+        <p class="muted">No brief yet. The Newsren writes a brief once a story has enough sourced developments.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel" aria-labelledby="related-heading">
+      <h2 class="panel-title" id="related-heading">Connected stories</h2>
+      {% if related %}
+      <ul class="side-list">
+        {% for other in related %}
+        <li>
+          <span class="vertical-tag vertical-tag-{{ other.vertical }}">{{ VERTICAL_LABELS.get(other.vertical, other.vertical) }}</span>
+          <a href="/stories/{{ other.id }}">{{ other.title }}</a>
+          <span class="muted">{{ counts.get(other.id, 0) }} source{{ 's' if counts.get(other.id, 0) != 1 else '' }} · updated {{ other.last_updated_at | fmt_dt }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="muted" style="font-size: 13px; margin-top: 8px">Connected through shared organizations, products and topics — across sections.</p>
+      {% else %}
+      <p class="muted">No connected stories found yet.</p>
+      {% endif %}
+    </section>
+  </aside>
+</div>
+{% endblock %}

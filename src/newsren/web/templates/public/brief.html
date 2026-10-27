@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% import "public/_public.html" as p with context %}
+{% set cites = brief.citations or [] %}
+{% block title %}{{ brief.headline }} — The Newsren{% endblock %}
+{% block description %}{{ plain(brief.summary) | truncate(200) }}{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">
+<link rel="stylesheet" href="/static/css/tools.css">{% endblock %}
+{% block content %}
+{% if is_finance %}{{ m.finance_notice(FINANCE_DISCLAIMER) }}{% endif %}
+
+{% if preview %}
+<div class="preview-banner" role="status">
+  <strong>Unpublished draft — in editorial review</strong>
+  Only editors can see this page. Status: {{ brief.status | label }} · risk {{ brief.risk_level }}{% if brief.requires_human_review %} · requires human review{% endif %} · {{ checks_passed }} of {{ checks_total }} automated checks passed.
+  Readers will see it once an editor approves it on the <a href="/editor">editor desk</a>.
+</div>
+{% endif %}
+
+<article class="brief" aria-labelledby="brief-title">
+  <header class="brief-header">
+    <div class="brief-kicker">
+      {{ m.vertical_tag(brief.vertical) }}
+      {% if brief.kind and brief.kind != 'story' %}<span class="badge">{{ brief.kind | label }} brief</span>{% else %}<span class="badge">AI Story Brief</span>{% endif %}
+      {% if is_opinion_brief(brief) %}<span class="badge badge-opinion">Opinion</span>{% endif %}
+      {{ m.demo_badge(brief.is_demo) }}
+      {% if brief.status == 'approved' %}<span class="badge badge-approved">Published</span>{% else %}{{ brief.status | badge }}{% endif %}
+    </div>
+    <h1 class="page-title brief-title" id="brief-title">{{ brief.headline }}</h1>
+    <p class="brief-meta">
+      {% if brief.published_at %}<span>Published <time datetime="{{ brief.published_at.isoformat() }}">{{ brief.published_at | fmt_dt_time }}</time></span>{% endif %}
+      <span>Generated <time datetime="{{ brief.generated_at.isoformat() }}">{{ brief.generated_at | fmt_dt_time }}</time></span>
+      <span><a href="#sources">{{ cites | length }} source{{ 's' if cites | length != 1 else '' }}</a></span>
+      {% if story %}<span><a href="/stories/{{ story.id }}">Story timeline</a></span>{% endif %}
+      <span>Version {{ brief.version }}</span>
+      <span>{% if corrections %}<a href="#corrections">{{ corrections | length }} correction{{ 's' if corrections | length != 1 else '' }}</a>{% else %}No corrections{% endif %}</span>
+    </p>
+  </header>
+
+  <div class="layout-main-side">
+    <div class="brief-body">
+      <p class="lede">{{ p.cited(brief.summary, cites) }}</p>
+
+      {% if brief.why_it_matters %}
+      <section class="why-box" aria-labelledby="why-heading">
+        <h2 id="why-heading">Why it matters</h2>
+        <p>{{ p.cited(brief.why_it_matters, cites) }}</p>
+      </section>
+      {% endif %}
+
+      {% if brief.what_changed %}
+      <section aria-labelledby="changed-heading">
+        <h2 class="section-heading" id="changed-heading">What changed</h2>
+        <p class="what-changed">{{ p.cited(brief.what_changed, cites) }}</p>
+      </section>
+      {% endif %}
+
+      {% if brief.key_points %}
+      <section aria-labelledby="points-heading">
+        <h2 class="section-heading" id="points-heading">Key points</h2>
+        <ul class="key-points">
+          {% for point in brief.key_points %}<li>{{ p.cited(point, cites) }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if brief.sections %}
+      <section aria-labelledby="explain-heading">
+        <h2 class="section-heading" id="explain-heading">Explore the story</h2>
+        {% for section in brief.sections %}
+          {% call m.expandable(section.title, open=loop.first) %}
+            {% for para in (section.body or '').split('\n') if para.strip() %}
+              <p>{{ p.cited_with(para, section.citation_ids if loop.last else [], cites) }}</p>
+            {% endfor %}
+          {% endcall %}
+        {% endfor %}
+      </section>
+      {% endif %}
+
+      {% if brief.claims %}
+      <section aria-labelledby="claims-heading">
+        <h2 class="section-heading" id="claims-heading">Claims and their evidence</h2>
+        <p class="muted" style="font-family: var(--sans); font-size: 14px">Each claim is labelled as fact, interpretation, forecast, performance claim, or opinion, with how well the cited sources support it.</p>
+        <ul class="claims">
+          {% for claim in brief.claims %}{{ m.claim_item(claim, cites) }}{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if brief.uncertainty %}
+      <section class="uncertainty" aria-labelledby="uncertainty-heading">
+        <h2 id="uncertainty-heading" class="section-label" style="color: inherit">What remains uncertain</h2>
+        <ul>
+          {% for item in brief.uncertainty %}<li>{{ p.cited(item, cites) }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if brief.disagreements %}
+      <section aria-labelledby="disagree-heading">
+        <h2 class="section-heading" id="disagree-heading">Where credible sources disagree</h2>
+        {% for d in brief.disagreements %}
+        <div class="disagreement">
+          <h3>{{ d.topic }}</h3>
+          <div class="disagreement-positions">
+            {% for pos in d.positions %}
+            <div class="position">
+              <span class="position-label">Position {{ loop.index }}</span>
+              {{ p.cited_with(pos.position, pos.citation_ids, cites) }}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+        <p class="muted" style="font-family: var(--sans); font-size: 13.5px">The Newsren describes disagreements rather than silently choosing one interpretation.</p>
+      </section>
+      {% endif %}
+
+      {% if brief.watch_next %}
+      <section aria-labelledby="watch-heading">
+        <h2 class="section-heading" id="watch-heading">What to watch next</h2>
+        <ul class="watch-list">
+          {% for item in brief.watch_next %}<li>{{ p.cited(item, cites) }}</li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <section id="corrections" aria-labelledby="corrections-heading">
+        <h2 class="section-heading" id="corrections-heading">Corrections</h2>
+        {% if corrections %}
+        <ul class="corrections-list">
+          {% for c in corrections %}
+          <li>
+            <strong>{{ c.created_at | fmt_dt_time }}</strong>{% if c.material %} <span class="badge badge-high">Material correction</span>{% endif %}<br>
+            {{ c.description }}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="muted" style="font-family: var(--sans); font-size: 14.5px">No corrections have been made to this brief. Corrections are listed here with the date and whether they were material.</p>
+        {% endif %}
+      </section>
+
+      <div id="sources">
+        {{ m.citation_list(cites, "Sources") }}
+      </div>
+      {{ m.generated_note(brief.generated_by, brief.generated_at) }}
+      {% if brief.reviewed_at and brief.status == 'approved' %}
+      <p class="generated-note muted">Reviewed and approved by a human editor · {{ brief.reviewed_at | fmt_dt_time }}{% if checks_total %} · {{ checks_passed }} of {{ checks_total }} automated editorial checks passed{% endif %}.</p>
+      {% endif %}
+    </div>
+
+    <aside class="side-stack" aria-label="Investigate further">
+      <nav class="panel" aria-labelledby="investigate-heading">
+        <h2 class="panel-title" id="investigate-heading">Investigate further</h2>
+        <ul class="side-list tool-shortcuts">
+          {% for tab in tabs %}
+          <li><a href="{{ tab.url }}" hx-get="{{ tab.url }}" hx-target="#tool-panel" hx-push-url="false" hx-swap="innerHTML show:#tools:top" data-tool-shortcut="{{ tab.key }}">{{ tab.label }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      {% if products %}
+      <section class="panel" aria-labelledby="products-heading">
+        <h2 class="panel-title" id="products-heading">Editorial products for this story</h2>
+        <ul class="side-list">
+          {% for spec in products %}
+          <li>
+            <a href="/briefs/{{ brief.id }}/tools/products/{{ spec.key }}"
+               hx-get="/briefs/{{ brief.id }}/tools/products/{{ spec.key }}"
+               hx-target="#tool-panel" hx-push-url="false" hx-swap="innerHTML show:#tools:top" data-product-link>{{ spec.name }}</a>
+            {% if spec.vertical != brief.vertical %}<span class="vertical-tag vertical-tag-{{ spec.vertical }}">{{ VERTICAL_LABELS[spec.vertical] }}</span>{% endif %}
+            <span class="muted">{{ spec.reader_value }}.</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <section class="panel" aria-labelledby="explain-for-heading">
+        <h2 class="panel-title" id="explain-for-heading">Explain for: {{ (AUDIENCES | selectattr('slug', 'equalto', audience) | first).label }}</h2>
+        <p>"Learn this topic" adapts explanations, glossary, quiz and discussion questions for {{ audience }}s. Switch between Student, Educator and Professional with "Explain for" at the top of the page.</p>
+      </section>
+
+      {% if story %}
+      <section class="panel" aria-labelledby="story-heading">
+        <h2 class="panel-title" id="story-heading">The story so far</h2>
+        <p>This brief covers one evolving story with {{ story.events | length }} sourced development{{ 's' if story.events | length != 1 else '' }}.</p>
+        <p><a href="/stories/{{ story.id }}">See the full timeline →</a></p>
+      </section>
+      {% endif %}
+
+      <section class="panel" aria-labelledby="standards-heading">
+        <h2 class="panel-title" id="standards-heading">How this brief was made</h2>
+        <p>AI agents drafted it from approved sources only; automated checks verified citations, labels and sources; {% if brief.vertical == 'finance' %}finance briefs always go to{% else %}it then went to{% endif %} a human editor before publication. <a href="/about">Our standards</a>.</p>
+      </section>
+    </aside>
+  </div>
+</article>
+
+<section class="tools" id="tools" aria-labelledby="tools-heading">
+  <h2 class="section-heading" id="tools-heading">Investigate this story</h2>
+  <p class="tools-intro">Intelligence tools run on this brief's sources when you open them.</p>
+  <div class="tool-tabs" role="tablist" aria-label="Intelligence tools">
+    {% for tab in tabs %}
+    <a class="tool-tab{% if loop.first %} is-active{% endif %}" role="tab" id="tool-tab-{{ tab.key }}"
+       aria-selected="{{ 'true' if loop.first else 'false' }}" aria-controls="tool-panel"
+       data-tool-tab href="{{ tab.url }}" hx-get="{{ tab.url }}" hx-target="#tool-panel" hx-push-url="false">{{ tab.label }}</a>
+    {% endfor %}
+  </div>
+  <div id="tool-panel" class="tool-panel" role="tabpanel" aria-label="Intelligence tool results" aria-live="polite"
+       hx-get="{{ tabs[0].url }}" hx-trigger="load">
+    <p class="loading htmx-indicator">Loading connected stories…</p>
+    <p class="tool-fallback"><a href="{{ tabs[0].url }}">Open Connected stories</a> — this story's timeline alongside related developments in other sections.</p>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Sidebar shortcuts and product links load into the tool panel: keep the tab bar's selection in sync.
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest("[data-tool-shortcut], [data-product-link]");
+    if (!link) return;
+    var key = link.getAttribute("data-tool-shortcut");
+    document.querySelectorAll("#tools [data-tool-tab]").forEach(function (tab) {
+      var active = key !== null && tab.id === "tool-tab-" + key;
+      tab.classList.toggle("is-active", active);
+      tab.setAttribute("aria-selected", active ? "true" : "false");
+    });
+  });
+</script>
+{% endblock %}

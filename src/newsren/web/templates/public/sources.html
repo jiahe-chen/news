@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m with context %}
+{% block title %}Approved sources — The Newsren{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/css/public.css">{% endblock %}
+{% set kind_labels = {'rss': 'RSS/Atom feed', 'arxiv': 'arXiv API', 'edgar': 'SEC EDGAR', 'eric': 'ERIC API', 'manual': 'Manual', 'demo': 'Demo feed'} %}
+{% block content %}
+<header>
+  <p class="kicker">Standards</p>
+  <h1 class="page-title">Approved sources</h1>
+  <p class="lede">The Newsren's agents can only read the {{ total }} sources below — approved news feeds, research indexes, regulators and SEC EDGAR filings. There is no unrestricted browsing and no unapproved scraping.</p>
+</header>
+
+<section aria-labelledby="tiers-heading">
+  <h2 class="section-heading" id="tiers-heading">How sources are labelled</h2>
+  <div class="tier-legend">
+    <div>{{ 'primary' | badge }} <span class="muted">{{ tiers.get('primary', 0) }}</span><p>The original record: a regulator, filing, research paper or official release.</p></div>
+    <div>{{ 'independent' | badge }} <span class="muted">{{ tiers.get('independent', 0) }}</span><p>Independent reporting or a third-party evaluation.</p></div>
+    <div>{{ 'vendor' | badge }} <span class="muted">{{ tiers.get('vendor', 0) }}</span><p>A company describing its own product — reported as the company's claim.</p></div>
+    <div>{{ 'commentary' | badge }} <span class="muted">{{ tiers.get('commentary', 0) }}</span><p>Opinion and analysis — shown as argument, never as evidence.</p></div>
+  </div>
+  <p class="muted" style="font-family: var(--sans); font-size: 14px">Licensing notes say what we may store (often headline, summary and link only). Data delay notes say how fresh a source can be; every source records when The Newsren last retrieved it.{% if demo_count %} {{ demo_count }} fictional demo sources on reserved <code>.example</code> domains power the demo content.{% endif %}</p>
+</section>
+
+{% for vertical, sources in grouped.items() if sources %}
+<section aria-labelledby="src-{{ vertical }}">
+  <h2 class="section-heading" id="src-{{ vertical }}">{{ VERTICAL_LABELS.get(vertical, vertical | capitalize) }} <span class="muted">({{ sources | length }})</span></h2>
+  {% if vertical == 'finance' %}<p class="finance-line" role="note">Finance data comes from public or licensed sources only (for example SEC EDGAR filings and company releases), timestamped, with delays noted. Not investment advice.</p>{% endif %}
+  <div class="table-wrap">
+    <table class="data sources-table">
+      <thead>
+        <tr><th scope="col">Source</th><th scope="col">Kind</th><th scope="col">Trust tier</th><th scope="col">License</th><th scope="col">Data delay</th><th scope="col">Last fetched</th></tr>
+      </thead>
+      <tbody>
+        {% for s in sources %}
+        <tr>
+          <td data-label="Source">
+            <span class="source-name">{% if s.homepage %}<a href="{{ s.homepage }}" rel="noopener noreferrer" target="_blank">{{ s.name }}</a>{% else %}{{ s.name }}{% endif %}</span>
+            {% if s.kind == 'demo' %}{{ m.demo_badge(true) }}{% endif %}
+            {% if not s.active %}<span class="badge">Paused</span>{% endif %}
+            <br><span class="muted">{{ article_counts.get(s.id, 0) }} document{{ 's' if article_counts.get(s.id, 0) != 1 else '' }} archived</span>
+          </td>
+          <td data-label="Kind">{{ kind_labels.get(s.kind, s.kind | capitalize) }}{% if s.default_doc_type %}<br><span class="muted">{{ s.default_doc_type | label }}</span>{% endif %}</td>
+          <td data-label="Trust tier">{{ s.trust_tier | badge }}</td>
+          <td data-label="License">{{ s.license_note or '—' }}</td>
+          <td data-label="Data delay">{{ s.data_delay_note or '—' }}</td>
+          <td data-label="Last fetched">
+            {% if s.last_fetched_at %}{{ s.last_fetched_at | fmt_dt_time }}{% elif s.kind == 'demo' %}Loaded with demo data{% else %}Not fetched yet{% endif %}
+            {% if s.last_status %}<br><span class="muted">{{ s.last_status }}</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endfor %}
+{% endblock %}

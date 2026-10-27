@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -80,6 +81,14 @@ def badge(value: Any, extra_class: str = "") -> Markup:
     key = str(value)
     cls = f"badge badge-{escape(key)}" + (f" {escape(extra_class)}" if extra_class else "")
     return Markup(f'<span class="{cls}">{escape(label(key))}</span>')
+
+
+_CITE_MARK = re.compile(r"\s*\[c\d+\]")
+
+
+def strip_cites(value: Any) -> str:
+    """Drop inline [cN] citation markers (for teasers where footnotes aren't shown)."""
+    return _CITE_MARK.sub("", str(value or ""))
 
 
 def fmt_dt(value: datetime | str | None, fmt: str = "%b %d, %Y") -> str:
@@ -163,7 +172,8 @@ def render(
         audience = user.audience if user is not None else Audience.PROFESSIONAL.value
     ctx.setdefault("audience", audience)
     ctx.setdefault("csrf_token", csrf_token(request))
-    ctx.setdefault("flash", request.session.pop("flash", None))
+    if "flash" not in ctx:
+        ctx["flash"] = request.session.pop("flash", None)
     ctx.setdefault("active_vertical", None)
     ctx.setdefault("now_label", utcnow().strftime("%A, %B %d, %Y").replace(" 0", " "))
     return templates.TemplateResponse(request, name, ctx, status_code=status_code, **kwargs)

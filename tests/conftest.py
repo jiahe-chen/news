@@ -208,8 +208,18 @@ def _csrf(client) -> str:
     return match.group(1)
 
 
+def form_csrf(html: str) -> str:
+    """The CSRF token rendered into a form's hidden field (what a real browser submits)."""
+    import re
+
+    match = re.search(r'name="csrf_token" value="([^"]*)"', html)
+    assert match, "form has no csrf_token field"
+    assert match.group(1), "form renders an empty csrf_token (macro imported without context?)"
+    return match.group(1)
+
+
 def login(client, email: str, password: str) -> str:
-    token = _csrf(client)
+    token = form_csrf(client.get("/login").text)
     resp = client.post(
         "/login", data={"email": email, "password": password, "csrf_token": token}, follow_redirects=False
     )
