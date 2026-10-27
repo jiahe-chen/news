@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from datetime import UTC, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -18,6 +18,7 @@ from newsren.intelligence.timeline import (
     member_articles,
     member_fingerprint,
     refresh_story,
+    source_sentences,
     story_changes_since,
     story_citations,
     update_stories,
@@ -366,3 +367,118 @@ def test_ai_benchmark_claims_are_not_given_finance_performance_labels(session, f
     refresh_story(session, story)
     assert "backtest" not in story.what_happened_first
     assert "company's own claims" in story.what_happened_first
+
+
+# --------------------------------------------------------------------------
+# Regressions from the live run (real titles and summaries, tests/data/briefs/live_samples.json)
+# --------------------------------------------------------------------------
+
+LIVE_ROWS = json.loads((Path(__file__).parent / "data" / "briefs" / "live_samples.json").read_text())["articles"]
+
+
+def live_story(session, factory, name: str) -> Story:
+    """A story holding the live articles of one sample storyline, oldest first, as feeds stored them."""
+    rows = [r for r in LIVE_ROWS if r["story"] == name]
+    base = utcnow() - timedelta(days=1)
+    story = Story(title=rows[0]["title"], vertical=rows[0]["vertical"])
+    session.add(story)
+    sources = {}
+    for i, row in enumerate(rows):
+        key = (row["publisher"], row["doc_type"])
+        if key not in sources:
+            sources[key] = factory.source(
+                vertical=row["vertical"],
+                trust_tier=row["trust_tier"],
+                doc_type=row["doc_type"],
+                name=row["publisher"],
+            )
+        published = (
+            datetime.fromisoformat(row["published_at"]) if row["published_at"] else base + timedelta(minutes=i)
+        )
+        article = factory.article(
+            row["title"],
+            "",  # publisher feeds and research indexes store no article body
+            source=sources[key],
+            vertical=row["vertical"],
+            doc_type=row["doc_type"],
+            trust_tier=row["trust_tier"],
+            summary=row["summary"],
+            published_at=published,
+        )
+        article.story = story
+    session.flush()
+    return story
+
+
+def test_source_sentences_keep_abbreviations_and_strip_abstract_labels():
+    eric = next(r for r in LIVE_ROWS if r["key"] == "eric_literacy_1")["summary"]
+    sentences = source_sentences(eric)
+    assert sentences[0].startswith("Current knowledge and research")  # "Purpose:" stripped
+    assert any(s.startswith("This research used survey-based research") for s in sentences)  # "Design/...:"
+    assert any(s.startswith("Most respondents used generative AI") for s in sentences)  # "Findings:"
+    assert any(s.startswith("Literature related to generative AI") for s in sentences)  # "Originality/value:"
+    assert not any(re.match(r"^(?:Purpose|Design|Findings|Originality)\b", s) for s in sentences)
+
+    denver = next(r for r in LIVE_ROWS if r["key"] == "denver_board_2")["summary"]
+    assert source_sentences(denver) == [
+        "The Denver school board is set to vote to appoint a new member on Nov. 19 following the resignation of "
+        "DJ Torres."
+    ]
+    election = next(r for r in LIVE_ROWS if r["key"] == "election_caption_1")["summary"]
+    assert (
+        len(source_sentences(election)) == 2
+    )  # "Thursday, Oct. 15, 2026, after inviting Republican Gov. Greg Abbott"
+    assert source_sentences(
+        "Researchers at IBM published “Superposed analog memory.” Summary: Researchers built it."
+    ) == [
+        "Researchers at IBM published “Superposed analog memory.”",
+        "Researchers built it.",
+    ]
+
+
+def test_second_research_paper_is_a_second_study_not_a_move_from_an_evaluation(session, factory):
+    story = live_story(session, factory, "eric_literacy")
+    assert refresh_story(session, story)
+    assert {ev.event_type for ev in story.events} == {EventType.RESEARCH_PUBLICATION}
+    assert "moved from" not in story.whats_new
+    assert "independent evaluation" not in " ".join([story.whats_new, *story.evidence_changes])
+    assert story.whats_new.startswith("A second study on the same topic was published: “")
+    later = member_articles(story)[1]
+    assert later.title in story.whats_new  # listed by its title, not by its background opener
+    assert "two peer-reviewed papers" in " ".join(story.evidence_changes)
+    # "creating opportunities and challenges" is not a dispute between sources.
+    assert story.disputed == []
+    # The first paper is described by what it did, not by its stated aim or its background opener.
+    assert "This research used survey-based research" in story.what_happened_first
+    assert "forward-looking" not in story.what_happened_first
+
+
+def test_three_papers_are_listed_as_further_studies(session, factory):
+    story = live_story(session, factory, "three_papers")
+    assert refresh_story(session, story)
+    assert story.whats_new.startswith("Two more studies on the same topic were published: “")
+    assert story.whats_new.count("(peer-reviewed paper,") == 2
+
+
+def test_lead_sentence_skips_captions_and_bare_quotes(session, factory):
+    denver = live_story(session, factory, "denver_board")
+    refresh_story(session, denver)
+    assert "on Nov. 19 following the resignation of DJ Torres" in denver.what_happened_first
+    assert "The board approved Marrero's latest performance evaluation Monday" in denver.whats_new
+    assert "listen in" not in denver.whats_new
+    assert "(development)" not in denver.whats_new
+    assert "two news reports" in " ".join(denver.evidence_changes)
+
+    dune = live_story(session, factory, "dune_trailer")
+    refresh_story(session, dune)
+    assert "“Warner Bros. drops final trailer for Dune: Part Three”" in dune.what_happened_first
+    assert "After years of combat" not in dune.what_happened_first
+    assert dune.evidence_changes == [
+        "No change in the evidence base yet: the story rests on a single news report [c1]."
+    ]
+
+
+def test_performance_basis_only_for_stories_that_report_performance(session, factory):
+    story = live_story(session, factory, "bibliometric")
+    refresh_story(session, story)
+    assert not any(c.startswith("Performance evidence") for c in story.evidence_changes)

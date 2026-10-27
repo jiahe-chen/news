@@ -1,0 +1,730 @@
+{
+ "source": "Copied verbatim from the live run of 2026-10-27 (545 articles from 27 approved feeds, offline LLM mode). Publisher feeds store a title and a short summary only; ERIC and arXiv summaries are abstracts.",
+ "articles": [
+  {
+   "key": "eric_literacy_1",
+   "story": "eric_literacy",
+   "title": "Exploring Generative AI Literacy in Higher Education: Student Adoption, Interaction, Evaluation and Ethical Perceptions",
+   "summary": "Purpose: Current knowledge and research on students' utilization and interaction with generative artificial intelligence (AI) tools in their academic work is limited. This study aims to investigate students' engagement with these tools. Design/methodology/approach: This research used survey-based research to investigate generative AI literacy (utilization, interaction, evaluation of output and ethics) among students enrolled in a four-year public university in the southeastern USA. This article focuses on the respondents who have used generative AI (218; 47.2%). Findings: Most respondents used generative AI to generate ideas for papers, projects or assignments, and they also used AI to assist with their original ideas. Despite their use of AI assistance, most students were critical of generative AI output, and this mindset was reflected in their reported interactions with ChatGPT. Respondents expressed a need for explicit guidance from course syllabi and university policies regarding generative AI's ethical and appropriate use. Originality/value: Literature related to generative AI use in higher education specific to ChatGPT is predominantly from educators' viewpoints. This study provides empirical evidence about how university students report using generative AI in the context of generative AI literacy.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "eric_literacy_2",
+   "story": "eric_literacy",
+   "title": "Exploring AI Literacy, Reliance, and Ethical Practices of Secondary Level Students in Using Generative AI",
+   "summary": "Generative artificial intelligence (AI) is rapidly changing education, creating opportunities and challenges. With this technology now widely available to secondary students, it is crucial to explore how they are using it. To explore secondary level students' AI literacy, AI reliance, and ethical practices when using generative AI, the researchers collected data from a sample of 595 secondary level students from a private institution using an adopted 20-item Generative AI Literacy Assessment (GLAT) and a researcher made tool for AI reliance and ethical practices with 5-point rating scale. Findings revealed that the students' mean AI literacy score was 8.71 out of 20, indicating a limited understanding of generative AI. The mean for AI reliance was found to be 2.91, while the mean for ethical practices was 3.88. Multiple linear regression analyses indicated that AI literacy and ethical practices significantly predict AI reliance, accounting for 6.02% of the variance in reliance (R[subscript 2] = 0.0602, p-value < 0.001). Specifically, AI literacy was a significant negative predictor of AI reliance, suggesting that as students' knowledge increases, their reliance decreases. However, ethical practices was a significant positive predictor of AI reliance, suggesting that more ethical students tend to also be more reliant on the technology. Furthermore, both AI literacy and AI reliance were found to be significant positive predictors of ethical practices, explaining 9.13% of the variance in ethical practices (R[subscript 2] = 0.0913, p-value < 0.001). This suggests a direct link where higher AI literacy leads to more ethical behavior, and that students who are more reliant on AI also tend to exhibit more ethical practices. The findings highlight the complex relationship between students' AI knowledge, reliance, and behavior, providing a foundation for targeted educational interventions.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "denver_board_1",
+   "story": "denver_board",
+   "title": "Denver Superintendent Alex Marrero earns 88 points out of 100 on latest evaluation",
+   "summary": "Denver Public Schools Superintendent Alex Marrero talks with students in August as school board members Xóchitl Gaytán and Marlene De La Rosa listen in. The board approved Marrero's latest performance evaluation Monday.",
+   "publisher": "Chalkbeat",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "published_at": "2026-10-27T19:15:24"
+  },
+  {
+   "key": "denver_board_2",
+   "story": "denver_board",
+   "title": "13 people apply to fill a vacancy on the Denver school board, which has been mired in conflict",
+   "summary": "The Denver school board is set to vote to appoint a new member on Nov. 19 following the resignation of DJ Torres.",
+   "publisher": "Chalkbeat",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "published_at": "2026-10-26T22:53:50"
+  },
+  {
+   "key": "disruptive_fund_1",
+   "story": "disruptive_fund",
+   "title": "Disruptive raises $10B fund to make big bets on at least 10 companies",
+   "summary": "Disruptive has made headlines in recent years for pouring money into companies like chip startup Groq and the AI voice-generation startup ElevenLabs.",
+   "publisher": "TechCrunch - Venture",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "published_at": "2026-10-27T18:55:35"
+  },
+  {
+   "key": "dune_trailer_1",
+   "story": "dune_trailer",
+   "title": "Warner Bros. drops final trailer for Dune: Part Three",
+   "summary": "\"After years of combat, I've become the oppressor Chani had sworn to fight.\"",
+   "publisher": "Ars Technica",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "published_at": "2026-10-27T18:05:55"
+  },
+  {
+   "key": "uefi_flaw_1",
+   "story": "uefi_flaw",
+   "title": "Code-execution flaw in UEFI firmware threatens most servers on planet Earth",
+   "summary": "Critical flaw in EDK2 allows attackers to execute code early in the boot process.",
+   "publisher": "Ars Technica",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "published_at": "2026-10-27T20:25:55"
+  },
+  {
+   "key": "bbc_budget_1",
+   "story": "bbc_budget",
+   "title": "Minimum wage set to rise but 18-20 year-olds will not get bigger increase",
+   "summary": "Chancellor John Healey will reveal the new pay rates in the Budget, and has also announced measures to help households with the cost of living.",
+   "publisher": "BBC News - Business",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "published_at": "2026-10-27T15:01:27"
+  },
+  {
+   "key": "bbc_budget_2",
+   "story": "bbc_budget",
+   "title": "Tax on banks, energy bill help and minimum wage rise - what could be in the Budget?",
+   "summary": "Chancellor John Healey will set out his plans for UK taxes on 28 October.",
+   "publisher": "BBC News - Business",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "published_at": "2026-10-27T18:45:56"
+  },
+  {
+   "key": "bibliometric_1",
+   "story": "bibliometric",
+   "title": "Generative Artificial Intelligence in Education: A Topic-Based Bibliometric Analysis",
+   "summary": "Information and communication technologies have transformed education, driving it towards intelligent teaching and learning. With the rise of generative artificial intelligence (AI), represented by tools such as ChatGPT, there is also a growing body of literature on generative AI in education. In this study, we searched the Scopus, ERIC, and Web of Science databases as well as the proceedings of the International Conference on Artificial Intelligence in Education and the International Conference on Educational Data Mining. These searches yielded 1,158 papers that we subjected to topic modelling analysis, the Mann-Kendall trend test, and keyword analysis to comprehensively review the evolving trends and dynamics of generative AI in education, active publication sources and authors, major research topics in generative AI education, and potential directions for cross-thematic research. We analysed the trends of keywords and relevance during different sub-periods. Topic modelling enabled us to classify all abstracts of the reviewed papers into 12 topics and identify the tendency of each topic. The topics included predicting student performance, learning tutoring systems, generative AI and AI literacy, writing/essay automated grading, chatbot-based learning/assessment, gamified/game-based learning & AI learning environments, emotional engagement, automatic feedback, question generation, generative AI use in peer assessment, personalised recommendation system, and simulation-based study environment. Finally, a heat map and a hierarchy cluster provided information about the correlations between topics and the potential integration of different research directions for generative AI in education, offering a reference for future research.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "pilot_study_1",
+   "story": "pilot_study",
+   "title": "Developing Higher Education Students' Artificial Intelligence (AI) Literacy for Academic Writing: A Pilot Study in a First-Year Seminar",
+   "summary": "As generative AI tools like ChatGPT become increasingly integrated into higher education contexts, the need to equip students with critical AI literacy has become urgent. This pilot study investigates how a four-lesson instructional module shaped undergraduate students' understanding of the ethical use, potentials, and limitations of generative AI tools, particularly in relation to academic reading and writing. Implemented in a First-Year Seminar (FYS) course at a U.S. university, the study employed a mixed-methods design, drawing on pre- and post-module AI Literacy Surveys (n=7), a post-semester instructor interview, and the researcher's reflection journal. Findings revealed a notable shift in students' awareness of ethical considerations, collaborative engagement with AI, and development of authorial voice when scaffolded through structured activities. However, these gains did not consistently transfer to independent academic tasks, pointing to the limitations of short-term interventions and the importance of integrating AI literacy instruction within foundational academic writing curricula. As an exploratory pilot study, the findings provide preliminary insight into the pedagogical potentials and constraints of early AI literacy intervention for college-level academic writing, suggesting the need for sustained, curriculum-embedded approaches to cultivate critical and ethical AI engagement among higher education students.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "ethical_scenarios_1",
+   "story": "ethical_scenarios",
+   "title": "AI Literacy and Scenario-Based Ethical Judgment about Generative AI among Undergraduate Students",
+   "summary": "Generative artificial intelligence (GenAI) is increasingly embedded in higher education, shaping how students learn and obtain knowledge. Although AI education is expanding, limited empirical research has examined how undergraduate students exercise ethical judgment about using GenAI in academic situations, particularly in relation to their AI literacy. This study examined undergraduate students' ethical judgment regarding GenAI use in educational contexts and its relationship to AI literacy and student demographics. A cross-sectional survey was conducted with a convenience sample (n = 531) recruited through two psychology courses at one public Midwestern university. The survey included demographics, six GenAI ethical scenarios, and the Generative AI Literacy Assessment Test (GLAT). Participants generally demonstrated high agreement when classifying the six predesignated scenarios, distinguishing GenAI use that supported learning from use that substituted AI-generated content for original academic work. 57.6% of students correctly classified all six scenarios, indicating a pronounced ceiling effect, with uncertainty greatest when AI-generated content was minimally modified before submission. AI literacy demonstrated a small positive association with classification accuracy, Spearman's ? = 0.234, p < 0.001, and emerged as a significant predictor across the six scenarios. In the adjusted binomial model, each additional correct response on the objective AI literacy measure was associated with a 13.9% increase in the modeled odds of correctly classifying an ethical scenario. By focusing on applied ethical judgment in academic scenarios, this study highlights the need to prospectively evaluate how AI literacy instruction and ethics education may support undergraduate students' preparation for future professional practice.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "civic_literacy_1",
+   "story": "civic_literacy",
+   "title": "Generative AI, Deepfakes, & Disinformation: A Case for Fostering Civic-Minded AI Literacy",
+   "summary": "Social media and the internet have become significant sources for news and simultaneously effective venues through which to spread disinformation. The internet and social media play a key role in how citizens make decisions about voting. As generative AI increases the ability to easily replicate voices, images, and writing styles, it will be increasingly important to teach students and the public how to discern authentic and credible content from deepfakes and disinformation. This paper conceptualized a civic-minded AI literacy within the umbrella of media literacy education as a way to empower students to critically evaluate and navigate the increasing volumes of disinformation and fake news they encounter. It argues that media literacy standards and policies that incorporate AI literacy will be essential for preparing students to participate effectively as digital citizens. Civic-minded AI literacy as part of a robust media literacy education program across K-12 and higher education will be vital to support a healthy democracy.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "evaluation_study_1",
+   "story": "evaluation_study",
+   "title": "Demystifying Artificial Intelligence for Preservice and In-Service Teachers: An Evaluation Study",
+   "summary": "While much attention has been placed on creating effective professional development opportunities centered on Artificial Intelligence (AI) for preservice and in-service teachers, little has been done to shape the experiences with the enthusiasm, knowledge, and concerns teachers bring to it. This study set out to evaluate a professional development learning opportunity for teachers. By utilizing a co-design approach with teachers from primarily Title 1 schools, the study aimed to demystify AI in education and develop a comfort level among teachers with new generative AI technology. This evaluation study relied on a mixed-method approach to analyze teachers' experiences in the online and in-person sessions of a professional development initiative on Generative AI. The findings revealed that teachers found this training to be helpful and beneficial in bringing generative AI to schools. Teachers were able to decide for themselves how and when to use AI for teaching and learning. While the study aimed to 'demystify' AI, it also allowed for collaborative learning of preservice and in-service teachers on how to leverage AI technologies for their own unique educational settings. This study offers an insightful guide for teachers, school leaders, and decision makers on how to bridge the AI literacy gap among teachers to be AI-ready.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "election_caption_1",
+   "story": "election_caption",
+   "title": "Election 2026: The education issues we’re watching",
+   "summary": "Democratic gubernatorial candidate Gina Hinojosa speaks outside the Texas Governor's Mansion in Austin on Thursday, Oct. 15, 2026, after inviting Republican Gov. Greg Abbott to debate. Hinojosa is one of several red-state Democrats running against vouchers this cycle.",
+   "publisher": "Chalkbeat",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "published_at": "2026-10-27T21:29:44"
+  },
+  {
+   "key": "incarcerated_youth_1",
+   "story": "incarcerated_youth",
+   "title": "What would help formerly incarcerated youth finish school? More support and accountability, experts say.",
+   "summary": "Chalkbeat Gun Violence Reporter Sammy Caiola, upper left, hosted a virtual panel about students losing academic credit between juvenile facilities and school.",
+   "publisher": "Chalkbeat",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "published_at": "2026-10-27T21:02:32"
+  },
+  {
+   "key": "world_language_1",
+   "story": "world_language",
+   "title": "AI Literacy: A Core Practice in World Language Education",
+   "summary": "The emergence of artificial intelligence (AI) innovations like ChatGPT presents new opportunities and challenges for world languages (WL) education. WL teacher education programs must prepare preservice teachers with \"AI literacy\" to help them effectively integrate these technologies into teaching. This multiple case study--part of our on-going self-study of teacher educator practice--investigated how AI literacy can be leveraged as a \"core practice\" in a WL teacher licensure program. Drawing on pre-surveys, course artifacts, structured reflections, and interviews, the study explored how three teacher candidates (TCs) engaged with Generative AI (chatbots) in the instructional activity of lesson planning and developed emergent forms of AI literacy. Participants demonstrated varying levels of development of AI literacy across four domains: technological proficiency, pedagogical compatibility, professional work, and ethical use. They developed critical stances toward AI, which were shaped by their evolving professional identities. This study contributes to growing conversations about AI in teacher education by showing the potential of the \"AI literacy\" core practice as a scaffolded, reflective approach to building AI competencies. It also underscores the importance of centering TC's professional identity development in AI integration while providing support for prompt design, noninstructional use of AI, and facilitating conversations about responsible AI use with students.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "unsettled_middle_1",
+   "story": "unsettled_middle",
+   "title": "From an Unsettled Middle: A Critical-Ethical Stance for GenAI-Engaged Writing Assignments",
+   "summary": "From an unsettled, ambivalent middle between discourses of generative AI integration and refusal, we offer a critical-ethical stance for AI-engaged writing assignments. We apply a critical thinking framework to these assignments, assert critical AI literacy as a kind of critical thinking, and discuss how critical thinking and critical AI literacy can facilitate ethical discernment about generative AI use. This unsettled, critical-ethical stance positions scholars in our field to support context-sensitive pedagogical responses to generative AI across first-year writing, Writing Across the Curriculum, writing centers, and beyond.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "tech_life_1",
+   "story": "tech_life",
+   "title": "Tech Life",
+   "summary": "We hear from Ondřej Surý, the programmer whose PHP patches helped avert a cyber crisis.",
+   "publisher": "BBC News - Technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "published_at": "2026-10-27T20:30:00"
+  },
+  {
+   "key": "android_stores_1",
+   "story": "android_stores",
+   "title": "Google begins certifying Registered App Stores for Android, but not in the US",
+   "summary": "Easier app installs are coming to third-party stores, pending Google's stamp of approval.",
+   "publisher": "Ars Technica",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "published_at": "2026-10-27T19:32:07"
+  },
+  {
+   "key": "three_papers_1",
+   "story": "three_papers",
+   "title": "From Chalkboards to ChatGPT: Navigating the Future of Teaching with Generative AI",
+   "summary": "Educators are at the forefront of shaping the future of education, particularly as technological advances introduce new tools and methods. Generative AI is a powerful tool capable of producing high-quality content based on properly constructed user prompts. While these advancements present significant opportunities, they also pose challenges. This study investigates educators' general attitudes and confidence in using and guiding student use of generative AI and evaluates the effectiveness of a targeted workshop designed to increase AI literacy among educators participating in a university outreach program. Participants included 12 undergraduate resident scientists, six graduate fellows, and eight professional teachers. The study utilised a pre- and post-survey approach to evaluate shifts in AI literacy and comfort before and after the workshop. Specifically, participants reported increased confidence in using AI tools, recognizing bias in AI-generated content, and understanding the ethical implications of AI use. The study highlights the importance of targeted, multigenerational training programs to improve educators' comfort and literacy with generative AI, emphasizing the value of cross-generational collaboration in enhancing learning outcomes. The findings suggest that such training fosters a deeper understanding of generative AI, thereby enhancing its integration into pedagogical practices.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "three_papers_2",
+   "story": "three_papers",
+   "title": "Preparing Students for the Generative Artificial Intelligence Future: Integrating Artificial Intelligence Literacy in Sport Management Education",
+   "summary": "As artificial intelligence (AI) becomes increasingly embedded in everyday life, there is a growing expectation that graduates are savvy in utilizing these tools. However, arguably, more important than simply understanding how to utilize these tools is fostering AI literacy, that is, developing the skill to utilize AI tools and the ability to critically assess their utility. This paper introduces an assignment that utilizes ChatGPT to promote critical engagement with course content and a generative AI tool. By engaging students in tasks that require interaction with AI tools like ChatGPT, educators can nurture both technical skills and the ability to discern the appropriate application and limitations of AI, an essential skill for preparing students for the complexities of the modern technological landscape.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "three_papers_3",
+   "story": "three_papers",
+   "title": "AI Literacy and Mediated Learner Autonomy in ChatGPT-Supported EFL Writing: A Qualitative Study at a Palestinian University",
+   "summary": "The rapid expansion of generative artificial intelligence (AI) has reshaped higher education, raising urgent pedagogical, ethical, and epistemic questions. In English as a Foreign Language (EFL) contexts, tools such as ChatGPT challenge established understandings of learner autonomy, authorship, and academic integrity. This qualitative study examines how AI literacy mediates learner autonomy and ethical decision-making in ChatGPT use within EFL programs at a Palestinian university. Drawing on semi-structured interviews and focus group discussions with EFL instructors and undergraduate students, the study employs thematic analysis to investigate how generative AI is interpreted and enacted in pedagogical practice. The findings indicate that ChatGPT functioned as a compensatory resource in contexts of limited instructional support, but its pedagogical value depended on learners' AI literacy and ethical awareness. The study also challenges the \"digital native\" assumption by showing that technological confidence did not necessarily translate into evaluative competence or responsible AI use in Palestinian university EFL writing.",
+   "publisher": "ERIC (IES) - AI in education research",
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "published_at": null
+  },
+  {
+   "key": "edgar_knowles",
+   "story": "edgar_filings",
+   "title": "Knowles Corp files Form 10-Q (quarterly report)",
+   "summary": "Knowles Corp (CIK 0001587523) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001587523-26-000035. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:05:46Z. EDGAR times are filing acceptance times.",
+   "publisher": "SEC EDGAR current filings - Form 10-Q",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "published_at": "2026-10-27T20:05:46"
+  },
+  {
+   "key": "edgar_ensign",
+   "story": "edgar_filings",
+   "title": "ENSIGN GROUP, INC files Form 10-Q (quarterly report)",
+   "summary": "ENSIGN GROUP, INC (CIK 0001125376) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001125376-26-000046. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:05:47Z. EDGAR times are filing acceptance times.",
+   "publisher": "SEC EDGAR current filings - Form 10-Q",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "published_at": "2026-10-27T20:05:47"
+  },
+  {
+   "key": "edgar_zurn",
+   "story": "edgar_filings",
+   "title": "Zurn Elkay Water Solutions Corp files Form 10-Q (quarterly report)",
+   "summary": "Zurn Elkay Water Solutions Corp (CIK 0001439288) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001628280-26-067577. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:08:21Z. EDGAR times are filing acceptance times.",
+   "publisher": "SEC EDGAR current filings - Form 10-Q",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "published_at": "2026-10-27T20:08:21"
+  },
+  {
+   "key": "benchmark_firm_partners",
+   "story": null,
+   "title": "No agenda, no rush, no leaving San Francisco: Benchmark’s partners on investing in a frenzied market",
+   "summary": "Benchmark may have grown its funds and swapped out some partners, but onstage the five who are left sounded like friends who just happen to be running one of the Valley’s most storied firms",
+   "publisher": "TechCrunch - Venture",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "published_at": "2026-10-18T21:00:00"
+  },
+  {
+   "key": "benchmark_firm_pact",
+   "story": null,
+   "title": "Even Benchmark thinks AI is eroding the venture pact against backing rivals",
+   "summary": "Benchmark says the Valley’s rule against backing rivals is getting harder to keep.",
+   "publisher": "TechCrunch - Venture",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "published_at": "2026-10-16T05:16:46"
+  },
+  {
+   "key": "ncsc_statement",
+   "story": null,
+   "title": "NCSC statement in response to recent incidents resulting from frontier AI evaluations",
+   "summary": "A statement from Ollie Whitehouse, Chief Technology Officer at the NCSC, on AI security following recent incidents.",
+   "publisher": "UK National Cyber Security Centre - News",
+   "doc_type": "news",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "published_at": "2026-08-04T12:00:00"
+  },
+  {
+   "key": "arxiv_vulnerability_detection",
+   "story": null,
+   "title": "Reva: Real-Time Vulnerability Detection through Contextual Probing of Large Language Models",
+   "summary": "A vulnerability costs more to fix the later it is discovered. As coding agents generate code faster than developers can review it, software needs a first line of defense screening each new function in real time. LLM agents have recently become capable of finding real-world vulnerabilities by working as a security expert would: they run analysis tools, explore the surrounding code, test hypotheses and weigh the evidence before forming their own judgement. This reasoning, however, spans many model calls, so that each verdict takes minutes of compute, far too long for real-time screening. Faster detectors, which fine-tune deep learning models or prompt an LLM for a direct verdict, are less accurate: they judge a function without the context an agent gathers, and an LLM's generated verdict is unreliable even when given some of it. We present REVA (REal-time Vulnerability Analysis), an AI vulnerability detector that brings the security context and code understanding components behind agentic detectors into a single forward pass of an LLM. For each new function, REVA gives the LLM a pre-computed threat model of its module, lightweight static analysis findings and call-graph information. REVA leverages a trained probe to read the LLM's internal representations of the new function in this context. On PrimeVul's held-out test set, REVA on GLM-5.3-Flash reaches 60.0% accuracy in about one second per function. This matches VulTriage (59.2%), the state-of-the-art agentic detector, run on the same LLM, while being over 250 times faster and less than a tenth as costly. On the same prompt, the probe is 14% to 17% more accurate than the LLM's own direct verdict. Across three open LLMs, REVA is at least as accurate as VulTriage, and about 10% more accurate on two of them. An LLM's internal representations thus encode much of what agentic detectors obtain through reasoning.",
+   "publisher": "arXiv cs.AI (Artificial Intelligence)",
+   "doc_type": "research_preprint",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "published_at": "2026-10-26T17:50:09"
+  },
+  {
+   "key": "arxiv_off_policy_evaluation",
+   "story": null,
+   "title": "Model Selection for Off-Policy Evaluation via Pairwise Bellman Validation",
+   "summary": "Model selection and hyperparameter tuning pose a central challenge in off-policy evaluation (OPE) because errors of fitted Q-functions and occupancy-ratio estimates cannot be directly evaluated from held-out transitions. Bellman-residual and minimax validation methods often require auxiliary regressions or optimization over separate critic classes, adding computational and tuning costs. We introduce pairwise Bellman validation (PBV), a tuning-free minimax procedure for selecting among finite classes of fitted Q-functions and occupancy-ratio estimators using held-out transitions. PBV constructs critics from pairwise candidate differences, requiring only finitely many empirical moment calculations without auxiliary validation models or separate critic optimization. We establish finite-sample oracle inequalities relative to the best available candidate, even under candidate-class misspecification. Our key insight is that Q-function errors and log ratios between candidate and true occupancy ratios provide oracle critics whose Bellman and adjoint Bellman moments control estimation error. Pairwise candidate differences approximate these unknown critics, while penalties account for comparator approximation error. For Q-function selection, we first develop unweighted PBV, which evaluates pairwise Bellman moments under the offline distribution and admits oracle guarantees under a pairwise coercivity condition relating the offline distribution to the target-policy dynamics. We then develop target-aligned PBV (TA-PBV), which uses marginalized importance weighting to provide error control without pairwise coercivity. For occupancy-ratio selection, we develop adjoint PBV (A-PBV), which evaluates adjoint Bellman moments against log-ratio critics. On Hopper and Deep OPE, unweighted PBV performs competitively, while target-occupancy weighting can improve performance in settings with controlled overlap.",
+   "publisher": "arXiv cs.LG (Machine Learning)",
+   "doc_type": "research_preprint",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "published_at": "2026-10-26T16:59:29"
+  },
+  {
+   "key": "school_ai_bans",
+   "story": null,
+   "title": "New York and Los Angeles Ban Student-Facing AI (For Now). Should Other Schools Follow?",
+   "summary": "The bans, coupled with a new APA report, signal a shift from rapid AI adoption toward more deliberate evaluation.",
+   "publisher": "EdSurge",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "published_at": "2026-09-14T00:00:00"
+  },
+  {
+   "key": "imec_research_summary",
+   "story": null,
+   "title": "Vertical DRAM Stacking Expands Thermal Design Space Beyond HBM-on-GPU (imec)",
+   "summary": "Researchers at imec published “Beyond HBM-on-GPU: Thermal Design Envelope for 3D Volumetric DRAM-on-GPU Integration.” Summary: Researchers evaluated a 3D memory architecture that rotates DRAM dies vertically above a GPU and places cooling cavities between them as an alternative to conventional 2.5D HBM and direct-stacked HBM-on-GPU. Package-level thermal simulations examined stack height, memory capacity and organization,... »",
+   "publisher": "Semiconductor Engineering",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "published_at": "2026-10-26T07:02:36"
+  },
+  {
+   "key": "arxiv_model_evaluation",
+   "story": null,
+   "title": "Evaluating DeepSeek V4.1 Flash-1017 for loss of control and harmful manipulation risks",
+   "summary": "As frontier language models grow increasingly capable and autonomous, independent third-party evaluations are critical for characterizing their systemic safety risks. While closed-source releases are routinely accompanied by comprehensive system cards, open-weight models receive less scrutiny regarding frontier risks. To address this gap, we present an independent safety evaluation of DeepSeek V4.1 Flash-1017, the latest version of V4.1 Flash that departs from V4 with a new architecture, scaled-up training, and strong agentic capabilities. Drawing on the EU General-Purpose AI Code of Practice, we evaluate the model across 34 benchmarks, including 5 in-house suites, spanning evaluation integrity, loss of control, and harmful manipulation. Conforming to the AEF-1 standard, we compare V4.1 Flash-1017 against V4.1 Flash, earlier DeepSeek V4 models, and leading closed-source systems (GPT-6 Astra, GPT-5.6 Sol, and Gemini 3.8 Flash). Overall, V4.1 Flash-1017 shows substantial safety improvements over the V4 generation and approaches or matches leading closed-source baselines on several dimensions, while still exhibiting notable behaviors that warrant continued attention. Building on our findings, we highlight three key observations and recommendations. First, because safety can shift and even regress across minor updates, developers should integrate safety evaluation into incremental releases. Second, as final-turn outputs and end-state checks alone cannot reliably detect loss-of-control behaviors, deployments require process-level observability across both reasoning traces and action logs. Third, because public benchmarks elicit strong evaluation awareness and face data contamination risks, developing private benchmarks is essential for trustworthy frontier evaluation.",
+   "publisher": "arXiv cs.CL (Computation and Language)",
+   "doc_type": "research_preprint",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "published_at": "2026-10-26T16:14:17"
+  }
+ ],
+ "stories": {
+  "eric_literacy": {
+   "key_entities": [
+    "Exploring AI Literacy",
+    "Exploring Generative AI Literacy",
+    "Using Generative AI",
+    "ChatGPT",
+    "Generative AI Literacy Assessment",
+    "GLAT"
+   ],
+   "keywords": [
+    "ai",
+    "generative",
+    "students",
+    "ethical",
+    "literacy",
+    "reliance",
+    "practices",
+    "using"
+   ]
+  },
+  "denver_board": {
+   "key_entities": [
+    "Denver",
+    "Marrero",
+    "Denver Superintendent Alex",
+    "Denver Public Schools Superintendent Alex Marrero",
+    "DJ Torres",
+    "Gayt",
+    "Marlene De La Rosa"
+   ],
+   "keywords": [
+    "board",
+    "denver",
+    "school",
+    "alex marrero",
+    "superintendent alex",
+    "evaluation",
+    "latest",
+    "apply fill"
+   ]
+  },
+  "disruptive_fund": {
+   "key_entities": [
+    "ElevenLabs",
+    "Groq"
+   ],
+   "keywords": [
+    "companies",
+    "disruptive",
+    "startup",
+    "ai voice-generation",
+    "bets least",
+    "big bets",
+    "fund big",
+    "groq ai"
+   ]
+  },
+  "dune_trailer": {
+   "key_entities": [
+    "Dune",
+    "Warner Bros",
+    "Chani"
+   ],
+   "keywords": [
+    "become oppressor",
+    "bros drops",
+    "chani sworn",
+    "combat become",
+    "drops final",
+    "dune part",
+    "final trailer",
+    "oppressor chani"
+   ]
+  },
+  "uefi_flaw": {
+   "key_entities": [
+    "Earth",
+    "UEFI",
+    "EDK2"
+   ],
+   "keywords": [
+    "flaw",
+    "allows attackers",
+    "attackers execute",
+    "boot process",
+    "code early",
+    "early boot",
+    "earth critical",
+    "edk2 allows"
+   ]
+  },
+  "bbc_budget": {
+   "key_entities": [
+    "Budget",
+    "Chancellor John Healey"
+   ],
+   "keywords": [
+    "chancellor john",
+    "john healey",
+    "minimum wage",
+    "budget",
+    "help",
+    "rise",
+    "set",
+    "banks energy"
+   ]
+  },
+  "bibliometric": {
+   "key_entities": [
+    "Topic-Based Bibliometric Analysis",
+    "ChatGPT",
+    "ERIC",
+    "Scopus",
+    "International Conference on Artificial Intelligence",
+    "International Conference on Educational Data Mining",
+    "Mann-Kendall"
+   ],
+   "keywords": [
+    "ai",
+    "generative",
+    "education",
+    "learning",
+    "research",
+    "topics",
+    "artificial intelligence",
+    "analysis"
+   ]
+  },
+  "pilot_study": {
+   "key_entities": [
+    "First-Year Seminar",
+    "Pilot Study",
+    "ChatGPT",
+    "AI Literacy Surveys",
+    "FYS"
+   ],
+   "keywords": [
+    "ai",
+    "academic",
+    "literacy",
+    "students",
+    "study",
+    "writing",
+    "higher education",
+    "ethical"
+   ]
+  },
+  "ethical_scenarios": {
+   "key_entities": [
+    "GenAI",
+    "Scenario-Based Ethical Judgment",
+    "Undergraduate Students",
+    "Generative AI Literacy Assessment Test",
+    "GLAT",
+    "Midwestern",
+    "Spearman"
+   ],
+   "keywords": [
+    "ai literacy",
+    "ethical",
+    "students",
+    "genai",
+    "scenarios",
+    "judgment",
+    "six",
+    "undergraduate"
+   ]
+  },
+  "civic_literacy": {
+   "key_entities": [
+    "Case for Fostering Civic-Minded AI Literacy",
+    "Civic-minded AI"
+   ],
+   "keywords": [
+    "literacy",
+    "ai",
+    "media",
+    "disinformation",
+    "civic-minded",
+    "education",
+    "students",
+    "citizens"
+   ]
+  },
+  "evaluation_study": {
+   "key_entities": [
+    "Evaluation Study",
+    "Title 1"
+   ],
+   "keywords": [
+    "teachers",
+    "ai",
+    "study",
+    "preservice in-service",
+    "professional development",
+    "generative",
+    "learning",
+    "artificial intelligence"
+   ]
+  },
+  "election_caption": {
+   "key_entities": [
+    "Austin",
+    "Democrats",
+    "Gina Hinojosa",
+    "Greg Abbott",
+    "Hinojosa",
+    "Mansion",
+    "Republican Gov"
+   ],
+   "keywords": [
+    "hinojosa",
+    "abbott debate",
+    "austin thursday",
+    "candidate gina",
+    "democratic gubernatorial",
+    "democrats running",
+    "education issues",
+    "election education"
+   ]
+  },
+  "incarcerated_youth": {
+   "key_entities": [
+    "Chalkbeat Gun Violence Reporter Sammy Caiola"
+   ],
+   "keywords": [
+    "school",
+    "academic credit",
+    "accountability experts",
+    "caiola upper",
+    "chalkbeat gun",
+    "credit juvenile",
+    "experts chalkbeat",
+    "formerly incarcerated"
+   ]
+  },
+  "world_language": {
+   "key_entities": [
+    "WL",
+    "ChatGPT",
+    "TC",
+    "TCs"
+   ],
+   "keywords": [
+    "ai",
+    "literacy",
+    "teacher",
+    "education",
+    "core practice",
+    "professional",
+    "use",
+    "wl"
+   ]
+  },
+  "unsettled_middle": {
+   "key_entities": [
+    "Unsettled Middle",
+    "Curriculum",
+    "Writing Across"
+   ],
+   "keywords": [
+    "ai",
+    "critical",
+    "writing",
+    "assignments",
+    "generative",
+    "stance",
+    "thinking",
+    "unsettled"
+   ]
+  },
+  "tech_life": {
+   "key_entities": [
+    "Tech Life",
+    "Ond",
+    "PHP",
+    "Sur"
+   ],
+   "keywords": [
+    "avert cyber",
+    "cyber crisis",
+    "ej sur",
+    "hear ond",
+    "helped avert",
+    "life hear",
+    "ond ej",
+    "patches helped"
+   ]
+  },
+  "android_stores": {
+   "key_entities": [
+    "Google",
+    "Android",
+    "Registered App Stores"
+   ],
+   "keywords": [
+    "app",
+    "stores",
+    "android us",
+    "begins certifying",
+    "certifying registered",
+    "coming third-party",
+    "google begins",
+    "google's stamp"
+   ]
+  },
+  "three_papers": {
+   "key_entities": [
+    "ChatGPT",
+    "Chalkboards",
+    "EFL",
+    "Palestinian",
+    "Foreign Language"
+   ],
+   "keywords": [
+    "ai",
+    "generative",
+    "literacy",
+    "study",
+    "tools",
+    "chatgpt",
+    "artificial intelligence",
+    "educators"
+   ]
+  },
+  "edgar_filings": {
+   "key_entities": [
+    "SEC",
+    "EDGAR",
+    "CIK",
+    "Financial Statements",
+    "Financial Condition",
+    "Events",
+    "Results of Operations",
+    "Election of Directors",
+    "Unregistered Sales of Equity Securities",
+    "Regulation FD Disclosure"
+   ],
+   "keywords": [
+    "current",
+    "edgar",
+    "form",
+    "sec",
+    "times",
+    "item",
+    "accession number",
+    "cik filed"
+   ]
+  }
+ }
+}

@@ -47,10 +47,17 @@ from sqlalchemy.orm import Session
 
 from newsren.agents.base import Orchestrator, citation_for
 from newsren.agents.tools import (
+    UNREPORTED_META_TERMS,
+    QueryProfile,
+    QueryUnit,
     ResearchToolbox,
     article_handle,
     doc_type_label,
+    query_profile,
     query_terms,
+    stem_supported,
+    stem_word,
+    text_stems,
 )
 from newsren.editorial.guardrails import ADVICE_REFUSAL, detect_advice_request, lint_text
 from newsren.finance.concepts import Concept, concepts_in_text, get_concept
@@ -81,9 +88,15 @@ from newsren.textutil import (
 )
 
 AGENT_NAME = "ask_newsren"
-MAX_READ = 4
+MAX_READ = 5
 MAX_CONTEXT_SOURCES = 8
 MAX_UNSUPPORTED_TERMS = 4
+# Share of the question's (rarity-weighted) terms a source must cover to answer it directly (and at least
+# DIRECT_RELATIVE of the best source's share), or to be offered as related coverage when nothing answers
+# directly. Either way it must mention the question's subject.
+DIRECT_COVERAGE = 0.5
+RELATED_COVERAGE = 0.3
+DIRECT_RELATIVE = 0.7
 
 AUDIENCE_GUIDANCE: dict[str, str] = {
     Audience.STUDENT: (
@@ -165,27 +178,86 @@ _FORECAST_CUE = re.compile(
 )
 _WHY_CUE = re.compile(r"\bwhy\b", re.IGNORECASE)
 _RESEARCH_CUE = re.compile(
-    r"\b(?:papers?|preprints?|study|studies|research|arxiv|peer[- ]review\w*|journal|trial|experiment\w*)\b",
+    r"\b(?:papers?|preprints?|study|studies|research|arxiv|peer[- ]review\w*|journal|trial|experiment\w*|"
+    r"evidence|meta-analys[ie]s|randomi[sz]ed)\b",
     re.IGNORECASE,
 )
+# A question about what a company filed or reported (a bare "SEC" is usually about the regulator itself).
 _FILING_CUE = re.compile(
-    r"\b(?:filings?|10-K|10-Q|8-K|SEC|EDGAR|earnings|annual\s+report|quarterly\s+report|proxy)\b", re.IGNORECASE
+    r"\b(?:fil(?:e|es|ed|ing|ings)|10-K|10-Q|8-K|S-1|20-F|6-K|EDGAR|earnings|annual\s+report|quarterly\s+(?:report|results)|"
+    r"proxy|prospectus)\b",
+    re.IGNORECASE,
+)
+_FIGURES_CUE = re.compile(
+    r"\b(?:report(?:ed|s)?|earnings|results|revenue|sales|profit|income|loss|figures|numbers|guidance|eps)\b",
+    re.IGNORECASE,
+)
+_FORM_IN_QUESTION = re.compile(r"\b(10-K|10-Q|8-K|S-1|20-F|6-K|DEF 14A)\b", re.IGNORECASE)
+_RECENT_CUE = re.compile(
+    r"\b(?:recent(?:ly)?|latest|newest|lately|this\s+(?:week|month|year)|so\s+far|currently|now)\b", re.IGNORECASE
 )
 _TICKER = re.compile(r"\$([A-Za-z]{1,5})\b|\((?:NYSE|NASDAQ|Nasdaq|NYSE American):\s*([A-Z]{1,5})\)")
 _QUANTITY_CUE = re.compile(r"\b(?:how\s+(?:many|much)|what\s+(?:percent|share|score)|figure|number)\b", re.I)
 _CITATION_MARKER = re.compile(r"\[\s*(c\d+(?:\s*[,;]\s*c\d+)*)\s*\]")
 _NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?%?")
-_CAPITALIZED = re.compile(r"\b[A-Z][A-Za-z0-9\-]+(?:\s+[A-Z][A-Za-z0-9\-]+)*")
+_CAPITALIZED = re.compile(
+    r"\b[A-Z][A-Za-z0-9\-&]*[A-Za-z0-9&](?:\s+(?:(?:of|for|&)\s+)?[A-Z][A-Za-z0-9\-&]*[A-Za-z0-9&])*"
+)
 _WORD = re.compile(r"[A-Za-z][A-Za-z0-9\-']*[A-Za-z0-9]|[A-Za-z]")
-_SENTENCE_END = re.compile(r"[.:!?]\s*[\"\u201c]?\s*$")
+_SENTENCE_END = re.compile(r"[.:!?]\s*[\"“]?\s*$")
 _CORRECTION = re.compile(r"^\s*(?:correction|clarification|corrected)\b", re.IGNORECASE)
 _BACKTEST = re.compile(r"\bback-?test\w*\b", re.IGNORECASE)
 _PAPER_TRADING = re.compile(r"\bpaper[- ]trading\b|\bsimulat\w+\b", re.IGNORECASE)
+_ALLEGATION = re.compile(r"\b(?:charg\w+|alleg\w+|complaint|indict\w*|lawsuit|sued)\b", re.IGNORECASE)
+_FUNDING = re.compile(
+    r"\b(?:raise[sd]|funding rounds?|venture funding|seed (?:round|funding)|series\s+[a-h]\b)", re.IGNORECASE
+)
 
-_SUFFIXES = (
-    "ational", "ations", "ation", "ately", "ating", "ated", "ates", "ate", "ings", "ing", "ions", "ion", "ments",
-    "ment", "ness", "ies", "ied", "ers", "er", "es", "ed", "ly", "s", "y",
-)  # fmt: skip
+# --- sentence hygiene for feed text --------------------------------------
+# Labels of structured abstracts ("Purpose: ...", "Design/methodology/approach: ...").
+_ABSTRACT_LABEL = re.compile(
+    r"^(?:purpose|background|objectives?|aims?|context|introduction|methods?|methodology|"
+    r"design(?:/methodology/approach)?|approach|findings|results|conclusions?|originality(?:/value)?|value|"
+    r"practical implications|social implications|research limitations(?:/implications)?|implications|"
+    r"significance|abstract|summary|keywords)\s*:\s*",
+    re.IGNORECASE,
+)
+_LEAD_IN = re.compile(
+    r"^(?:updated|update|breaking|exclusive|analysis|explainer)\s*:\s*|^watch\b.{0,80}?\bversion of this story\s*",
+    re.IGNORECASE,
+)
+# "WASHINGTON—", "OKLAHOMA CITY — ", "AMHERST, Mass. — "
+_DATELINE = re.compile(r"^([A-Z][A-Z.'’ ]{2,40}?)(?:,\s*[A-Z][\w.]+(?:\s+[A-Z][\w.]+)?)?\s*[—–]\s*(?=\S)")
+# Whole sentences that are feed furniture rather than reporting.
+_BOILERPLATE = re.compile(
+    r"^(?:this (?:article|story|post|piece|content|podcast|report)\b.{0,120}?\b(?:brought to you|sponsored|"
+    r"paid for|originally (?:published|appeared|produced)|crossposted|cross-posted|reprinted|republished|"
+    r"produced by)|this is today.s edition of|sign up\b|subscribe\b|read more\b|continue reading|click here|"
+    r"the post\b.{0,200}\bappeared first on|source: sec edgar|edgar times are\b|a collage of|"
+    r"\(?photos?\s+(?:by|courtesy|credit))",
+    re.IGNORECASE,
+)
+_BOILERPLATE_ANY = re.compile(
+    r"\b(?:our|a)\s+(?:weekday|daily|weekly)\s+newsletter\b|\breprinted with permission\b|"
+    r"\bdelivered to your inbox\b",
+    re.IGNORECASE,
+)
+# Photo captions read as present-tense scene descriptions with a full date.
+_CAPTION = re.compile(
+    r"\b(?:speaks|talks|poses|listens|looks on|stands|walks|rall(?:y|ies)|attended|visited|gathers?|hosted)\b"
+    r".{0,160}\b(?:on|in)\s+(?:\w+day,\s+)?[A-Z][a-z]{2,8}\.?\s+\d{1,2},\s+\d{4}"
+)
+# A split after one of these is not a sentence end ("Sept. 29", "Gov. Abbott", "Owen E.H. Meyer").
+_ABBREVIATION_END = re.compile(
+    r"(?:\b(?:Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec|Mr|Mrs|Ms|Dr|Prof|Gov|Sen|Rep|Gen|Lt|Col|Sgt|"
+    r"St|Mt|No|Nos|vs|approx|est)|\b[A-Z]|\bU\.S|\bU\.K|\bE\.U)\.$"
+)
+_COMPANY_SUFFIX_END = re.compile(r"\b(?:Inc|Corp|Co|Ltd|L\.P|L\.L\.C|N\.A|S\.A|Bros)\.$")
+_REGION_UNITS = frozenset({"uk", "us", "u.s.", "u.k.", "eu", "usa"})
+# Names in a question that are regulators or generic labels, never the company whose filings are wanted.
+_NOT_A_COMPANY = frozenset(
+    "sec edgar finra fed nist ncsc fcc ftc irs cisa ecb uk us eu usa ai ipo ceo cfo spac etf form".split()
+) | {"federal reserve", "securities and exchange commission"}
 
 # Words in an advice request that describe the request, not its topic.
 _ADVICE_WORDS = frozenset(
@@ -198,67 +270,14 @@ _ADVICE_WORDS = frozenset(
 )
 _DEFAULT_ADVICE_CONCEPTS = ("sec-forms-10q-10k-8k", "earnings-guidance", "benchmark", "backtesting")
 
-# Verbs that shape a question ("did X confirm ...") rather than name its subject;
-# their absence from the sources is not a gap worth reporting.
-_QUESTION_VERBS = frozenset(
-    """
-    confirm confirmed verify verified prove proved proven compare compared differ affect affected change changed
-    work worked cause caused describe described expect expected reach reached become became get got make
-    file filed
-    """.split()
-)
-
 
 # --------------------------------------------------------------------------
 # Text helpers
 # --------------------------------------------------------------------------
 
-
-def _stem(word: str) -> str:
-    """Crude suffix stripping so "evaluation"/"evaluated" and "benchmarks"/"benchmark" meet."""
-    w = word.lower()
-    if w.endswith("'s"):
-        w = w[:-2]
-    for suffix in _SUFFIXES:
-        if w.endswith(suffix) and len(w) - len(suffix) >= 4:
-            return w[: -len(suffix)]
-    return w
-
-
-def _stems(text: str | None) -> set[str]:
-    return {_stem(t) for t in tokenize(text)}
-
-
-def _supported(term_stem: str, stems: set[str]) -> bool:
-    """Exact stem match, or a prefix match ("math" ~ "mathemat") when the shorter stem has 4+ letters
-    and is at least half as long as the longer one (so "trad" does not match "tradingagent")."""
-    if term_stem in stems:
-        return True
-    if len(term_stem) < 4:
-        return False
-    for s in stems:
-        if s[:2] != term_stem[:2]:
-            continue
-        short, long_ = (s, term_stem) if len(s) <= len(term_stem) else (term_stem, s)
-        if len(short) >= 4 and 2 * len(short) >= len(long_) and long_.startswith(short):
-            return True
-    return False
-
-
-def _question_terms(question: str) -> list[tuple[str, str]]:
-    """(stem, display form) of the question's topic words, in order."""
-    display: dict[str, str] = {}
-    for raw in _WORD.findall(question):
-        word = raw[:-2] if raw.lower().endswith("'s") else raw
-        display.setdefault(word.lower().strip("'-"), word)
-    out: list[tuple[str, str]] = []
-    seen: set[str] = set()
-    for term in query_terms(question):
-        stem = _stem(term)
-        if stem not in seen:
-            seen.add(stem)
-            out.append((stem, display.get(term, term)))
-    return out
+_stem = stem_word
+_stems = text_stems
+_supported = stem_supported
 
 
 def _date(value: str | None) -> str:
@@ -272,6 +291,56 @@ def _dedupe(items: Sequence[str]) -> list[str]:
         item = normalize_space(item)
         if item and item not in out:
             out.append(item)
+    return out
+
+
+def _strip_dateline(sentence: str) -> str:
+    match = _DATELINE.match(sentence)
+    if not match:
+        return sentence
+    place = match.group(1).replace(" ", "").replace(".", "").replace("'", "").replace("’", "")
+    if len(place) >= 3 and place.isupper():
+        return sentence[match.end() :]
+    return sentence
+
+
+def _trim_truncated(sentence: str) -> str:
+    """A feed summary cut off mid-sentence ("... through their fund, Beyond…") ends at its last full clause."""
+    if not sentence.endswith(("…", "...")):
+        return sentence
+    body = sentence.rstrip(".… ").rstrip()
+    cut = max(body.rfind(", "), body.rfind("; "), body.rfind(" — "))
+    if cut >= 0.6 * len(body):
+        body = body[:cut]
+    return body.rstrip(",;:— ") + "…"
+
+
+def clean_sentences(text: str | None) -> list[str]:
+    """Sentences of feed text fit to quote: abbreviation splits repaired; datelines, abstract labels
+    ("Purpose:"), lead-ins ("Updated:"), sponsor/newsletter/reprint notes, and feed metadata removed;
+    cut-off endings trimmed to the last full clause. What remains is verbatim source text."""
+    merged: list[str] = []
+    for piece in split_sentences(text):
+        if merged and (
+            _ABBREVIATION_END.search(merged[-1])
+            or (_COMPANY_SUFFIX_END.search(merged[-1]) and re.match(r"[(\[$0-9a-z]", piece))
+        ):
+            merged[-1] = f"{merged[-1]} {piece}"
+        else:
+            merged.append(piece)
+    out: list[str] = []
+    for sentence in merged:
+        previous = None
+        while previous != sentence:
+            previous = sentence
+            sentence = _LEAD_IN.sub("", sentence).strip()
+            sentence = _ABSTRACT_LABEL.sub("", sentence).strip()
+            sentence = _strip_dateline(sentence).strip()
+        if not sentence or _BOILERPLATE.match(sentence) or _BOILERPLATE_ANY.search(sentence):
+            continue
+        sentence = _trim_truncated(sentence)
+        if len(sentence) >= 25 and sentence not in out:
+            out.append(sentence)
     return out
 
 
@@ -430,6 +499,9 @@ class _Doc:
     vertical: str | None
     sentences: list[str]
     citation: CitationRef
+    date_label: str = ""
+    is_paper: bool = False
+    summary_only: bool = False  # a publisher feed item: headline and summary, no full text
 
     @property
     def is_vendor(self) -> bool:
@@ -442,6 +514,14 @@ class _Doc:
     @property
     def is_preprint(self) -> bool:
         return self.doc_type == DocType.RESEARCH_PREPRINT
+
+    @property
+    def is_research(self) -> bool:
+        return self.doc_type in (
+            DocType.RESEARCH_PREPRINT,
+            DocType.RESEARCH_PEER_REVIEWED,
+            DocType.EDUCATION_REPORT,
+        )
 
     @property
     def is_correction(self) -> bool:
@@ -465,16 +545,31 @@ class _Doc:
             return "states"
         return "reports"
 
+    @property
+    def when(self) -> str:
+        """Publication date, the year alone when that is all the source gives, else "date unknown"."""
+        if self.published_at:
+            return _date(self.published_at)
+        return self.date_label or "date unknown"
+
+    def source_line(self) -> str:
+        return f"{self.publisher or self.title} ({self.label}, {self.when})"
+
     def attribution(self) -> str:
-        return f"{self.publisher or self.title} ({self.label}, {_date(self.published_at)}) {self.verb}"
+        return f"{self.source_line()} {self.verb}"
+
+    @property
+    def text(self) -> str:
+        return f"{self.title} {' '.join(self.sentences)}"
 
 
 def _doc_from_article_data(data: Mapping[str, Any]) -> _Doc:
-    sentences = _dedupe(split_sentences(data.get("summary")) + split_sentences(data.get("content")))
+    content = data.get("content") or ""
+    sentences = _dedupe(clean_sentences(data.get("summary")) + clean_sentences(content))
     return _Doc(
         article_id=data.get("article_id"),
         url=data["url"],
-        title=data.get("title", ""),
+        title=normalize_space(data.get("title", "")),
         publisher=data.get("publisher", ""),
         published_at=data.get("published_at"),
         doc_type=data.get("doc_type", DocType.NEWS),
@@ -482,6 +577,8 @@ def _doc_from_article_data(data: Mapping[str, Any]) -> _Doc:
         vertical=data.get("vertical"),
         sentences=sentences,
         citation=data["citation"],
+        date_label=data.get("date_label") or "",
+        summary_only=not normalize_space(content),
     )
 
 
@@ -489,23 +586,42 @@ def _doc_from_paper_data(data: Mapping[str, Any]) -> _Doc:
     return _Doc(
         article_id=None,
         url=data["url"],
-        title=data.get("title", ""),
+        title=normalize_space(data.get("title", "")),
         publisher=f"arXiv preprint “{truncate(data.get('title', ''), 80)}”",
         published_at=data.get("published_at"),
         doc_type=DocType.RESEARCH_PREPRINT,
         trust_tier=TrustTier.PRIMARY,
         vertical=Vertical.TECHNOLOGY,
-        sentences=split_sentences(data.get("summary")),
+        sentences=clean_sentences(data.get("summary")),
         citation=data["citation"],
+        is_paper=True,
     )
 
 
 @dataclass
 class _Pick:
+    """What one source contributes to the answer: its headline and/or best sentences, verbatim."""
+
     doc: _Doc
-    sentence: str
     score: float
     hits: int
+    headline: str = ""
+    sentences: list[str] = field(default_factory=list)
+
+    @property
+    def sentence(self) -> str:
+        """The quoted material: “Headline.” followed by the sentences."""
+        parts: list[str] = []
+        if self.headline:
+            end = "" if self.headline[-1] in ".?!" else "."
+            parts.append(f"“{self.headline}{end}”")
+        parts.extend(self.sentences)
+        return " ".join(parts)
+
+    def statement(self) -> str:
+        if self.headline:
+            return f"{self.doc.source_line()}: {self.sentence}"
+        return f"{self.doc.attribution()}: {self.sentence}"
 
 
 def _source_weight(doc: _Doc) -> float:
@@ -517,43 +633,100 @@ def _source_weight(doc: _Doc) -> float:
     return 1.1 if doc.trust_tier == TrustTier.PRIMARY else 1.0
 
 
-def _score_sentences(docs: Sequence[_Doc], q_stems: list[str], ctx_stems: set[str], quantity: bool) -> list[_Pick]:
-    """Candidate sentences that mention the question's terms, best first."""
-    picks: list[_Pick] = []
-    for doc in docs:
-        weight = _source_weight(doc)
-        for sentence in doc.sentences:
-            if len(sentence) < 30:
-                continue
-            stems = _stems(sentence)
-            hits = sum(1 for s in q_stems if _supported(s, stems))
-            if q_stems and hits == 0:
-                continue
-            score = hits + 0.3 * len((ctx_stems & stems) - set(q_stems))
-            if quantity and re.search(r"\d", sentence):
-                score += 0.5
-            if len(sentence) > 400:
-                score *= 0.8
-            picks.append(_Pick(doc, truncate(sentence, 420), score * weight, hits))
-    picks.sort(key=lambda p: (-p.score, -p.hits))
+def _sentence_score(
+    profile: QueryProfile, sentence: str, ctx_stems: set[str], quantity: bool, lede: bool
+) -> tuple[float, int]:
+    """Weighted share of the question this sentence mentions, plus small bonuses; and the units it hits."""
+    stems = text_stems(sentence)
+    hit = [u for u in profile.units if u.matches(sentence, stems)]
+    score = sum(u.weight for u in hit) / profile.total if profile.units else 0.0
+    if ctx_stems:
+        extra = len((ctx_stems & stems) - {u.stem for u in profile.units})
+        score += min(0.3, 0.1 * extra)
+    if lede:
+        score += 0.05
+    if quantity and re.search(r"\d", sentence):
+        score += 0.15
+    if _CAPTION.search(sentence):
+        score *= 0.6
+    if len(sentence) > 400:
+        score *= 0.85
+    return score, len(hit)
+
+
+def _redundant(headline: str, sentence: str) -> bool:
+    """True when the sentence already says what the headline says (EDGAR feed items, ledes that repeat it)."""
+    head = set(tokenize(headline))
+    return bool(head) and len(head & set(tokenize(sentence))) >= 0.7 * len(head)
+
+
+def _doc_picks(
+    doc: _Doc, coverage: float, profile: QueryProfile, ctx_stems: set[str], quantity: bool, direct: bool
+) -> list[_Pick]:
+    """The source's main contribution (headline and/or best sentence) and an optional second sentence."""
+    scored = [
+        (s, *_sentence_score(profile, s, ctx_stems, quantity, i == 0))
+        for i, s in enumerate(doc.sentences)
+        if len(s) >= 30
+    ]
+    ranked = sorted(scored, key=lambda x: (-x[1], -x[2]))
+    best = ranked[0] if ranked and ranked[0][2] > 0 else None
+    head_score, head_hits = (0.0, 0)
+    if doc.title and not doc.is_paper and len(doc.title.split()) >= 3:
+        head_score, head_hits = _sentence_score(profile, doc.title, ctx_stems, quantity, False)
+    if best is None and direct and scored and head_hits:
+        # The first sentence that is not a photo caption gives context for a headline that answers the question.
+        best = next((x for x in scored if not _CAPTION.search(x[0])), scored[0])
+    use_headline = head_hits > 0 and not (best and _redundant(doc.title, best[0]))
+    if not use_headline and best is None:
+        if not scored or not direct:
+            return []
+        best = ranked[0]
+    weight = _source_weight(doc)
+    main = _Pick(
+        doc=doc,
+        score=(0.6 * coverage + 0.4 * max(head_score, best[1] if best else 0.0)) * weight,
+        hits=max(head_hits, best[2] if best else 0),
+        headline=doc.title if use_headline else "",
+        sentences=[best[0]] if best else [],
+    )
+    picks = [main]
+    if best is not None:
+        for sentence, score, hits in ranked[1:]:
+            if hits and score >= 0.6 * best[1] and jaccard(tokenize(sentence), tokenize(best[0])) <= 0.6:
+                picks.append(_Pick(doc=doc, score=0.7 * score * weight, hits=hits, sentences=[sentence]))
+                break
     return picks
 
 
-def _choose(picks: Sequence[_Pick], limit: int, min_hits: int) -> list[_Pick]:
+def _choose(primary: Sequence[_Pick], extra: Sequence[_Pick], limit: int) -> list[_Pick]:
+    """Best picks, one per source first; second sentences fill any remaining room. Syndicated or repeated
+    wording (same headline or largely the same text) is kept once."""
     chosen: list[_Pick] = []
-    per_doc: dict[str, int] = {}
-    for pick in picks:
-        if pick.hits < min_hits:
-            continue
-        if per_doc.get(pick.doc.url, 0) >= 2:
-            continue
+
+    def duplicate(pick: _Pick) -> bool:
         toks = set(tokenize(pick.sentence))
-        if any(jaccard(toks, tokenize(c.sentence)) > 0.6 for c in chosen):
-            continue  # syndicated or repeated wording
-        chosen.append(pick)
-        per_doc[pick.doc.url] = per_doc.get(pick.doc.url, 0) + 1
+        for other in chosen:
+            if (
+                other.doc is not pick.doc
+                and normalize_space(other.doc.title).lower() == normalize_space(pick.doc.title).lower()
+            ):
+                return True
+            if jaccard(toks, tokenize(other.sentence)) > 0.6:
+                return True
+        return False
+
+    for pick in sorted(primary, key=lambda p: (-p.score, -p.hits)):
         if len(chosen) >= limit:
             break
+        if not duplicate(pick):
+            chosen.append(pick)
+    for pick in sorted(extra, key=lambda p: -p.score):
+        if len(chosen) >= limit:
+            break
+        main = next((c for c in chosen if c.doc is pick.doc), None)
+        if main is not None and not duplicate(pick):
+            main.sentences.append(pick.sentences[0])
     return chosen
 
 
@@ -565,7 +738,10 @@ def _reading_list(
     The reader's article, the best search hit, the best hit from the reader's
     context, any correction among the hits (so a corrected figure is never
     missed), the best primary source, then the remaining hits and context.
+    Without a reader context, hits that barely touch the question are skipped.
     """
+    if ctx is None:
+        hits = [h for h in hits if h.get("relevance", 1.0) >= 0.15]
     hit_ids = [h["article_id"] for h in hits]
     ctx_ids = set(ctx.article_ids) if ctx else set()
     order: list[int] = []
@@ -599,12 +775,20 @@ def _vertical_of(ctx: ResearchContext | None, docs: Sequence[_Doc]) -> str | Non
 
 _NOT_A_NAME = frozenset(
     """
-    Opinion Commentary Column Correction Clarification Update Advisory Op-Ed Introducing Regulatory Notice The A
-    An In On At For And But With Board Survey What How Why When Who Which This That These Those Until It Its
-    Monday Tuesday Wednesday Thursday Friday Saturday Sunday January February March April May June July August
-    September October November December
+    Opinion Commentary Column Correction Clarification Update Updated Advisory Op-Ed Introducing Regulatory Notice
+    The A An In On At For And But With Board Survey What How Why When Who Which This That These Those Until It
+    Its Monday Tuesday Wednesday Thursday Friday Saturday Sunday January February March April May June July
+    August September October November December Jan Feb Mar Apr Jun Jul Aug Sep Sept Oct Nov Dec Inc Inc. LLC
+    LP Corp Corp. Co Co. Ltd Ltd. PLC Holdings Group CEO CFO Chief Executive Officer Commission Securities
+    Exchange Division Department Office Agency Watch Read Photo Source Form Item Items Results Operations
     """.split()
 )
+
+
+def _title_case(text: str) -> bool:
+    """Headline-style capitalization ("SEC Charges Two Individuals With ..."), where capitals are not names."""
+    words = [w for w in re.findall(r"[A-Za-z][\w'’\-]*", text) if len(w) > 3]
+    return len(words) >= 3 and sum(w[0].isupper() for w in words) >= 0.7 * len(words)
 
 
 def _names(texts: Sequence[str], exclude: Sequence[str] = ()) -> list[str]:
@@ -623,62 +807,82 @@ def _names(texts: Sequence[str], exclude: Sequence[str] = ()) -> list[str]:
             opens_sentence = match.start() == 0 or bool(_SENTENCE_END.search(text[: match.start()]))
             if opens_sentence and len(words) == 1:
                 continue
-            name = " ".join(w for w in words if w not in _NOT_A_NAME)
-            if len(name) < 3 or (name.isupper() and len(name) <= 3):
+            while words and words[0] in _NOT_A_NAME:
+                words = words[1:]
+            while words and (words[-1] in _NOT_A_NAME or words[-1] in {"of", "and", "for", "&"}):
+                words = words[:-1]
+            name = " ".join(words)
+            if len(name) < 3 or (name.isupper() and len(name) <= 3) or name in _NOT_A_NAME:
                 continue
-            if any(name.lower() in e for e in excluded):
+            if any(name.lower() in e or e in name.lower() for e in excluded):
                 continue
             counts[name] = counts.get(name, 0) + 1
             first_seen.setdefault(name, len(first_seen))
-    return sorted(counts, key=lambda n: (-counts[n], first_seen[n]))
+
+    def distinctive(name: str) -> bool:
+        # Several words, or a coined form (PayPal, EDK2), or a word that recurs.
+        return " " in name or bool(re.search(r"[a-z][A-Z]|\d", name)) or name.isupper() or counts[name] > 1
+
+    return sorted((n for n in counts if distinctive(n)), key=lambda n: (-counts[n], first_seen[n]))
 
 
 def _follow_ups(
     ctx: ResearchContext | None,
-    docs: Sequence[_Doc],
+    cited: Sequence[_Doc],
     chosen: Sequence[_Pick],
-    q_stems: list[str],
+    profile: QueryProfile,
     audience: str | None,
     vertical: str | None,
 ) -> list[str]:
-    """Two to four next questions grounded in the story's names and the evidence types found."""
-    texts = [d.title for d in docs] + [p.sentence for p in chosen]
-    candidates = _names(texts, exclude=[d.publisher for d in docs]) + list(ctx.keywords if ctx else [])
+    """Two to four next questions grounded in the cited sources' names and evidence types."""
+    texts = [s for p in chosen for s in p.sentences] + [d.title for d in cited if not _title_case(d.title)]
+    candidates = _names(texts, exclude=[d.publisher for d in cited]) + list(ctx.keywords if ctx else [])
     subjects: list[str] = []
     for name in candidates:
         name = normalize_space(name)
         if not name or any(name.lower() in k.lower() or k.lower() in name.lower() for k in subjects):
             continue
-        if all(_supported(_stem(t), set(q_stems)) for t in tokenize(name)):
+        if any(u.matches(name) for u in profile.units if not u.weak):
             continue  # already what the reader asked about
         subjects.append(name)
-    subject = subjects[0] if subjects else None
     questions: list[str] = []
-    if subject:
-        questions.append(f"How has the story involving {subject} developed since the first reports?")
-    if any(d.doc_type == DocType.ADVISORY for d in docs):
-        technology = "What do the latest advisories tell affected organizations to do, and by when?"
+    if subjects:
+        questions.append(f"How has the story involving {subjects[0]} developed since the first reports?")
+    joined = " ".join(texts)
+    if any(d.doc_type == DocType.ADVISORY for d in cited):
+        typed = "What do the latest advisories tell affected organizations to do, and by when?"
+    elif _has_backtest(cited):
+        typed = "Is each performance figure here a backtest, a simulation, or a live result, and over what period?"
+    elif any(d.doc_type == DocType.REGULATORY for d in cited) and _ALLEGATION.search(joined):
+        typed = "Have any of these cases been settled or decided, and what penalties were imposed?"
+    elif any(d.doc_type == DocType.REGULATORY for d in cited):
+        typed = "Who is affected by these regulatory actions, and what do they require or change?"
+    elif any(d.is_research for d in cited):
+        typed = "Which population was studied, and which outcome was actually measured?"
+    elif any(d.doc_type == DocType.FILING for d in cited):
+        typed = "What do the filings themselves report, and how do the figures compare with the prior period?"
+    elif cited and all(d.is_vendor for d in cited):
+        typed = "Has anyone independent of the organization confirmed these claims?"
     else:
-        technology = "Has an independent evaluation been published since these reports, and what did it measure?"
-    if _has_backtest(docs):
         finance = (
-            "Is each performance figure here a backtest, a simulation, or a live result, and over what period?"
+            "Who led these funding rounds, and what do they suggest about where investors are putting money?"
+            if _FUNDING.search(joined)
+            else "How do the reported figures compare with guidance and with the same period a year earlier?"
         )
-    else:
-        finance = "How do the reported figures compare with guidance and with the same period a year earlier?"
-    by_vertical = {
-        Vertical.TECHNOLOGY: technology,
-        Vertical.EDUCATION: "Which students were studied, and which learning outcome was actually measured?",
-        Vertical.INDUSTRY: "Which of these effects are documented, and which are still projections or scenarios?",
-        Vertical.FINANCE: finance,
-    }
-    questions.append(
-        by_vertical.get(
+        by_vertical = {
+            Vertical.TECHNOLOGY: "Has an independent evaluation been published since these reports, and what did "
+            "it measure?",
+            Vertical.EDUCATION: "Which students, schools, or families are affected, and what changes for them?",
+            Vertical.INDUSTRY: "Which of these effects are documented, and which are still projections or "
+            "scenarios?",
+            Vertical.FINANCE: finance,
+        }
+        typed = by_vertical.get(
             vertical or "", "Which primary documents (filings, papers, or official releases) would settle this?"
         )
-    )
-    concept = next(iter(concepts_in_text(" ".join(texts), limit=1)), None)
-    term = concept.term.split(" (")[0] if concept else ("preprint" if any(d.is_preprint for d in docs) else None)
+    questions.append(typed)
+    concept = next(iter(concepts_in_text(joined, limit=1)), None)
+    term = concept.term.split(" (")[0] if concept else ("preprint" if any(d.is_preprint for d in cited) else None)
     if term and len(term) > 1 and term[1].islower():
         term = term[0].lower() + term[1:]
     if audience == Audience.EDUCATOR:
@@ -689,25 +893,82 @@ def _follow_ups(
         questions.append(f"What does “{term}” mean, and why does it matter for this story?")
     if len(subjects) > 1:
         questions.append(f"What do primary sources say about {subjects[1]}?")
+    for fallback in (
+        "Which primary documents (filings, papers, or official releases) would settle this?",
+        "What has changed since the earliest of these reports?",
+    ):
+        if len(_dedupe(questions)) >= 2:
+            break
+        questions.append(fallback)
     return _dedupe(questions)[:4]
 
 
-def _missing_terms(question: str, terms: list[tuple[str, str]], corpus: str) -> tuple[list[str], list[str]]:
-    """Question topic words and figures that no retrieved text mentions."""
-    stems = _stems(corpus)
-    missing = [
-        display
-        for stem, display in terms
-        if display.lower() not in _QUESTION_VERBS and not _supported(stem, stems)
-    ]
+def _reportable(unit: QueryUnit) -> bool:
+    """Whether a unit's absence from the sources is a gap worth telling the reader about."""
+    text = unit.text.lower()
+    return not unit.weak and text not in UNREPORTED_META_TERMS and text not in _REGION_UNITS
+
+
+def _missing_units(profile: QueryProfile, corpus: str) -> list[str]:
+    """Question units (names and topic words) that no text in ``corpus`` mentions, most specific first."""
+    stems = text_stems(corpus)
+    missing = [u for u in profile.units if _reportable(u) and not u.matches(corpus, stems)]
+    missing.sort(key=lambda u: (not u.is_name, -u.weight))
+    return [u.text for u in missing[:MAX_UNSUPPORTED_TERMS]]
+
+
+def _missing_numbers(question: str, corpus: str) -> list[str]:
     lowered = corpus.lower()
-    numbers = [n for n in _NUMBER.findall(question) if len(n) >= 2 and n not in lowered]
-    return missing[:MAX_UNSUPPORTED_TERMS], numbers[:2]
+    return [n for n in _NUMBER.findall(question) if len(n) >= 2 and n not in lowered][:2]
+
+
+# Evidence-type words in a question name a property of the sources, not a topic to look for.
+_META_GAPS: dict[str, tuple[str, str]] = {
+    "independent": (
+        "none of them is identified as an independent evaluation",
+        "None of the retrieved sources is identified as an independent evaluation, so independence could not be "
+        "verified.",
+    ),
+    "peer-reviewed": (
+        "none of them is identified as peer-reviewed research",
+        "None of the retrieved sources is identified as peer-reviewed research.",
+    ),
+    "evaluation": (
+        "none of them reports an evaluation",
+        "No retrieved source reports an evaluation, so that part of the question could not be verified.",
+    ),
+}
+_META_GAPS["independently"] = _META_GAPS["independent"]
+_META_GAPS["evaluations"] = _META_GAPS["evaluation"]
+
+
+def _gap_preface(missing: Sequence[str], direct: bool) -> str:
+    """Opening that says which parts of the question the sources leave open."""
+    terms = [m for m in missing if m.lower() not in _META_GAPS]
+    metas = _dedupe([_META_GAPS[m.lower()][0] for m in missing if m.lower() in _META_GAPS])
+    parts: list[str] = []
+    if terms:
+        parts.append(f"The retrieved sources do not address {_quoted_list(terms)}")
+    if metas:
+        meta_text = "; ".join(metas)
+        parts.append(meta_text if terms else meta_text.replace("none of them", "None of the retrieved sources", 1))
+    if not parts:
+        return (
+            ""
+            if direct
+            else "The Newsren archive does not directly answer this question. The closest related coverage:"
+        )
+    opening = "; ".join(parts)
+    if direct:
+        return f"{opening}. Here is what they do report on the rest of the question:"
+    return f"{opening}, so the question is not answered directly. The closest related coverage:"
 
 
 def _unsupported_items(missing: Sequence[str], numbers: Sequence[str]) -> list[str]:
     items = [
-        f"No retrieved source mentions “{term}”, so that part of the question could not be verified."
+        _META_GAPS[term.lower()][1]
+        if term.lower() in _META_GAPS
+        else f"No retrieved source mentions “{term}”, so that part of the question could not be verified."
         for term in missing
     ]
     items.extend(f"The figure “{n}” does not appear in the retrieved sources." for n in numbers)
@@ -758,12 +1019,13 @@ def _limits_notes(question: str, docs: Sequence[_Doc], cited: Sequence[_Doc], ne
 
 
 def _refs(selected: Sequence[_Doc], ids: Mapping[str, str]) -> tuple[str, bool]:
-    keys = sorted({ids[d.url] for d in selected}, key=lambda cid: int(cid[1:]))
+    keys = sorted({ids[d.url] for d in selected if d.url in ids}, key=lambda cid: int(cid[1:]))
     return "".join(f"[{k}]" for k in keys), len(keys) > 1
 
 
 def _source_notes(docs: Sequence[_Doc], chosen: Sequence[_Pick], ids: Mapping[str, str]) -> list[str]:
-    """Labels for the cited sources: organization's own account, preprint, opinion, correction, backtest, dates."""
+    """Labels for the cited sources: organization's own account, preprint, opinion, correction, backtest,
+    allegations, dates."""
     notes: list[str] = []
     vendor = [d for d in docs if d.is_vendor]
     others = [d for d in docs if not d.is_vendor and not d.is_opinion]
@@ -794,7 +1056,7 @@ def _source_notes(docs: Sequence[_Doc], chosen: Sequence[_Pick], ids: Mapping[st
         )
     for doc in (d for d in docs if d.is_correction):
         notes.append(
-            f"A correction or clarification was published on {_date(doc.published_at)} [{ids[doc.url]}]; where it "
+            f"A correction or clarification was published on {doc.when} [{ids[doc.url]}]; where it "
             "differs from earlier reports, rely on the corrected account."
         )
     backtests = _has_backtest(docs)
@@ -806,7 +1068,14 @@ def _source_notes(docs: Sequence[_Doc], chosen: Sequence[_Pick], ids: Mapping[st
         )
     elif any(_PAPER_TRADING.search(p.sentence) for p in chosen):
         notes.append("Simulated or paper-trading results are not live performance.")
-    dates = sorted(_date(d.published_at) for d in docs if d.published_at)
+    alleged = [p.doc for p in chosen if p.doc.doc_type == DocType.REGULATORY and _ALLEGATION.search(p.sentence)]
+    if alleged:
+        r, plural = _refs(alleged, ids)
+        notes.append(
+            f"{r} {'announce' if plural else 'announces'} charges: these are the regulator's allegations unless "
+            "the release says the matter was settled or decided."
+        )
+    dates = sorted(d.when for d in docs if d.when != "date unknown")
     if len(dates) > 1 and dates[0] != dates[-1]:
         notes.append(f"The sources are dated {dates[0]} to {dates[-1]}.")
     return notes
@@ -820,10 +1089,11 @@ _AUDIENCE_CLOSERS: dict[str, str] = {
 
 
 def _no_coverage(
-    question: str, terms: list[tuple[str, str]], plan: list[str], notes: list[str]
+    question: str, profile: QueryProfile, plan: list[str], notes: list[str], missing: Sequence[str] = ()
 ) -> ResearchAnswerOut:
-    searched = ", ".join(d for _, d in terms[:6]) or normalize_space(question)
+    searched = ", ".join(u.text for u in profile.units[:6]) or normalize_space(question)
     plan.append("Found nothing in the retrieved sources that addresses the question; reported the gap.")
+    gaps = [f"No archived source mentions “{m}”." for m in missing]
     return ResearchAnswerOut(
         answer=(
             "The Newsren archive has no coverage that addresses this question, so there is no sourced answer to "
@@ -833,7 +1103,7 @@ def _no_coverage(
         plan=plan[:5],
         verified=[],
         could_not_verify=_dedupe(
-            [f"No retrieved source addresses the question: “{normalize_space(question)}”", *notes]
+            [f"No retrieved source addresses the question: “{normalize_space(question)}”", *gaps, *notes]
         ),
         citations=[],
         follow_up_questions=[
@@ -843,25 +1113,85 @@ def _no_coverage(
     )
 
 
+def _company_in_question(question: str, profile: QueryProfile) -> str | None:
+    """The company a filings question names: a $TICKER / (NYSE: X), else its first non-regulator name."""
+    ticker = _TICKER.search(question)
+    if ticker:
+        return ticker.group(1) or ticker.group(2)
+    for unit in profile.units:
+        if unit.is_name and unit.text.lower() not in _NOT_A_COMPANY:
+            return unit.text
+    return None
+
+
+def _filing_statements(filings: Any, question: str, cite: Any) -> tuple[list[StatementOut], list[str], str | None]:
+    """Statements from an EDGAR filings listing; the could-not-verify notes; the asked-for form's citation id."""
+    data = filings.data
+    company = data["company"]
+    by_url = {c.url: c for c in filings.citations}
+    statements: list[StatementOut] = []
+    asked = _FORM_IN_QUESTION.search(question)
+    form_cid = None
+    if asked:
+        form = asked.group(1).upper()
+        match = next((f for f in data["filings"] if f["form"].upper() == form), None)
+        if match is not None and match["url"] in by_url:
+            form_cid = cite(match["url"], by_url[match["url"]])
+            period = f" for the period ending {match['report_date']}" if match["report_date"] else ""
+            statements.append(
+                StatementOut(
+                    text=f"SEC EDGAR shows {company}'s most recent Form {match['form']} "
+                    f"({match['form_description']}) was filed {match['filed']}{period}.",
+                    citation_ids=[form_cid],
+                )
+            )
+    listed = "; ".join(
+        f"Form {f['form']} filed {f['filed']}" + (f" ({', '.join(f['items'][:2])})" if f["items"] else "")
+        for f in data["filings"][:3]
+    )
+    first = filings.citations[0]
+    statements.append(
+        StatementOut(
+            text=f"SEC EDGAR lists {company}'s most recent material filings: {listed}.",
+            citation_ids=[cite(first.url, first)],
+        )
+    )
+    notes: list[str] = []
+    if _FIGURES_CUE.search(question):
+        ref = f" [{form_cid}]" if form_cid else ""
+        notes.append(
+            "The figures inside the filings were not extracted here; read the filing itself"
+            f"{ref} for what the company reported."
+        )
+    return statements, notes, form_cid
+
+
 def offline_answer(
     runner: ToolRunner,
     question: str,
     ctx: ResearchContext | None = None,
     audience: str | None = None,
     network: bool = False,
+    *,
+    toolbox: ResearchToolbox | None = None,
 ) -> ResearchAnswerOut:
     """Extractive Ask Newsren answer built only from what the approved tools return.
 
     Plan from the question; search the archive (seeded with the reader's
     context); read the best articles (corrections and primary sources
-    included); quote the best-matching sentences with attribution, source
-    type, and date; label vendor claims, preprints, opinion, corrections, and
-    backtests; and list what the retrieved sources do not support.
+    included); keep only sources that are on topic, weighting the question's
+    rare words and names above common ones; quote each source's headline
+    and best-matching sentences with attribution, source type, and date;
+    label vendor claims, preprints, opinion, corrections, allegations, and
+    backtests; and list what the retrieved sources do not support. With
+    ``network``, arXiv is searched for research questions and SEC EDGAR for
+    filings questions that name a company.
     """
-    terms = _question_terms(question)
-    q_stems = [s for s, _ in terms]
-    ctx_stems = _stems(f"{ctx.headline} {' '.join(ctx.keywords)}") if ctx else set()
-    display = ", ".join(d for _, d in terms[:6]) or "the question's wording"
+    profile = query_profile(toolbox.session if toolbox is not None else None, question)
+    ctx_stems = text_stems(f"{ctx.headline} {' '.join(ctx.keywords)}") if ctx else set()
+    ctx_ids = set(ctx.article_ids) if ctx else set()
+    quantity = bool(_QUANTITY_CUE.search(question))
+    display = ", ".join(u.text for u in profile.units[:6]) or "the question's wording"
     plan = [
         f"Identified the question's key terms ({display})"
         + (f" and started from the {ctx.kind} “{truncate(ctx.headline, 90)}”." if ctx else ".")
@@ -887,43 +1217,125 @@ def offline_answer(
     if docs:
         plan.append("Read " + "; ".join(f"“{truncate(d.title, 70)}”" for d in docs) + ".")
 
+    papers: list[_Doc] = []
     if network and _RESEARCH_CUE.search(question) and not runner.exhausted():
-        papers = runner.call("search_research_papers", {"query": question})
-        found = list(papers.data or []) if not papers.is_error else []
-        docs.extend(_doc_from_paper_data(p) for p in found[:2])
-        plan.append(f"Searched arXiv for related research papers: {len(found)} preprints found.")
+        found_papers = runner.call("search_research_papers", {"query": question})
+        found = list(found_papers.data or []) if not found_papers.is_error else []
+        candidates = [_doc_from_paper_data(p) for p in found]
+        ranked_papers = sorted(
+            (d for d in candidates if profile.on_topic(d.text, archive=False)),
+            key=lambda d: -profile.coverage(d.title, " ".join(d.sentences)),
+        )
+        papers = [
+            d for d in ranked_papers if profile.coverage(d.title, " ".join(d.sentences)) >= RELATED_COVERAGE
+        ][:2]
+        plan.append(
+            f"Searched arXiv for related research papers: {len(found)} preprints found, {len(papers)} on topic."
+        )
     filings = None
-    ticker = _TICKER.search(question)
-    if network and ticker and _FILING_CUE.search(question) and not runner.exhausted():
-        listing = runner.call("search_sec_filings", {"company_or_ticker": ticker.group(1) or ticker.group(2)})
+    filing_notes: list[str] = []
+    company = _company_in_question(question, profile) if _FILING_CUE.search(question) else None
+    if network and company and not runner.exhausted():
+        listing = runner.call("search_sec_filings", {"company_or_ticker": company})
         if not listing.is_error and isinstance(listing.data, dict) and listing.data.get("filings"):
             filings = listing
-        plan.append("Listed the company's recent SEC EDGAR filings.")
+            plan.append(f"Listed {listing.data['company']}'s recent SEC EDGAR filings.")
+        else:
+            reason = split_sentences(listing.content)[0] if listing.content else "no filings were returned"
+            filing_notes.append(f"SEC EDGAR filings for “{company}” could not be listed: {reason}")
+            plan.append(f"Looked up “{company}” in SEC EDGAR; no filings were listed.")
 
-    corpus = " ".join(
-        [
-            *(f"{h['title']} {h['snippet']}" for h in hits),
-            *(f"{d.title} {' '.join(d.sentences)}" for d in docs),
-            filings.content if filings is not None else "",
-        ]
-    )
-    missing, numbers = _missing_terms(question, terms, corpus)
+    # Which sources address the question: direct (most of it), related (part of it, on topic), or neither.
+    direct_docs: list[tuple[_Doc, float]] = []
+    related_docs: list[tuple[_Doc, float]] = []
+    for doc in [*docs, *papers]:
+        body = " ".join(doc.sentences)
+        coverage = profile.coverage(doc.title, body)
+        # Words absent from the whole archive do not count against a source, but a direct answer must still
+        # cover a real share of everything the question asks.
+        share = profile.coverage(doc.title, body, count_absent=True)
+        in_context = doc.article_id is not None and doc.article_id in ctx_ids
+        on_topic = profile.on_topic(doc.text, archive=not doc.is_paper)
+        answers = on_topic and coverage >= DIRECT_COVERAGE and share >= RELATED_COVERAGE
+        if in_context or answers or (not profile.units and ctx is not None):
+            direct_docs.append((doc, max(coverage, DIRECT_COVERAGE) if in_context else coverage))
+        elif on_topic and coverage >= RELATED_COVERAGE:
+            related_docs.append((doc, coverage))
+    if direct_docs:
+        # Sources that cover much less of the question than the best one are context, not answers.
+        def from_context(doc: _Doc) -> bool:
+            return doc.article_id is not None and doc.article_id in ctx_ids
 
-    picks = _score_sentences(docs, q_stems, ctx_stems, bool(_QUANTITY_CUE.search(question)))
+        searched_cov = [c for d, c in direct_docs if not from_context(d)]
+        cutoff = DIRECT_RELATIVE * max(searched_cov) if searched_cov else 0.0
+        demoted = [(d, c) for d, c in direct_docs if c < cutoff and not from_context(d)]
+        direct_docs = [(d, c) for d, c in direct_docs if c >= cutoff or from_context(d)]
+        related_docs = [*demoted, *related_docs]
+    direct = bool(direct_docs) or filings is not None
+    absent_names = [u.text for u in profile.units if u.kind == "name" and " " in u.text and u.df == 0]
+    if absent_names and not direct:
+        # The question's specific subject ("Mars Sample Return", "CHIPS Act") is in no archived article:
+        # items that share only a broader name (NASA, Intel) are not offered as related coverage.
+        related_docs = [(d, c) for d, c in related_docs if d.is_paper]
+    use = direct_docs if direct_docs else ([] if filings is not None else related_docs)
+
+    # Gaps are judged against the sources the answer uses (and any filings listed), not everything read.
+    filing_text = filings.content if filings is not None else ""
+    relevant_text = " ".join([*(d.text for d, _ in use), filing_text])
+    if direct_docs:
+        # A multi-part question: add the best related source for each topic the direct sources leave open.
+        added = 0
+        for unit in profile.units:
+            if added >= 2 or not _reportable(unit) or unit.meta or unit.matches(relevant_text):
+                continue
+            helper = max(
+                ((d, c) for d, c in related_docs if all(d is not u for u, _ in use) and unit.matches(d.text)),
+                key=lambda item: item[1],
+                default=None,
+            )
+            if helper is not None:
+                use = [*use, helper]
+                relevant_text = f"{relevant_text} {helper[0].text}"
+                added += 1
+    if not use and filings is None:
+        everything = " ".join([*(f"{h['title']} {h['snippet']}" for h in hits), *(d.text for d in docs)])
+        notes = _limits_notes(question, docs, [], network) + filing_notes
+        return _no_coverage(question, profile, plan, notes, _missing_units(profile, everything))
+    missing = _missing_units(profile, relevant_text)
+    numbers = _missing_numbers(question, relevant_text)
+
+    if filings is not None:
+        # The archive's EDGAR feed item and the live EDGAR listing describe the same filing: cite it once.
+        accessions = {f["accession"] for f in filings.data["filings"]}
+        use = [(d, c) for d, c in use if not any(a in d.text for a in accessions)]
     limit = 3 if audience == Audience.STUDENT else 4
-    chosen = _choose(picks, limit, 2 if len(q_stems) >= 3 else 1)
-    direct = bool(chosen) or filings is not None
-    if not chosen and filings is None:
-        chosen = _choose(picks, 2, 1)
+    primary: list[_Pick] = []
+    extra: list[_Pick] = []
+    for doc, coverage in use:
+        picks = _doc_picks(doc, coverage, profile, ctx_stems, quantity, direct=bool(direct_docs))
+        if picks:
+            primary.append(picks[0])
+            extra.extend(picks[1:])
+    chosen = _choose(primary, extra, limit)
+    paper_picks = [p for p in primary if p.doc.is_paper]
+    if paper_picks and not any(p.doc.is_paper for p in chosen):
+        # The reader asked for research and arXiv returned on-topic preprints: show the best one.
+        best_paper = max(paper_picks, key=lambda p: p.score)
+        if len(chosen) >= limit:
+            chosen.remove(min(chosen, key=lambda p: p.score))
+        chosen.append(best_paper)
     if chosen:
         # A correction that was read must be reflected even if its wording scores lower.
-        for doc in (d for d in docs if d.is_correction and all(p.doc is not d for p in chosen)):
-            best = next((p for p in picks if p.doc is doc), None)
-            if best is not None:
-                chosen.append(best)
+        for doc, coverage in [*direct_docs, *related_docs]:
+            if doc.is_correction and all(p.doc is not doc for p in chosen):
+                picks = _doc_picks(doc, coverage, profile, ctx_stems, quantity, direct=True)
+                if picks:
+                    chosen.append(picks[0])
 
     if not chosen and filings is None:
-        return _no_coverage(question, terms, plan, _limits_notes(question, docs, [], network))
+        everything = " ".join([*(f"{h['title']} {h['snippet']}" for h in hits), *(d.text for d in docs)])
+        notes = _limits_notes(question, docs, [], network) + filing_notes
+        return _no_coverage(question, profile, plan, notes, _missing_units(profile, everything))
 
     ids: dict[str, str] = {}
     citations: list[CitationRef] = []
@@ -938,62 +1350,69 @@ def offline_answer(
             citations.append(citation.model_copy(update=update))
         return ids[url]
 
-    # Lead with the most direct sentence, then the rest in date order.
-    ordered = chosen[:1] + sorted(chosen[1:], key=lambda p: p.doc.published_at or "")
+    # Lead with the most direct source, then the rest newest first for "recent" questions, else by date.
+    def when(p: _Pick) -> str:
+        return p.doc.published_at or p.doc.date_label or ""
+
+    if _RECENT_CUE.search(question):
+        ordered = sorted(chosen, key=when, reverse=True)
+    else:
+        ordered = chosen[:1] + sorted(chosen[1:], key=when)
     for pick in ordered:
-        cid = cite(pick.doc.url, pick.doc.citation, pick.sentence)
-        verified.append(StatementOut(text=f"{pick.doc.attribution()}: {pick.sentence}", citation_ids=[cid]))
+        cid = cite(pick.doc.url, pick.doc.citation, pick.sentences[0] if pick.sentences else pick.headline)
+        verified.append(StatementOut(text=pick.statement(), citation_ids=[cid]))
+    could_not_verify_extra: list[str] = []
     if filings is not None:
-        data = filings.data
-        listed = "; ".join(
-            f"Form {f['form']} filed {f['filed']}" + (f" ({', '.join(f['items'][:2])})" if f["items"] else "")
-            for f in data["filings"][:3]
-        )
-        first = filings.citations[0]
-        verified.append(
-            StatementOut(
-                text=f"SEC EDGAR lists {data['company']}'s most recent material filings: {listed}.",
-                citation_ids=[cite(first.url, first)],
-            )
-        )
+        statements, notes, _ = _filing_statements(filings, question, cite)
+        verified.extend(statements)
+        could_not_verify_extra.extend(notes)
 
     cited_docs: list[_Doc] = []
     for pick in ordered:
         if all(pick.doc is not d for d in cited_docs):
             cited_docs.append(pick.doc)
 
-    parts: list[str] = []
-    if not direct:
-        parts.append("The Newsren archive does not directly answer this question. The closest coverage found:")
-    elif missing:
-        parts.append(
-            f"The retrieved sources do not address {_quoted_list(missing)}. Here is what they do report on the rest "
-            "of the question:"
-        )
-    parts.extend(f"{st.text} [{st.citation_ids[0]}]" for st in verified)
-    parts.extend(_source_notes(cited_docs, ordered, ids))
+    lines = [f"{st.text} [{st.citation_ids[0]}]" for st in verified]
+    preface = _gap_preface(missing, direct)
+    paragraphs: list[str] = []
+    if direct:
+        paragraphs.append(normalize_space(f"{preface} {lines[0]}"))
+        if len(lines) > 1:
+            paragraphs.append("Also relevant:\n" + "\n".join(f"- {line}" for line in lines[1:]))
+    else:
+        paragraphs.append(preface + "\n" + "\n".join(f"- {line}" for line in lines))
+    notes = _source_notes(cited_docs, ordered, ids)
     if _FORECAST_CUE.search(question):
-        parts.append(
+        notes.append(
             "What happens next is not known: anything forward-looking in these sources is a plan or projection."
         )
     if audience in _AUDIENCE_CLOSERS:
-        parts.append(_AUDIENCE_CLOSERS[audience])
+        notes.append(_AUDIENCE_CLOSERS[audience])
+    if notes:
+        paragraphs.append(" ".join(notes))
     plan.append(
-        "Quoted the sentences that best address the question with their source type and date, and listed what the "
-        "sources do not establish."
+        "Quoted each relevant source's headline and the sentences that best address the question, with source "
+        "type and date, and listed what the sources do not establish."
     )
 
     could_not_verify = _unsupported_items(missing, numbers) + _limits_notes(question, docs, cited_docs, network)
+    feed_only = [d for d in cited_docs if d.summary_only and not d.is_paper]
+    if feed_only:
+        r, plural = _refs(feed_only, ids)
+        could_not_verify.append(
+            f"Only the headline and feed summary of {r} are archived; details beyond them were not checked."
+        )
+    could_not_verify += could_not_verify_extra + filing_notes
     if not direct:
         could_not_verify.insert(0, "None of the retrieved sources answers the question directly.")
-    vertical = _vertical_of(ctx, docs)
+    vertical = _vertical_of(ctx, cited_docs or docs)
     return ResearchAnswerOut(
-        answer=" ".join(parts),
+        answer="\n\n".join(paragraphs),
         plan=plan[:5],
         verified=verified,
         could_not_verify=_dedupe(could_not_verify),
         citations=citations,
-        follow_up_questions=_follow_ups(ctx, docs, ordered, q_stems, audience, vertical),
+        follow_up_questions=_follow_ups(ctx, cited_docs, ordered, profile, audience, vertical),
     )
 
 
@@ -1113,7 +1532,13 @@ def _remap_markers(text: str, id_map: Mapping[str, str]) -> str:
         return "".join(f"[{i}]" for i in new)
 
     cleaned = _CITATION_MARKER.sub(repl, text or "")
-    return normalize_space(re.sub(r"\s+([.,;:])", r"\1", cleaned))
+    # Tidy spacing within each line but keep paragraph breaks and list lines for the reader view.
+    lines = [normalize_space(re.sub(r"\s+([.,;:])", r"\1", line)) for line in cleaned.splitlines()]
+    out: list[str] = []
+    for line in lines:
+        if line or (out and out[-1]):
+            out.append(line)
+    return "\n".join(out).strip()
 
 
 def sanitize_answer(
@@ -1251,7 +1676,7 @@ def ask(
         prompt=_build_prompt(text, ctx, audience, network),
         tools=toolbox.tools(),
         output_model=ResearchAnswerOut,
-        offline=lambda runner: offline_answer(runner, text, ctx, audience, network),
+        offline=lambda runner: offline_answer(runner, text, ctx, audience, network, toolbox=toolbox),
     )
     outcome = orch.run(AGENT_NAME, task, subject_type="question", subject_id=row.id)
     allowed = [*outcome.result.citations, *(ctx.citations if ctx else [])]
@@ -1269,7 +1694,7 @@ def ask(
         if problem is not None:
             # Withhold the model's draft and answer extractively from the same approved tools.
             runner = ToolRunner(toolbox.tools(), orch.budget())
-            fallback = offline_answer(runner, text, ctx, audience, network)
+            fallback = offline_answer(runner, text, ctx, audience, network, toolbox=toolbox)
             result = sanitize_answer(fallback, list(runner.citations.values()), toolbox.retrieved_text)
             result = result.model_copy(
                 update={"plan": [*result.plan, "The model's draft was withheld by the editorial quality gate."]}

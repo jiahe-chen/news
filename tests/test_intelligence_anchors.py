@@ -52,3 +52,34 @@ def test_product_launch_joins_its_model_story_through_a_headline_anchor(factory,
     assert evaluation.story_id == launch.story_id
     assert product.story_id == launch.story_id
     assert unrelated.story_id != launch.story_id
+
+
+def test_a_publisher_name_never_anchors_its_own_releases_together(factory, session):
+    """A vendor naming itself links neither its own unrelated releases nor counts as an anchor of them."""
+    now = utcnow()
+    newsroom = factory.source(
+        vertical=Vertical.TECHNOLOGY, trust_tier=TrustTier.VENDOR, name="Quillfeather Labs Newsroom"
+    )
+    press = factory.source(vertical=Vertical.TECHNOLOGY, name="Tech Desk")
+    launch = factory.article(
+        "Quillfeather Labs unveils Quill-7 model with record algebra benchmark scores",
+        "Quillfeather Labs released Quill-7, a language model it says sets records on algebra benchmarks.",
+        source=newsroom,
+        published_at=now - timedelta(days=6),
+    )
+    hire = factory.article(
+        "Quillfeather Labs names Dana Whitfield chief financial officer",
+        "Quillfeather Labs appointed Dana Whitfield, previously at a cloud software company, as its finance chief.",
+        source=newsroom,
+        published_at=now - timedelta(days=5),
+    )
+    coverage = factory.article(
+        "Quillfeather Labs' Quill-7 tops algebra leaderboard, company says",
+        "The company says Quill-7 leads algebra benchmarks; independent tests are pending.",
+        source=press,
+        published_at=now - timedelta(days=4),
+    )
+    assert "quillfeather" not in title_anchors(session, launch)
+    assign_stories(session)
+    assert hire.story_id != launch.story_id
+    assert coverage.story_id == launch.story_id

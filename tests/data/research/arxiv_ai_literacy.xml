@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/2mDXsqHG9kCF3pYbzcRsXNYp06I</id>
+  <title>arXiv Query: search_query=all:students AND all:"ai literacy"&amp;id_list=&amp;start=0&amp;max_results=6</title>
+  <updated>2026-10-27T22:31:55Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=all:students+AND+all:%22ai+literacy%22&amp;start=0&amp;max_results=6&amp;id_list=" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>6</opensearch:itemsPerPage>
+  <opensearch:totalResults>147</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2604.01955v3</id>
+    <title>Teaching Students to Question the Machine: An AI Literacy Intervention Improves Students' Regulation of LLM Use in a Science Task</title>
+    <updated>2026-06-29T14:14:55Z</updated>
+    <link href="https://arxiv.org/abs/2604.01955v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.01955v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The rapid adoption of generative artificial intelligence (GenAI) in schools raises concerns about students' uncritical reliance on its outputs. Effective use of large language models (LLMs) requires not only technical knowledge but also the ability to monitor, evaluate, and regulate one's interaction with the system, processes closely tied to metacognitive regulation. These skills are still developing in middle school, making students particularly vulnerable to over-trust and premature acceptance of AI outputs. Because classroom time and teacher training resources are constrained, there is a pressing need to develop and evaluate AI literacy interventions that can be implemented under realistic school conditions. We report a controlled classroom study examining whether a two-hour AI literacy workshop improves students' interaction strategies and quality of final answers in LLM-supported science problem solving. A total of 116 students (grades 8-9; ages 13-15) completed six science investigation tasks using a generative AI system. Two days prior, the intervention group attended the workshop, which combined information about how LLMs work and fail with practical guidance on prompting and response evaluation; the control group received no training. Trained students showed less uncritical reliance on the system: they more often reformulated queries, asked follow-up questions, and more accurately judged response correctness, leading to better performance. In contrast, GenAI and metacognitive self-report scores did not predict performance, suggesting that effective use of generative AI depends less on self-reported measures and more on explicit training in interaction regulation. Overall, the results show that brief, scalable AI literacy instruction can meaningfully improve how middle-school students use generative AI in school-like learning activities.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-02T12:19:43Z</published>
+    <arxiv:comment>Workshop paper accepted at ALIT4ALL 2026: 2nd International Workshop on AI Literacy Education For All, co-located with AIED 2026</arxiv:comment>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>O. Clerc</name>
+    </author>
+    <author>
+      <name>R. Abdelghani</name>
+    </author>
+    <author>
+      <name>C. Desvaux</name>
+    </author>
+    <author>
+      <name>E. Poisson</name>
+    </author>
+    <author>
+      <name>P. Y. Oudeyer</name>
+    </author>
+    <author>
+      <name>H. Sauzéon</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2607.11314v1</id>
+    <title>Programming Language Policy as an AI Literacy Equity Problem: A 15-Nation Comparative Analysis</title>
+    <updated>2026-07-13T09:27:09Z</updated>
+    <link href="https://arxiv.org/abs/2607.11314v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2607.11314v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>The promise of AI literacy ``for all'' confronts a structural challenge embedded in how nations organise secondary computer science education. In most systems, a general-track subject -- Digital Literacy, ICT, TIC, or SNT -- bears the weight of universal AI literacy, while a specialist Informatics course serves STEM pathways separately. Yet the content and depth of the general track are shaped by governance decisions made largely with reference to the specialist one. This paper presents a comparative analysis of curricula and examination frameworks across fifteen countries, identifying two structural challenges. First, in several systems a significant portion of students completes secondary education without any formal programming exposure. Second, among those who do receive CS education, a \emph{Syntax Ceiling} emerges: Python-based instruction reaches most students, while the algorithmic depth associated with C++ remains concentrated in elite STEM tracks. Drawing on reform cases spanning centralised mandates (France, China, Japan), assessment-driven systems (Poland, Romania, South Korea), and recent universal reforms (Switzerland, Kazakhstan), we show that governance structures and high-stakes examinations are the primary drivers of both challenges -- and that specialist and general-track language choices are rarely independent, linked through shared teacher pipelines that curriculum policy seldom acknowledges. Achieving genuine AI literacy for all requires confronting not just curriculum content, but the access architectures and resource constraints that determine who receives it -- and at what depth.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-07-13T09:27:09Z</published>
+    <arxiv:comment>Presented at 2nd International Workshop on AI Literacy Education For All (CEUR proceedings)</arxiv:comment>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>Adrian-Marius Dumitran</name>
+    </author>
+    <author>
+      <name>Iulia-Maria Popescu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2604.21995v2</id>
+    <title>Emergent Technology, Emergent Critique: Students and Teachers Developing Critical AI Literacy through Participatory Design around Generative AI</title>
+    <updated>2026-04-29T20:15:19Z</updated>
+    <link href="https://arxiv.org/abs/2604.21995v2" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2604.21995v2" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Who gets to decide how generative AI tools enter students' classrooms? We report on a five-week participatory design program in which three 11th-grade Latinx students and three high school teachers in California negotiated how generative AI tools would be used and taught about in learning environments. Drawing on video recordings and designed artifacts, we ask: what critical AI literacy practices emerged as students and teachers jointly designed how generative AI tools would be used and taught about? Our analysis reveals three practices: collectively unsettling assumptions about AI, mutual learning through complementary expertise, and grounding AI critique in cultural knowledge and creative practice. Students and teachers developed these practices through the design work itself. This case contributes strategies for designing with youth around an emergent technology like generative AI toward critical AI literacy. It extends work on youth as protagonists by showing how this approach enables students to shape both the adoption and the interrogation of these tools in their learning environments.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-04-23T18:24:06Z</published>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Santiago Ojeda-Ramirez</name>
+    </author>
+    <author>
+      <name>Eva Durall Gazulla</name>
+    </author>
+    <author>
+      <name>Kylie Peppler</name>
+    </author>
+    <arxiv:doi>10.1145/3773077.3812170</arxiv:doi>
+    <link rel="related" href="https://doi.org/10.1145/3773077.3812170" title="doi"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2610.10743v1</id>
+    <title>What does it mean to use AI critically? Unpacking critical AI literacy through students' evaluation of AI-generated content</title>
+    <updated>2026-10-07T18:11:50Z</updated>
+    <link href="https://arxiv.org/abs/2610.10743v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2610.10743v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Although critical AI literacy has emerged as an important educational goal, the construct remains conceptually broad and insufficiently specified for guiding students' day-to-day interactions with AI. This study examines how students critically evaluated AI-generated content. Drawing on an analysis of students' chatbot interactions and written reflections, we first identified seven stages of AI-supported academic task completion and five functional roles assumed by AI. More importantly, we identified eight evaluative lenses that students used to assess AI-generated responses (accuracy, completeness, task alignment/relevance, personalization, practicality, creativity, ethics, and bias). The findings suggest that critical AI literacy extends beyond verifying the factual accuracy of AI-generated information. Rather, critically engaging with AI involves situated and multidimensional judgment about the epistemic quality, contextual fit, practical feasibility, creative value, and ethical implications of AI-generated content. The framework offers both a conceptual contribution to the emerging literature on critical AI literacy and a practical tool for educators seeking to help learners move from passive acceptance of AI toward deliberate, context-sensitive, and responsible human judgment.</summary>
+    <category term="cs.HC" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-10-07T18:11:50Z</published>
+    <arxiv:primary_category term="cs.HC"/>
+    <author>
+      <name>Hyejeong Lee</name>
+    </author>
+    <author>
+      <name>Wonjin Yu</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2508.15112v1</id>
+    <title>Mapping Students' AI Literacy Framing and Learning through Reflective Journals</title>
+    <updated>2025-08-20T23:01:51Z</updated>
+    <link href="https://arxiv.org/abs/2508.15112v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2508.15112v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>This research paper presents a study of undergraduate technology students' self-reflective learning about artificial intelligence (AI). Research on AI literacy proposes that learners must develop five competencies associated with AI: awareness, knowledge, application, evaluation, and development. It is important to understand what, how, and why students learn about AI so formal instruction can better support their learning. We conducted a reflective journal study where students described their interactions with AI each week. Data was collected over six weeks and analyzed using an emergent interpretive process. We found that the participants were aware of AI, expressed opinions on their future use of AI skills, and conveyed conflicted feelings about developing deep AI expertise. They also described ethical concerns with AI use and saw themselves as intermediaries of knowledge for friends and family. We present the implications of this study and propose ideas for future work in this area.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2025-08-20T23:01:51Z</published>
+    <arxiv:comment>Pre-print, paper accepted at SEFI 2025 Annual Conference</arxiv:comment>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>Ashish Hingle</name>
+    </author>
+    <author>
+      <name>Aditya Johri</name>
+    </author>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/2603.20056v1</id>
+    <title>From School AI Readiness to Student AI Literacy: A National Multilevel Mediation Analysis of Institutional Capacity and Teacher Capability</title>
+    <updated>2026-03-20T15:38:30Z</updated>
+    <link href="https://arxiv.org/abs/2603.20056v1" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2603.20056v1" rel="related" type="application/pdf" title="pdf"/>
+    <summary>Artificial intelligence (AI) is increasingly embedded in vocational education systems, yet empirical evidence linking institutional AI readiness to student learning outcomes remains limited. This study develops and tests a 2-2-1 cross-level mediation framework examining how school-level AI readiness is associated with student AI literacy through aggregated teacher mechanisms. Using linked survey data from 1,007 vocational institutions, 156,125 teachers, and 2,379,546 students nationwide, multilevel models were estimated to assess direct, indirect, and contextual effects. Results indicate that overall school AI readiness is positively associated with student AI literacy after adjusting for institutional and regional characteristics. When examined independently, all readiness dimensions show positive associations, while simultaneous modelling suggests that readiness operates as an integrated organisational configuration. Cross-level mediation analyses reveal that aggregated teacher-perceived AI capability partially mediates the relationship between institutional readiness and student literacy, whereas general attitudinal acceptance measures do not demonstrate stable transmission effects. Robustness analyses further show that this readiness-capability-literacy pathway remains structurally stable across heterogeneous regional AI development contexts and under alternative modelling specifications. These findings reposition institutional AI readiness as a multilevel organisational condition linked to student AI literacy, identify collective teacher capability as its central transmission mechanism, and underscore the need to align infrastructural investment with sustained professional capacity development.</summary>
+    <category term="cs.CY" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-03-20T15:38:30Z</published>
+    <arxiv:primary_category term="cs.CY"/>
+    <author>
+      <name>Xiu Guan</name>
+    </author>
+    <author>
+      <name>Mingmin Zheng</name>
+    </author>
+    <author>
+      <name>Dragan Gašević</name>
+    </author>
+    <author>
+      <name>Wenxin Guo</name>
+    </author>
+    <author>
+      <name>Yingqun Liu</name>
+    </author>
+    <author>
+      <name>Xibin Han</name>
+    </author>
+    <author>
+      <name>Danijela Gasevic</name>
+    </author>
+    <author>
+      <name>Ruiling Ma</name>
+    </author>
+    <author>
+      <name>Qi Wu</name>
+    </author>
+    <author>
+      <name>Lixiang Yan</name>
+    </author>
+  </entry>
+</feed>

@@ -1,0 +1,514 @@
+{
+ "description": "Real headline + summary rows from the live-source run (Oct 2026, 27 approved feeds); expected Funding Round Tracker outcome per row.",
+ "samples": [
+  {
+   "live_article_id": 253,
+   "source_slug": "sec-press-releases",
+   "source_url": "https://www.sec.gov/news/pressreleases.rss",
+   "source_homepage": "https://www.sec.gov/newsroom/press-releases",
+   "source_trust_tier": "primary",
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-92-sec-charges-south-florida-resident-his-company-alleged-investment-scheme-defrauding-law-enforcement",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "published_at": "2026-09-23T16:00:00",
+   "title": "SEC Charges South Florida Resident and His Company for Alleged Investment Scheme Defrauding Law Enforcement",
+   "summary": "The Securities and Exchange Commission today charged CMI Capital LLC and its founder and manager, Michael D. Williams, for an alleged fraudulent investment scheme that raised approximately $860,000 from at least 18 investors, many of whom are current or…",
+   "content": "",
+   "extra": {
+    "tags": []
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "SEC enforcement action: a scheme that 'raised approximately $860,000 from investors' (logged as 'Williams $860,000' before the fix)"
+   }
+  },
+  {
+   "live_article_id": 272,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/21/foursquare-co-founder-says-equity-holders-saw-no-returns-from-the-companys-acquisition/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-21T14:03:11",
+   "title": "Foursquare co-founder says equity holders saw no returns from the company’s acquisition",
+   "summary": "Foursquare raised $411 million in funding according to PitchBook data, but its equity holders saw no returns from its final acquisition.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Apps",
+     "Venture",
+     "Foursquare"
+    ]
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "lifetime total per PitchBook data plus 'no returns' from an acquisition (logged as 'Foursquare $411 million' before the fix)"
+   }
+  },
+  {
+   "live_article_id": 275,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/19/ai-assistant-startup-town-nabs-unicorn-valuation-four-months-after-launch/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-19T18:00:39",
+   "title": "AI assistant startup Town nabs unicorn valuation 4 months after launch",
+   "summary": "AI assistant startup Town nabbed a unicorn valuation on Monday, announcing a $108 million Series B round co-led by Forerunner Ventures and Menlo Ventures.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Startups",
+     "Venture",
+     "AI assistant",
+     "In Brief",
+     "unicorn"
+    ]
+   },
+   "expected": {
+    "is_funding_round": true,
+    "company_name": "Town",
+    "stage": "series_b",
+    "amount_text": "$108 million",
+    "amount_usd": 108000000.0,
+    "lead_investors": [
+     "Forerunner Ventures",
+     "Menlo Ventures"
+    ],
+    "why": "valuation headline; the round is in the summary's participle clause"
+   }
+  },
+  {
+   "live_article_id": 271,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/21/blacksmith-hits-unicorn-valuation-after-sequoia-leads-series-c/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-21T17:18:27",
+   "title": "Blacksmith hits unicorn valuation after Sequoia leads Series C",
+   "summary": "Blacksmith, a platform that lets companies build and test AI code more effectively, just announced a $66 million Series C round led by Sequoia that values the company at $1 billion.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "AI",
+     "Startups",
+     "Venture",
+     "Blacksmith",
+     "In Brief",
+     "Sequoia",
+     "unicorn"
+    ]
+   },
+   "expected": {
+    "is_funding_round": true,
+    "company_name": "Blacksmith",
+    "stage": "series_c",
+    "amount_text": "$66 million",
+    "amount_usd": 66000000.0,
+    "lead_investors": [
+     "Sequoia"
+    ],
+    "why": "the $1 billion valuation is not the round size"
+   }
+  },
+  {
+   "live_article_id": 270,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/21/legal-ai-startup-legora-raises-550m-series-e-at-8-8b-valuation/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-21T18:51:56",
+   "title": "Legal AI startup Legora raises $550M Series E at $8.8B valuation",
+   "summary": "Legal AI startup Legora announced Wednesday that it raised a $550 million Series E round, valuing it at $8.8 billion.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Startups",
+     "Venture",
+     "In Brief",
+     "law"
+    ]
+   },
+   "expected": {
+    "is_funding_round": true,
+    "company_name": "Legora",
+    "stage": "series_d_plus",
+    "amount_text": "$550M",
+    "amount_usd": 550000000.0,
+    "why": "Series E maps to series_d_plus; the $8.8B valuation is not the round size"
+   }
+  },
+  {
+   "live_article_id": 144,
+   "source_slug": "crunchbase-news",
+   "source_url": "https://news.crunchbase.com/feed/",
+   "source_homepage": "https://news.crunchbase.com",
+   "source_trust_tier": "independent",
+   "url": "https://news.crunchbase.com/fintech-ecommerce/insuretech/startup-slingshot-insurance-seed-funding-genteman/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-22T13:00:23",
+   "title": "Exclusive: Slingshot Raises $27M In Seed Funding To Build An Insurer For Those Small Policies Sold At Checkout",
+   "summary": "Slingshot Insurance, a Minneapolis-based AI-native embedded insurance startup, is emerging from stealth with $27 million in a seed funding round co-led by Rally Ventures and Skyward Group, it tells Crunchbase News exclusively.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Artificial intelligence",
+     "E-commerce",
+     "Insurance tech",
+     "SaaS",
+     "Seed funding",
+     "Startups",
+     "Venture"
+    ]
+   },
+   "expected": {
+    "is_funding_round": true,
+    "company_name": "Slingshot",
+    "stage": "seed",
+    "amount_text": "$27M",
+    "amount_usd": 27000000.0,
+    "lead_investors": [
+     "Rally Ventures",
+     "Skyward Group"
+    ],
+    "why": "seed round"
+   }
+  },
+  {
+   "live_article_id": 309,
+   "source_slug": "ee-times",
+   "source_url": "https://www.eetimes.com/feed/",
+   "source_homepage": "https://www.eetimes.com",
+   "source_trust_tier": "independent",
+   "url": "https://www.eetimes.com/copperpilot-raises-pre-seed-to-develop-ai-agent-for-pcb-design/",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-27T13:58:33",
+   "title": "CopperPilot Raises Pre-seed to Develop AI Agent for PCB Design",
+   "summary": "CopperPilot’s CEO said the startup has built its AI design agent so that “no hardware team is ever blocked because a board is too hard to design.”",
+   "content": "",
+   "extra": {
+    "tags": [
+     "News",
+     "AI agents",
+     "Design Tools (EDA)",
+     "EDA",
+     "Hardware Development",
+     "Venture Capital Funding"
+    ]
+   },
+   "expected": {
+    "is_funding_round": true,
+    "company_name": "CopperPilot",
+    "stage": "pre_seed",
+    "amount_text": "",
+    "amount_usd": null,
+    "why": "undisclosed pre-seed round"
+   }
+  },
+  {
+   "live_article_id": 265,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/22/ben-lamm-raises-200m-for-warhound-to-engineer-war-dogs-and-arm-them-with-anduril-gear/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-22T23:15:00",
+   "title": "Warhound raises $200M to engineer war dogs and arm them with Anduril gear",
+   "summary": "Warhound, the brainchild of Ben Lamm and Palmer Luckey, emerges from stealth to genetically engineer dogs for military and law enforcement.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Fundraising",
+     "Startups",
+     "Venture",
+     "Ben Lamm",
+     "defense",
+     "Palmer Luckey"
+    ]
+   },
+   "expected": {
+    "is_funding_round": true,
+    "company_name": "Warhound",
+    "stage": "undisclosed",
+    "amount_text": "$200M",
+    "amount_usd": 200000000.0,
+    "why": "headline round; funding context comes from the publisher's Fundraising/Venture tags"
+   }
+  },
+  {
+   "live_article_id": 248,
+   "source_slug": "sec-press-releases",
+   "source_url": "https://www.sec.gov/news/pressreleases.rss",
+   "source_homepage": "https://www.sec.gov/newsroom/press-releases",
+   "source_trust_tier": "primary",
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-97-sec-charges-two-individuals-orchestrating-fraud-scheme-targeted-veterans",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "published_at": "2026-09-30T16:42:15",
+   "title": "SEC Charges Two Individuals With Orchestrating Fraud Scheme That Targeted Veterans",
+   "summary": "The Securities and Exchange Commission today announced charges against Christopher Kenji Dinelli and Jacob David “Kobe” Frankel for allegedly orchestrating a fraud scheme that raised more than $8.7 million from 35 investors through their fund, Beyond…",
+   "content": "",
+   "extra": {
+    "tags": []
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "SEC enforcement: fraud scheme that raised money from investors"
+   }
+  },
+  {
+   "live_article_id": 259,
+   "source_slug": "sec-press-releases",
+   "source_url": "https://www.sec.gov/news/pressreleases.rss",
+   "source_homepage": "https://www.sec.gov/newsroom/press-releases",
+   "source_trust_tier": "primary",
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-86-sec-charges-founder-his-two-new-jersey-based-companies-alleged-16-million-ponzi-scheme",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "published_at": "2026-09-10T17:45:22",
+   "title": "SEC Charges Founder and His Two New Jersey-Based Companies in Alleged $16 Million Ponzi Scheme",
+   "summary": "The Securities and Exchange Commission today charged Ernest Ossei Boateng and two New Jersey-based companies he controls, Intercontinental Wealth Network LLC and I Wealth Network LP, for allegedly raising approximately $16 million from more than 200…",
+   "content": "",
+   "extra": {
+    "tags": []
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "SEC enforcement: alleged Ponzi scheme"
+   }
+  },
+  {
+   "live_article_id": 261,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/27/disruptive-raises-10b-fund-to-make-big-bets-on-at-least-10-companies/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-27T18:55:35",
+   "title": "Disruptive raises $10B fund to make big bets on at least 10 companies",
+   "summary": "Disruptive has made headlines in recent years for pouring money into companies like chip startup Groq and the AI voice-generation startup ElevenLabs.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "AI",
+     "Startups",
+     "Venture",
+     "disruptive",
+     "In Brief"
+    ]
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "a venture firm's own fund"
+   }
+  },
+  {
+   "live_article_id": 273,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/20/inspired-capital-closes-450m-fourth-fund-as-new-york-pushes-back-on-silicon-valleys-gravitational-pull/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-20T13:00:00",
+   "title": "Inspired Capital closes $450M fourth fund as New York pushes back on Silicon Valley’s gravitational pull",
+   "summary": "The raise comes as venture dollars pile up on the West Coast.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Venture",
+     "Alexa von Tobel",
+     "Inspired Capital"
+    ]
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "a venture firm's own fund"
+   }
+  },
+  {
+   "live_article_id": 274,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/19/tenstorrent-hits-6-2b-valuation-to-scale-open-weight-ai-chips/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-19T18:37:27",
+   "title": "Tenstorrent hits $6.2B valuation to scale open-weight AI chips",
+   "summary": "After drawing acquisition interest earlier this year, the Nvidia challenger raised $1.5 billion to remain independent.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "AI",
+     "Fundraising",
+     "Venture",
+     "In Brief",
+     "Tenstorrent"
+    ]
+   },
+   "expected": {
+    "never_amount_text": "$6.2B",
+    "why": "valuation headline; the $1.5 billion round's subject is a descriptor ('the Nvidia challenger'), a known recall gap"
+   }
+  },
+  {
+   "live_article_id": 141,
+   "source_slug": "crunchbase-news",
+   "source_url": "https://news.crunchbase.com/feed/",
+   "source_homepage": "https://news.crunchbase.com",
+   "source_trust_tier": "independent",
+   "url": "https://news.crunchbase.com/venture/biggest-funding-rounds-ai-defense-biotech-robotics-tenstorrent/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-23T18:51:22",
+   "title": "The Week’s 10 Biggest Funding Rounds: AI Drives A Varied Lineup Of Large Financings",
+   "summary": "It was another interesting week for AI-related startup funding, with a number of large rounds and quirky companies. The largest financings went to Tenstorrent, a developer of AI processors and systems, and AI lab Flapping Airplanes. The quirkiest round, meanwhile, was undoubtedly a $200 million financing for Warhound, which wants to breed elite military dogs. A number of big rounds in areas including biotech, space tech and physical AI rounded out the list.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Artificial intelligence",
+     "Defense tech",
+     "Fintech",
+     "Health, Wellness & Biotech",
+     "Manufacturing",
+     "Robotics",
+     "SaaS",
+     "Seed funding",
+     "Startups",
+     "Venture",
+     "unicorn"
+    ]
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "weekly roundup of many rounds"
+   }
+  },
+  {
+   "live_article_id": 268,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/22/investors-break-down-how-founders-can-raise-a-series-a-today/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-22T15:15:00",
+   "title": "Investors break down how founders can raise a Series A today",
+   "summary": "Raising a Series A these days isn't so simple — top investors break down what founders need to know now.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Startups",
+     "Venture",
+     "fundraising",
+     "TechCrunch Disrupt"
+    ]
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "how-to advice, no company raising"
+   }
+  },
+  {
+   "live_article_id": 532,
+   "source_slug": "nist-news",
+   "source_url": "https://www.nist.gov/news-events/news/rss.xml",
+   "source_homepage": "https://www.nist.gov/news-events/news",
+   "source_trust_tier": "primary",
+   "url": "https://www.nist.gov/news-events/news/2026/07/nist-announces-funding-opportunity-14-mep-centers-advance-small-and-medium",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "published_at": "2026-07-22T12:00:00",
+   "title": "NIST Announces Funding Opportunity for 14 MEP Centers to Advance Small and Medium-Sized U.S. Manufacturers",
+   "summary": "NIST MEP will host an informational webinar on Tuesday, July 28, 2026, at 1 p.m. ET to provide general information about this opportunity and guidance on preparing applications.",
+   "content": "",
+   "extra": {
+    "tags": []
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "government funding opportunity, not a round"
+   }
+  },
+  {
+   "live_article_id": 12,
+   "source_slug": "chalkbeat",
+   "source_url": "https://www.chalkbeat.org/arc/outboundfeeds/rss/",
+   "source_homepage": "https://www.chalkbeat.org",
+   "source_trust_tier": "independent",
+   "url": "https://www.chalkbeat.org/indiana/2026/10/23/ips-school-board-candidates-raise-money-from-political-action-committees/",
+   "vertical": "education",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-23T17:57:14",
+   "title": "IPS school board candidates raise over $150,000 from political action committees",
+   "summary": "There are 15 candidates for five spots on the IPS school board on the ballot Nov. 3.",
+   "content": "",
+   "extra": {
+    "tags": []
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "political campaign fundraising"
+   }
+  },
+  {
+   "live_article_id": 296,
+   "source_slug": "bbc-business",
+   "source_url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+   "source_homepage": "https://www.bbc.co.uk/news/business",
+   "source_trust_tier": "independent",
+   "url": "https://www.bbc.co.uk/news/articles/c65yn9p55np2o?at_medium=RSS&at_campaign=rss",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-25T06:00:15",
+   "title": "Four ways Labour could raise money in the Budget without hiking income tax",
+   "summary": "Chancellor John Healey may need to raise money to boost his fiscal headroom - BBC Verify examines what options could be on the table.",
+   "content": "",
+   "extra": {
+    "tags": []
+   },
+   "expected": {
+    "is_funding_round": false,
+    "why": "government budget"
+   }
+  }
+ ]
+}

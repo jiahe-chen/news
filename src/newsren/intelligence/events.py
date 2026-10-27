@@ -19,7 +19,8 @@ Rules are checked in this order; the first that fires wins:
 3. **enforcement** - regulators charging, fining, settling, or issuing
    cease-and-desist orders; lawsuits only when a public enforcer sues.
 4. **security_advisory** - ``doc_type`` advisory, CVE ids, vulnerabilities,
-   exploited flaws, data breaches.
+   exploited flaws, data breaches, code-execution / authentication-bypass
+   flaws, "critical flaw", "allows attackers to".
 5. **earnings / filing** - ``doc_type`` earnings_call, or quarterly-results
    language -> earnings; ``doc_type`` filing or SEC form numbers
    (10-K, 10-Q, 8-K, S-1 ...) -> filing.
@@ -32,13 +33,19 @@ Rules are checked in this order; the first that fires wins:
    replicate") or a non-vendor source that is not merely relaying the
    company's own claim. A vendor's own benchmark claim (vendor trust tier or
    press release, or reporting that attributes the scores to the company)
-   is ``benchmark``. Research papers need the evaluation cue in the title.
+   is ``benchmark``. Research papers need the evaluation cue in the title,
+   and a bare "Evaluation" there (a topic, "Adoption, Interaction, Evaluation
+   and Ethical Perceptions", or the design, "An Evaluation Study") does not
+   count: an evaluation names what it evaluates ("Evaluating X", "evaluation
+   of X"). A person's job review ("Superintendent earns 88 points on latest
+   evaluation") is never an evaluation of claims.
 8. **research_publication** - ``doc_type`` research_preprint,
    research_peer_reviewed, or education_report; "study", "paper",
    "preprint", "peer-reviewed", "randomized".
 9. **regulation / policy** - ``doc_type`` regulatory -> regulation;
    ``doc_type`` policy -> policy; legally binding rule-making language
-   (rule, regulation, law, bill, "AI Act", compliance) -> regulation;
+   (rule, regulation, law, bill, "AI Act", compliance) -> regulation (a
+   household bill, "energy bill help", is not legislation);
    government or institutional policy and guidance (curriculum, standards,
    monetary policy, guidance for schools) -> policy.
 10. **product_launch** - launches, unveils, releases, "now available",
@@ -46,7 +53,8 @@ Rules are checked in this order; the first that fires wins:
 11. **adoption** - adopts, deploys, pilots, "rolls out to staff/schools",
     partnerships and contracts, "goes live".
 12. **opinion / analysis by cue** - "why", "what it means", "explainer",
-    "the case for/against", "lessons".
+    "the case for/against", "lessons", a preview after a dash ("... - what
+    could be in the Budget?").
 13. **announcement** - press releases or vendor sources, "announces",
     "plans to", "unveils plan".
 14. **other**.
@@ -124,6 +132,11 @@ _SECURITY = _rx(
     r"\bmalware\b",
     r"\bpatch(?:es|ed)?\b[^.]{0,30}?\b(?:flaw|bug|vulnerabilit\w*|exploit\w*)",
     r"\bCISA\s+(?:warns|adds|issues|orders)\b",
+    # "Code-execution flaw in UEFI firmware", "Critical flaw ... allows attackers to execute code".
+    r"\b(?:(?:remote[- ])?code[- ]execution|privilege[- ]escalation|authentication[- ]bypass|memory[- ]corruption)"
+    r"\s+(?:flaw|bug|hole|vulnerabilit\w*|exploit\w*|attack\w*)\b",
+    r"\b(?:critical|unpatched|exploitable)\s+(?:security\s+)?(?:flaw|bug)\b",
+    r"\ballows?\s+(?:remote\s+|unauthenticated\s+)?attackers?\s+to\b",
 )
 
 # Weak cues count only in the title; strong cues anywhere in title + summary.
@@ -191,6 +204,22 @@ _NEGATED_THIRD_PARTY = _rx(
     r"external)\b"
     r"(?:\s+\w+)?"
 )
+# A person's job review ("Superintendent ... earns 88 points on latest evaluation") is not an evaluation of claims.
+_PERSONNEL_REVIEW = _rx(
+    r"\b(?:superintendent|principal|teacher|chancellor|president|ceo|chief\s+executive|director|coach|mayor|"
+    r"governor|employee|staff|manager)s?(?:'s|’s)?\b[^.;:]{0,80}?\b(?:performance\s+)?"
+    r"(?:evaluation|review|rating)s?\b",
+    r"\b(?:performance|job|annual|personnel)\s+(?:evaluation|review|appraisal)s?\s+(?:of|for)\s+(?:the\s+)?"
+    r"(?:superintendent|principal|teacher|chancellor|president|ceo|director|coach|mayor|governor)\b",
+)
+# In a research paper's title a bare "Evaluation" names a topic ("Adoption, Interaction, Evaluation and Ethical
+# Perceptions") or the study design ("An Evaluation Study"); an evaluation of something says what it evaluates.
+_EVAL_TOPIC_NOUN = re.compile(r"\bevaluations?\b(?!\s+(?:of|for)\b)", re.IGNORECASE)
+# The venture firm Benchmark ("Benchmark's partners", "Even Benchmark thinks ...") is a name, not an evaluation.
+_BENCHMARK_FIRM = re.compile(
+    r"\bBenchmark(?=(?:'s|’s)\b|\s+(?:Capital|partners?|general\s+partners?|thinks|says|said|led|leads|backs|"
+    r"backed|invests|invested)\b)"
+)
 _VENDOR_ATTRIBUTION = _rx(
     r"\b(?:says|said)\s+its\b",
     r"\bclaim(?:s|ed|ing)?\s+(?:that\s+)?(?:its|the\s+model|top|state[- ]of[- ]the[- ]art|record|best)\b",
@@ -211,13 +240,20 @@ _RESEARCH = _rx(
     r"\barXiv\b",
     r"\bpeer[- ]reviewed\b",
     r"\bpublished\s+in\s+(?:the\s+)?(?:journal|Nature|Science|Proceedings|PNAS|The\s+Lancet)\b",
-    r"\b(?:working|research)\s+paper\b",
+    r"\b(?:working|research|technical)\s+paper\b",
+    r"\bresearchers\s+(?:at|from)\s+[^.]{1,120}?\bpublished\b",
     r"\brandomi[sz]ed\s+(?:controlled\s+)?(?:trial|study|experiment)\b",
     r"\bmeta-analysis\b",
 )
 
 _REGULATION_TITLE = _rx(
-    r"\bregulat(?:ion|ions|ors?|ory)\b", r"\brules?\b", r"\blaw\b", r"\bbill\b", r"\blegislation\b"
+    r"\bregulat(?:ion|ions|ors?|ory)\b",
+    r"\brules?\b",
+    r"\blaw\b",
+    # A household bill ("energy bill help") is not legislation.
+    r"(?<!energy )(?<!electricity )(?<!power )(?<!utility )(?<!gas )(?<!water )(?<!heating )(?<!phone )"
+    r"(?<!grocery )(?<!medical )(?<!hospital )(?<!food )\bbill\b",
+    r"\blegislation\b",
 )
 _REGULATION = _rx(
     r"\b(?:proposed|final|new|interim)\s+rules?\b",
@@ -283,6 +319,8 @@ _ADOPTION = _rx(
 )
 _ANALYSIS_CUE = _rx(
     r"^\s*(?:why|how|what)\b",
+    # A preview or explainer after a dash: "Tax on banks ... - what could be in the Budget?"
+    r"\s[-–—]\s+(?:why|how|what)\b[^.]*\?\s*$",
     r"\bwhat\s+[^.;:]{0,60}?\b(?:would\s+|will\s+|could\s+)?means?\b",
     r"\bexplain(?:er|ed)\b",
     r"\bthe\s+case\s+(?:for|against)\b",
@@ -340,7 +378,8 @@ def classify_event_with_reason(article: EventSubject) -> tuple[str, str]:
     # 3-4. Enforcement and security advisories.
     if _ENFORCEMENT.search(text):
         return EventType.ENFORCEMENT, "enforcement"
-    if doc_type == DocType.ADVISORY or _SECURITY.search(text):
+    # A research paper about vulnerabilities is a research publication, not an advisory.
+    if doc_type == DocType.ADVISORY or (doc_type not in _RESEARCH_DOCS and _SECURITY.search(text)):
         return EventType.SECURITY_ADVISORY, "security_advisory"
 
     # 5. Earnings and filings.
@@ -362,15 +401,22 @@ def classify_event_with_reason(article: EventSubject) -> tuple[str, str]:
     # 7. Evaluations and benchmarks. A cue only in the summary of a launch or
     # announcement story describes that launch, not a new evaluation.
     launch_in_title = _first_pos(_LAUNCH, title)
-    eval_in_title = _first_pos(_EVAL, title)
-    if doc_type in _RECORD_DOCS:
+    announce_in_title = _first_pos(_ANNOUNCEMENT, title)
+    eval_title = _BENCHMARK_FIRM.sub(" ", title)
+    eval_summary = _BENCHMARK_FIRM.sub(" ", summary)
+    if doc_type in _RESEARCH_DOCS and not is_vendor:
+        eval_title = _EVAL_TOPIC_NOUN.sub(" ", eval_title)
+    eval_in_title = _first_pos(_EVAL, eval_title)
+    if doc_type in _RECORD_DOCS or _PERSONNEL_REVIEW.search(title):
         eval_hit = False
     elif launch_in_title >= 0 and (eval_in_title < 0 or launch_in_title < eval_in_title):
         eval_hit = False  # "X unveils Y; benchmark claims unverified" reports a launch
+    elif announce_in_title >= 0 and announce_in_title < eval_in_title:
+        eval_hit = False  # "Statement in response to incidents from AI evaluations" is a statement
     elif doc_type in _RESEARCH_DOCS:
         eval_hit = eval_in_title >= 0
     else:
-        eval_hit = eval_in_title >= 0 or bool(_EVAL.search(summary) and not _ANNOUNCEMENT.search(title))
+        eval_hit = eval_in_title >= 0 or bool(_EVAL.search(eval_summary) and not _ANNOUNCEMENT.search(title))
     if eval_hit:
         if is_vendor:
             if eval_in_title >= 0:
@@ -379,7 +425,9 @@ def classify_event_with_reason(article: EventSubject) -> tuple[str, str]:
             return EventType.INDEPENDENT_EVALUATION, "third_party_evaluation"
         elif _VENDOR_ATTRIBUTION.search(text):
             return EventType.BENCHMARK, "reported_vendor_benchmark"
-        elif tier in (TrustTier.INDEPENDENT, TrustTier.PRIMARY):
+        elif tier in (TrustTier.INDEPENDENT, TrustTier.PRIMARY) and eval_in_title >= 0:
+            # Without third-party wording, the evaluation must be what the piece is about (its title):
+            # "a shift toward more deliberate evaluation" in a summary is not an evaluation.
             return EventType.INDEPENDENT_EVALUATION, "non_vendor_evaluation"
 
     # 8. Research publications.
@@ -450,3 +498,21 @@ EVENT_LABELS: dict[str, str] = {
 def event_label(event_type: str | None) -> str:
     """Reader-facing label for an ``EventType`` value."""
     return EVENT_LABELS.get(event_type or EventType.OTHER, (event_type or "development").replace("_", " "))
+
+
+# How an event reads in running text ("moved from an announcement to adoption and earnings").
+_EVENT_PHRASES: dict[str, str] = {
+    EventType.ADOPTION: "adoption",
+    EventType.EARNINGS: "earnings",
+    EventType.OPINION: "an opinion piece",
+    EventType.ANALYSIS: "an analysis",
+}
+
+
+def event_phrase(event_type: str | None) -> str:
+    """``event_label`` with the article it takes in running text: "an independent evaluation", "adoption"."""
+    phrase = _EVENT_PHRASES.get(event_type or EventType.OTHER)
+    if phrase:
+        return phrase
+    label = event_label(event_type)
+    return ("an " if label[:1].lower() in "aeiou" else "a ") + label

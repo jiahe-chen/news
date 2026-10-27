@@ -14,6 +14,18 @@ names only a publisher, the publisher's homepage is used as the link.
 ``ai_finance_classifier`` agent when an orchestrator is given, otherwise with
 the rule-based builder ``classify_claim_rules`` (which is also the agent's
 offline builder).
+
+A claim needs a financial-sector actor (a bank, asset or wealth manager,
+fund, broker-dealer, insurer, exchange, trading firm, payments or fintech
+company, lender, investment adviser, or a financial regulator acting on such
+firms) and an AI cue in the same sentence. A company's own "AI-native"
+self-description does not count as a capability claim. Sponsored content,
+opinion and guest commentary, and marketing copy ("See how ...") are skipped
+before any rule or agent runs (``skip_reason``). The firm is a name found in
+the claim sentences (known firms, names with a financial suffix such as
+"Bank" or "Advisors", a regulator for regulatory findings), else the
+headline's subject when the headline is in sentence case; otherwise it is
+"Unnamed firm", never a run of capitalised headline words.
 """
 
 from __future__ import annotations
@@ -382,16 +394,6 @@ _AI_PHRASE = re.compile(
     r"neural networks?)\b",
     re.IGNORECASE,
 )
-_FINANCE_CUE = re.compile(
-    r"\b(?:banks?|bank's|banking|trading|traders?|trade surveillance|portfolios?|asset managers?|asset management|"
-    r"wealth managers?|wealth management|investment advis[eo]rs?|financial advis[eo]rs?|advis[eo]rs?|"
-    r"broker-dealers?|brokers?|brokerage|hedge funds?|securities|anti-money laundering|fraud detection|"
-    r"robo-advis[eo]rs?|credit scoring|underwriting|lending|lenders?|insurers?|fintech|financial institutions?|"
-    r"financial services|financial firms?|member firms|investment firms?|private equity|venture capital|"
-    r"deal sourcing|due diligence|fundraising|client money|client accounts|60/40)\b",
-    re.IGNORECASE,
-)
-_FINANCE_UPPER = re.compile(r"\b(?:SEC|FINRA|AML|CFTC|OCC)\b")
 _REGULATOR = re.compile(
     r"\b(?:SEC|FINRA|CFTC|OCC|FCA|ESMA|Securities and Exchange Commission|Federal Reserve|regulators?|"
     r"(?:[A-Z][\w-]*\s){0,4}(?:Commission|Authority))\b"
@@ -429,6 +431,103 @@ _KNOWN_FIRMS = (
     "Robinhood", "Bridgewater", "Two Sigma", "Citadel", "Bloomberg", "Nasdaq", "Delphia", "Global Predictions",
     "Visa", "Mastercard", "PayPal", "Stripe", "Klarna", "Google Cloud",
 )  # fmt: skip
+# Known firms that count as financial-sector actors on their own. Google Cloud is a vendor; Bloomberg is
+# usually the news outlet, Nasdaq the listing venue, and Visa, Vanguard, Citadel, and Fidelity are also
+# ordinary words in Title Case headlines, so those need another actor cue in the sentence.
+_AMBIGUOUS_FIRMS = {"Google Cloud", "Bloomberg", "Nasdaq", "Visa", "Vanguard", "Citadel", "Fidelity"}
+_KNOWN_FINANCIAL_FIRMS = re.compile(
+    r"\b(?:" + "|".join(re.escape(f) for f in _KNOWN_FIRMS if f not in _AMBIGUOUS_FIRMS) + r")\b"
+)
+# Financial-sector actors: banks, asset/wealth managers, funds, broker-dealers, insurers, exchanges, trading
+# firms, payments/fintech companies, lenders, investment advisers (generic product words such as "portfolio"
+# or "securities-fraud liability" are not actors).
+_FIN_ACTOR = re.compile(
+    r"\b(?:banks?|bank's|banks'|banking (?:groups?|giants?|units?|arms?|industry|sector)|neobanks?|"
+    r"lenders?|credit unions?|card (?:issuers?|networks?)|"
+    r"asset managers?|asset management (?:firms?|compan(?:y|ies)|arms?|units?|business|industry)|"
+    r"wealth managers?|wealth management (?:firms?|compan(?:y|ies)|arms?|units?|business|industry|platforms?)|"
+    r"fund managers?|(?:hedge|mutual|pension|index|investment|quant|quantitative|sovereign wealth|private equity|"
+    r"venture|crypto) funds?|(?:registered )?investment advis[eo]rs?|financial advis[eo]rs?|robo-advis[eo]rs?|"
+    r"advisory firms?|broker-dealers?|brokers?|brokerages?|(?:stock|securities|crypto|futures|derivatives) "
+    r"exchanges?|trading (?:firms?|desks?|houses?|venues?)|market makers?|proprietary traders?|traders|"
+    r"insurers?|reinsurers?|insurance (?:compan(?:y|ies)|firms?|carriers?|providers?|startups?|groups?|industry)|"
+    r"insurtechs?|payments? (?:compan(?:y|ies)|firms?|providers?|processors?|giants?|startups?|platforms?|"
+    r"networks?)|fintechs?|investment (?:banks?|banking|firms?|managers?|compan(?:y|ies)|houses?)|"
+    r"financial (?:institutions?|firms?|services (?:firms?|compan(?:y|ies)|industry|sector|providers?)|sector|"
+    r"industry)|member firms|private equity(?: firms?)?|venture capital(?:ists| firms?)?|VC firms?|"
+    r"family offices?|custodians?|clearing (?:houses?|firms?)|credit bureaus?|rating agenc(?:y|ies)|"
+    r"asset owners?|(?:the|a|an|this|that|one) funds?)\b|^(?:The )?funds?\b",
+    re.IGNORECASE,
+)
+# A name with a financial suffix ("Harbor Bank", "Brightvane Advisors", "Meridian Securities", "Acme Capital"),
+# but not a publication or a public body ("The Financial Times", "National Insurance").
+_FIN_NAME = re.compile(
+    r"\b(?:[A-Z][\w&'.-]*\s){1,3}(?:Bank|Bancorp|Bancshares|Advisors|Advisers|Capital|Securities|Investments|"
+    r"Asset Management|Wealth|Financial|Insurance|Assurance|Brokerage|Payments)\b"
+    r"(?!\s+(?:Times|Review|News|Post|Journal|Conduct|Stability|Literacy|Aid|Crimes|Ombudsman))"
+)
+_NOT_FIN_NAME_START = {"The", "A", "An", "National", "Social", "Human", "Intellectual", "Venture"}
+# Mentions of a regulator's records are not the regulator acting ("an SEC filing", "filed with the SEC").
+_REGULATOR_RECORD = re.compile(
+    r"\b(?:SEC|FCA)\s+(?:filings?|forms?|documents?|disclosures?|data)\b|"
+    r"\b(?:filed|filing|filings|registered|registration|disclosed) with the (?:SEC|U\.S\. Securities and Exchange "
+    r"Commission|Securities and Exchange Commission)\b",
+    re.IGNORECASE,
+)
+# Financial regulators (a "Commission"/"Authority" counts when its name is about markets or finance).
+_FIN_REGULATOR = re.compile(
+    r"\b(?:SEC|FINRA|CFTC|OCC|FCA|PRA|ESMA|EBA|FDIC|CFPB|NFA|Federal Reserve|central banks?|"
+    r"Securities and Exchange Commission|(?:financial|securities|banking|market) regulators?|"
+    r"(?:[A-Z][\w-]*\s){0,3}(?:Markets?|Securities|Financial|Broker-Dealer|Banking|Exchange|Conduct|Investment|"
+    r"Prudential|Futures|Monetary)\s(?:[A-Z][\w-]*\s){0,3}(?:Commission|Authority|Board|Agency))\b"
+)
+# "an AI-native embedded insurance startup": a company describing itself, not a claim about an AI capability.
+# "AI assistant startup Town", "Legal AI startup Legora": a category label, not a claim either.
+_AI_SELF_DESCRIPTOR = re.compile(
+    r"\b(?:AI|A\.I\.|GenAI)[\s-](?i:native|first|powered|driven|enabled|based|led|focused|centric)\s+"
+    r"(?:[\w-]+\s+){0,3}?(?i:startups?|compan(?:y|ies)|firms?|insurers?|lenders?|neobanks?|banks?|fintechs?|"
+    r"insurtechs?|players?|unicorns?|brokers?|brokerages?)\b|"
+    r"\b(?:AI|GenAI)\s+(?:[\w-]+\s+){0,2}?(?i:startup|unicorn)\s+(?=[A-Z])"
+)
+# Investors named in a funding sentence ("a Series B round co-led by Forerunner Ventures and Menlo Ventures")
+# back the company; they are not the actor of an AI claim.
+_FUNDING_SENTENCE = re.compile(r"\b(?:round|rais(?:e[sd]?|ing)|funding|financing|series [a-h]|seed)\b", re.I)
+_INVESTOR_NAMES = re.compile(
+    r"\b(?:(?:co-)?led by|backed by|joined by|headed by|participation from|investment from|backing from|"
+    r"investors (?:include|including)|from investors(?: including)?)\s+(?:(?:existing|new|returning) investors\s+)?"
+    r"(?:[A-Z][\w&'.-]*\s*)+(?:(?:,\s*(?:and\s+)?|\band\s+|&\s*)(?:[A-Z][\w&'.-]*\s*)+)*"
+)
+# Sponsored posts, guest commentary, and marketing calls to action are not documented claims.
+_SPONSORED_TAG = re.compile(
+    r"\b(?:sponsored|partner content|paid (?:post|content)|advertorial|promoted content)\b", re.IGNORECASE
+)
+_SPONSORED_LEAD = re.compile(
+    r"^\s*(?:sponsored(?: content| post)?\b|paid (?:content|post)\b|partner content\b|"
+    r"this (?:article|content|post) is (?:brought to you|sponsored|paid for|presented) by\b)",
+    re.IGNORECASE,
+)
+_COMMENTARY_CUE = re.compile(
+    r"\b(?:guest (?:author|post|column|columnist|contributor|commentary|essay)|op-ed|opinion:|commentary:|"
+    r"the views expressed|in this column|contributed (?:article|post)|viewpoint:)",
+    re.IGNORECASE,
+)
+_MARKETING_LEAD = re.compile(
+    r"^\s*(?:see|learn|discover|find out|explore|download|watch|register|join us|sign up)\s+"
+    r"(?:how|why|what|more|the|our)\b",
+    re.IGNORECASE,
+)
+# Generic nouns and headline function words that are never a firm's name.
+_GENERIC_ACTOR_WORDS = {
+    "Fund", "Funds", "Bank", "Banks", "Lender", "Lenders", "Insurer", "Insurers", "Broker", "Brokers",
+    "Regulator", "Regulators", "Firm", "Firms", "Adviser", "Advisers", "Advisor", "Advisors", "Traders",
+    "Investors", "Fintech", "Fintechs", "Researchers", "Founders", "Startups", "Startup",
+}  # fmt: skip
+_HEADLINE_FUNCTION_WORDS = {
+    "From", "When", "What", "How", "Why", "Where", "Who", "Which", "Inside", "Is", "Are", "Can", "Could", "Will",
+    "Would", "Should", "Does", "Do", "In", "On", "At", "For", "With", "After", "Before", "As", "If", "Here",
+    "This", "These", "Meet", "Behind", "Beyond", "To", "Of", "By", "Not", "New", "Exclusive", "Breaking",
+    "Analysis", "Explainer", "Opinion", "Commentary", "Update", "Report", "Watch", "See", "Learn", "Our", "Your",
+}  # fmt: skip
 _FIRM_SUFFIX = re.compile(
     r"\b(?:[A-Z][\w&'.-]*\s){1,3}(?:Bank|Advisors|Advisers|Capital|Securities|Sachs|Investments|Asset Management|"
     r"Wealth|Financial|Partners|Holdings|Bancorp|Insurance|Ventures)\b"
@@ -478,8 +577,56 @@ def _has_ai(text: str) -> bool:
     return bool(_AI_ACRONYM.search(text) or _AI_PHRASE.search(text))
 
 
-def _has_finance(text: str) -> bool:
-    return bool(_FINANCE_CUE.search(text) or _FINANCE_UPPER.search(text))
+def _has_fin_name(text: str) -> bool:
+    for m in _FIN_NAME.finditer(text):
+        words = m.group(0).split()
+        while words and words[0] in _NOT_FIN_NAME_START:
+            words.pop(0)
+        if len(words) > 1:
+            return True
+    return False
+
+
+def _has_finance_actor(text: str) -> bool:
+    """A financial-sector actor is named or described (a bank, fund, insurer, broker, regulator, ...)."""
+    text = _REGULATOR_RECORD.sub(" ", text)
+    return bool(
+        _FIN_ACTOR.search(text)
+        or _has_fin_name(text)
+        or _KNOWN_FINANCIAL_FIRMS.search(text)
+        or _FIN_REGULATOR.search(text)
+    )
+
+
+def is_ai_finance_sentence(sentence: str) -> bool:
+    """An AI cue and a financial-sector actor in one sentence, ignoring "AI-native startup" self-descriptions."""
+    text = _AI_SELF_DESCRIPTOR.sub(" ", sentence)
+    if _FUNDING_SENTENCE.search(text):
+        text = _INVESTOR_NAMES.sub(" ", text)
+    return _has_ai(text) and _has_finance_actor(text)
+
+
+def _tags(article: Article) -> list[str]:
+    return [str(t) for t in (article.extra or {}).get("tags") or [] if t]
+
+
+def skip_reason(article: Article) -> str:
+    """Why an article cannot carry a documented AI-in-finance claim ("" when it can be classified)."""
+    lead = normalize_space(article.summary or article.content)[:300]
+    if article.doc_type in SKIP_DOC_TYPES or article.trust_tier == TrustTier.COMMENTARY:
+        return "Opinion or commentary: not a documented claim."
+    extra = article.extra or {}
+    if (
+        extra.get("sponsored")
+        or any(_SPONSORED_TAG.search(t) for t in _tags(article))
+        or _SPONSORED_LEAD.search(lead)
+    ):
+        return "Sponsored content: marketing, not a documented claim."
+    if _COMMENTARY_CUE.search(f"{article.title or ''} {lead}"):
+        return "Guest commentary or opinion: not a documented claim."
+    if _MARKETING_LEAD.search(lead):
+        return "Marketing copy: not a documented claim."
+    return ""
 
 
 def _sentences(article: Article) -> tuple[list[str], list[str]]:
@@ -490,14 +637,14 @@ def _sentences(article: Article) -> tuple[list[str], list[str]]:
 
 
 def ai_finance_sentences(article: Article) -> list[str]:
-    """Sentences in which an AI cue and a finance cue co-occur (the evidence that a claim is about AI in finance)."""
+    """Sentences pairing an AI cue with a financial-sector actor (the evidence that a claim is about AI in finance)."""
     head, body = _sentences(article)
-    return [s for s in [*head, *body] if _has_ai(s) and _has_finance(s)]
+    return [s for s in [*head, *body] if is_ai_finance_sentence(s)]
 
 
 def mentions_ai_in_finance(article: Article) -> bool:
-    """Cheap pre-filter: does any sentence pair an AI cue with a finance cue?"""
-    return bool(ai_finance_sentences(article))
+    """Cheap pre-filter: a classifiable article (not sponsored, opinion, or marketing) with an AI-in-finance sentence."""
+    return not skip_reason(article) and bool(ai_finance_sentences(article))
 
 
 def _live_cue(text: str) -> bool:
@@ -557,20 +704,63 @@ def _is_regulator(name: str) -> bool:
     return bool(re.fullmatch(_REGULATOR.pattern, name.strip()))
 
 
-def _firm(article: Article, classification: str, text: str) -> str:
+def _named_firms(text: str) -> list[str]:
+    """Firm names in reading order: known firms and names with a firm suffix ("Harbor Bank"), not regulators."""
     candidates: list[tuple[int, str]] = []
     for firm in _KNOWN_FIRMS:
         idx = text.find(firm)
         if idx >= 0:
             candidates.append((idx, firm))
     for m in _FIRM_SUFFIX.finditer(text):
-        name = re.sub(r"'s$|’s$", "", m.group(0)).strip()
-        if name.split()[0] not in _TITLE_STOP:
-            candidates.append((m.start(), name))
+        words = re.sub(r"'s$|’s$", "", m.group(0)).strip().split()
+        while len(words) > 1 and (words[0] in _TITLE_STOP or words[0] in _HEADLINE_FUNCTION_WORDS):
+            words.pop(0)  # "How Harbor Bank" -> "Harbor Bank"
+        if len(words) > 1:
+            candidates.append((m.start(), " ".join(words)))
     candidates.sort()
-    firms = [name for _, name in candidates if not _is_regulator(name)]
-    if firms:
-        return firms[0]
+    return [name for _, name in candidates if not _is_regulator(name)]
+
+
+def _headline_subject(title: str) -> str:
+    """The name a sentence-case headline opens with ("Northbridge says ..." -> "Northbridge"), else "".
+
+    Title Case headlines ("When Traction Becomes Personal Exposure: ...") are
+    skipped because their capitals say nothing about names, as are function
+    words ("From Cloud AI to Edge AI") and generic nouns ("Fund says ...").
+    """
+    title = re.sub(
+        r"^\s*(?:exclusive|breaking|update|report)\s*[:\-–—]\s*", "", normalize_space(title), flags=re.I
+    )
+    words = re.findall(r"[\w&'’.-]+|[:;,!?]", title)
+    long_words = [w for w in words if len(w) > 3 and w[:1].isalpha()]
+    if long_words and sum(w[:1].isupper() for w in long_words) / len(long_words) >= 0.6:
+        return ""
+    run: list[str] = []
+    following = ""
+    for word in words:
+        if not word[:1].isupper():
+            following = word
+            break
+        run.append(word)
+        if re.search(r"['’]s$", word):
+            following = "'s"  # a possessive ends the name
+            break
+    if not run or not (following == "'s" or following[:1].islower()):
+        return ""
+    run = [re.sub(r"['’]s$", "", w) for w in run]
+    if run[0] in _HEADLINE_FUNCTION_WORDS or run[0] in _TITLE_STOP:
+        return ""
+    if all(w in _GENERIC_ACTOR_WORDS or w in _TITLE_STOP for w in run):
+        return ""
+    return " ".join(run[:4])
+
+
+def _firm(article: Article, classification: str, text: str, evidence: Iterable[str] = ()) -> str:
+    """The firm the claim is about: a name in the claim sentences first, then in the whole text."""
+    for scope in (" ".join(evidence), text):
+        firms = _named_firms(scope)
+        if firms:
+            return firms[0]
     if classification == "regulatory_finding":
         regulators = [
             re.sub(r"^The\s+", "", m.group(0).strip())
@@ -579,13 +769,7 @@ def _firm(article: Article, classification: str, text: str) -> str:
         ]
         if regulators:
             return regulators[0]
-    words = []
-    for word in re.findall(r"[\w&'.-]+", article.title or ""):
-        if word[:1].isupper() and word not in _TITLE_STOP:
-            words.append(re.sub(r"'s$|’s$", "", word))
-        elif words:
-            break
-    return " ".join(words[:4]).rstrip(":") or "Unnamed firm"
+    return _headline_subject(article.title or "") or "Unnamed firm"
 
 
 def _period(text: str) -> str:
@@ -654,8 +838,9 @@ def _evidence_note(
 
 def classify_claim_rules(article: Article) -> AIFinanceClaimOut:
     """Rule-based classification of an article's AI-in-finance claim (offline builder)."""
-    if article.doc_type in SKIP_DOC_TYPES:
-        return AIFinanceClaimOut(is_ai_finance_claim=False, evidence_note="Opinion piece: not a documented claim.")
+    reason = skip_reason(article)
+    if reason:
+        return AIFinanceClaimOut(is_ai_finance_claim=False, evidence_note=reason)
     evidence = ai_finance_sentences(article)
     if not evidence:
         return AIFinanceClaimOut(is_ai_finance_claim=False)
@@ -675,7 +860,7 @@ def classify_claim_rules(article: Article) -> AIFinanceClaimOut:
         }
     return AIFinanceClaimOut(
         is_ai_finance_claim=True,
-        firm=truncate(_firm(article, classification, full), 200),
+        firm=truncate(_firm(article, classification, full, evidence), 200),
         area=_area(classification, full),  # type: ignore[arg-type]
         claim_text=truncate(claim_sentences[0], 500),
         classification=classification,  # type: ignore[arg-type]
@@ -696,9 +881,13 @@ evidence it actually contains, so readers can tell announcements and backtests a
 deployments and regulatory findings.
 
 First decide is_ai_finance_claim: true only when the document makes or reports a specific claim about a \
-financial firm, regulator, investor, or founder using, testing, marketing, or being sanctioned over AI \
-(including AI agents and machine learning). Return false for opinion pieces, generic AI news without a \
-finance use, and finance news without an AI claim.
+financial-sector actor (a bank, asset or wealth manager, fund, broker-dealer, insurer, exchange, trading firm, \
+payments or fintech company, lender, investment adviser, or venture or private-equity investor) or a financial \
+regulator acting on such firms, using, testing, marketing, or being sanctioned over AI (including AI agents and \
+machine learning). Return false for opinion pieces, guest commentary, and explainers (for example about \
+founders' legal exposure), sponsored content and hardware or technology marketing, a company merely \
+describing itself as "AI-native" in a funding or product announcement, generic AI news without a finance use, \
+and finance news without an AI claim.
 
 classification (choose the strongest category the document itself documents, not what it hopes for):
 - regulatory_finding: an enforcement action, penalty, settlement, examination finding, observation report, \
@@ -739,8 +928,9 @@ def _validated(out: AIFinanceClaimOut, article: Article) -> AIFinanceClaimOut:
     update: dict[str, Any] = {}
     if out.classification == "backtest" and out.performance_label in (None, "live"):
         update["performance_label"] = rules.performance_label or "backtest"
-    if not out.firm.strip():
-        update["firm"] = rules.firm
+    text = f"{article.title} {article.summary or ''} {article.content or ''}".lower()
+    if not out.firm.strip() or (out.firm.lower() not in text and rules.is_ai_finance_claim):
+        update["firm"] = rules.firm  # a firm the document does not name is replaced by the rule-based reading
     if not out.claim_text.strip():
         update["claim_text"] = rules.claim_text
     if not out.evidence_note.strip():
@@ -750,7 +940,7 @@ def _validated(out: AIFinanceClaimOut, article: Article) -> AIFinanceClaimOut:
 
 def classify_claim(article: Article, orchestrator: Orchestrator | None = None) -> AIFinanceClaimOut:
     """Classify an article's AI-in-finance claim; uses the ``ai_finance_classifier`` agent when given an orchestrator."""
-    if orchestrator is None:
+    if orchestrator is None or skip_reason(article):
         return classify_claim_rules(article)
     session = orchestrator.session
     key_parts = [article.id, article.content_hash]
@@ -790,7 +980,7 @@ def classify_claim(article: Article, orchestrator: Orchestrator | None = None) -
 
 def _candidates(session: Session) -> list[Article]:
     linked = select(AIFinanceClaim.article_id).where(AIFinanceClaim.article_id.is_not(None))
-    return list(
+    articles = list(
         session.scalars(
             select(Article)
             .where(
@@ -802,6 +992,7 @@ def _candidates(session: Session) -> list[Article]:
             .order_by(Article.published_at, Article.id)
         )
     )
+    return [a for a in articles if not skip_reason(a)]
 
 
 def _norm(name: str) -> str:

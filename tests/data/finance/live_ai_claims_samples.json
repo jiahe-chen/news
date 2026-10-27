@@ -1,0 +1,219 @@
+{
+ "description": "Real headline + summary rows from the live-source run (Oct 2026); none is a documented AI-in-finance claim.",
+ "samples": [
+  {
+   "live_article_id": 139,
+   "source_slug": "crunchbase-news",
+   "source_url": "https://news.crunchbase.com/feed/",
+   "source_homepage": "https://news.crunchbase.com",
+   "source_trust_tier": "independent",
+   "url": "https://news.crunchbase.com/startups/personal-exposure-securities-fraud-joonko-jeziorski-founder-shield/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-26T11:00:38",
+   "title": "When Traction Becomes Personal Exposure: What The Joonko Guilty Plea Means For Founders",
+   "summary": "False claims about customers, revenue and AI capabilities can expose founders to personal securities-fraud liability, with D&O insurance offering limited protection against established misconduct. Guest author Kyle Jeziorski of Founder Shield shares three policy provisions that need close attention from founders.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Artificial intelligence",
+     "Startups",
+     "Venture"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "guest explainer about founders' securities-fraud liability (logged with firm 'When Traction Becomes Personal' before the fix)"
+   }
+  },
+  {
+   "live_article_id": 318,
+   "source_slug": "ee-times",
+   "source_url": "https://www.eetimes.com/feed/",
+   "source_homepage": "https://www.eetimes.com",
+   "source_trust_tier": "independent",
+   "url": "https://www.eetimes.com/from-cloud-ai-to-edge-ai-how-biwin-enables-the-next-generation-of-storage-and-memory-solutions/",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-22T18:24:39",
+   "title": "From Cloud AI to Edge AI: How BIWIN Enables the Next Generation of Storage and Memory Solutions",
+   "summary": "See how BIWIN’s SSD, embedded storage, and memory portfolio supports faster, efficient AI from cloud data centers to edge wearables.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Sponsored content",
+     "AI and Big Data",
+     "edge AI"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "sponsored storage-hardware marketing (logged with firm 'From Cloud' before the fix)"
+   }
+  },
+  {
+   "live_article_id": 144,
+   "source_slug": "crunchbase-news",
+   "source_url": "https://news.crunchbase.com/feed/",
+   "source_homepage": "https://news.crunchbase.com",
+   "source_trust_tier": "independent",
+   "url": "https://news.crunchbase.com/fintech-ecommerce/insuretech/startup-slingshot-insurance-seed-funding-genteman/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-22T13:00:23",
+   "title": "Exclusive: Slingshot Raises $27M In Seed Funding To Build An Insurer For Those Small Policies Sold At Checkout",
+   "summary": "Slingshot Insurance, a Minneapolis-based AI-native embedded insurance startup, is emerging from stealth with $27 million in a seed funding round co-led by Rally Ventures and Skyward Group, it tells Crunchbase News exclusively.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Artificial intelligence",
+     "E-commerce",
+     "Insurance tech",
+     "SaaS",
+     "Seed funding",
+     "Startups",
+     "Venture"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "funding announcement; 'AI-native embedded insurance startup' is a self-description, not an AI capability claim"
+   }
+  },
+  {
+   "live_article_id": 275,
+   "source_slug": "techcrunch-venture",
+   "source_url": "https://techcrunch.com/category/venture/feed/",
+   "source_homepage": "https://techcrunch.com/category/venture/",
+   "source_trust_tier": "independent",
+   "url": "https://techcrunch.com/2026/10/19/ai-assistant-startup-town-nabs-unicorn-valuation-four-months-after-launch/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-19T18:00:39",
+   "title": "AI assistant startup Town nabs unicorn valuation 4 months after launch",
+   "summary": "AI assistant startup Town nabbed a unicorn valuation on Monday, announcing a $108 million Series B round co-led by Forerunner Ventures and Menlo Ventures.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Startups",
+     "Venture",
+     "AI assistant",
+     "In Brief",
+     "unicorn"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "funding announcement for an AI startup; the venture investors are not the AI actor"
+   }
+  },
+  {
+   "live_article_id": 491,
+   "source_slug": "mit-technology-review",
+   "source_url": "https://www.technologyreview.com/feed/",
+   "source_homepage": "https://www.technologyreview.com",
+   "source_trust_tier": "independent",
+   "url": "https://www.technologyreview.com/2026/10/26/1147650/the-download-everyday-ai-harms-nuclear-spaceflight/",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-26T12:40:00",
+   "title": "The Download: everyday AI harms and the race to nuclear spaceflight",
+   "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Opinion: The focus on AI safety disasters ignores everyday harms —Sam Hiner, cofounder of the Young People’s Alliance, and Emma Leiken, executive director of the Responsible Technology Youth Power Fund at…",
+   "content": "",
+   "extra": {
+    "tags": [
+     "The Download"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "newsletter digest whose AI sentence is an opinion item; the 'Fund' is a nonprofit"
+   }
+  },
+  {
+   "live_article_id": 137,
+   "source_slug": "crunchbase-news",
+   "source_url": "https://news.crunchbase.com/feed/",
+   "source_homepage": "https://news.crunchbase.com",
+   "source_trust_tier": "independent",
+   "url": "https://news.crunchbase.com/real-estate-property-tech/agentic-ai-staffing-coo-folgmann-get-covered/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-27T11:00:44",
+   "title": "Your AI Agents Need A Chief Operating Officer, Too",
+   "summary": "Scaling AI agents requires treating them like employees in regulated roles, with written rules, clearly defined responsibilities and a named human manager accountable for their performance. Guest author Rick Folgmann, COO at Get Covered, tells companies they should start with tasks governed by established rules, adjust autonomy to each workflow’s risks, and regularly review results before expanding agents’ authority.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Artificial intelligence",
+     "Real estate & property tech"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "guest commentary"
+   }
+  },
+  {
+   "live_article_id": 142,
+   "source_slug": "crunchbase-news",
+   "source_url": "https://news.crunchbase.com/feed/",
+   "source_homepage": "https://news.crunchbase.com",
+   "source_trust_tier": "independent",
+   "url": "https://news.crunchbase.com/ai/protecting-trade-secrets-legal-kugler-grellas-shah/",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "published_at": "2026-10-23T11:00:29",
+   "title": "Protecting Trade Secrets In The Age Of AI",
+   "summary": "AI agents create new trade secret risks by allowing employees to access expertise or inadvertently expose proprietary information through personal devices. In this guest commentary, Seth Kugler, a partner at Grellas Shah LLP, warns companies that they should adopt strict AI policies, restrict data access on unmanaged devices, update confidentiality agreements, and act immediately when misuse is suspected.",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Artificial intelligence",
+     "Workplace"
+    ]
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "guest commentary"
+   }
+  },
+  {
+   "live_article_id": 319,
+   "source_slug": "ieee-spectrum",
+   "source_url": "https://spectrum.ieee.org/feeds/feed.rss",
+   "source_homepage": "https://spectrum.ieee.org",
+   "source_trust_tier": "independent",
+   "url": "https://spectrum.ieee.org/ai-robot-safety-cybersecurity-vicone",
+   "vertical": "industry",
+   "doc_type": "blog",
+   "trust_tier": "vendor",
+   "published_at": "2026-10-27T16:14:39",
+   "title": "Your Robot’s Safety Functions Already Work. What If the Input Lies?",
+   "summary": "This article is brought to you by VicOne . A mobile robot slows for someone in a hallway. A collaborative arm eases its movement as a worker approaches. A humanoid pauses to let a person pass. Each response depends on information about the robot or its surroundings: a distance reading, a position estimate, or a stop signal. But what happens when one of those inputs is wrong, and the robot still responds exactly as designed? The mobile robot reads the hallway as clear while someone is still there. The arm estimates that the worker is farther away. The humanoid does not receive a stop signal as a person crosses its path. In each case, a fault could cause that mismatch. So could deliberate manipulation . At VicOne LAB R7 , we examine how manipulated inputs can change robot behavior — and what that means for the systems meant to keep people safe. How an untrusted input can change a robot’s behavior A robot does more than measure its surroundings. It may interpret what it sees and hears to decide what to do next. Information placed in its environment can therefore influence its actions. Published research shows how this can happen. In a study of vision-language-action (VLA) models , a patch in a camera’s view reduced task success in simulated robot tests. FreezeVLA found that an adversarial image could cause tested models to ignore later instructions. Although the studies used different methods, both demonstrate how visual input can interfere with a robot’s intended task. In a…",
+   "content": "",
+   "extra": {
+    "tags": [
+     "Humanoid-robots",
+     "Type-sponsored",
+     "Cybersecurity",
+     "Physical-ai",
+     "Robot-safety",
+     "Ai-robots"
+    ],
+    "sponsored": true
+   },
+   "expected": {
+    "is_ai_finance_claim": false,
+    "why": "sponsored post ('This article is brought to you by ...')"
+   }
+  }
+ ]
+}

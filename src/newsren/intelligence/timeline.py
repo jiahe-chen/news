@@ -17,7 +17,15 @@ membership:
   and how the evidence changed, citing sources inline as ``[c1]``. Unknown
   citation ids are removed from the output. The offline builder derives the
   same fields extractively from the evidence (earliest member, latest
-  members, contradiction cues, event-type progression).
+  members, contradiction cues, event-type progression). Further papers of
+  the same kind are listed by title ("A second study on the same topic was
+  published: “...”"), a research abstract is quoted for what the study did
+  rather than its background opener, and photo captions and bare quotations
+  give way to the next sentence or the headline.
+
+``source_sentences`` (shared with the brief agent) splits feed and abstract
+text into sentences without breaking "Nov. 19" or "INC. (CIK ...)", and strips
+abstract section labels ("Purpose:", "Design/methodology/approach:").
 
 ``story_changes_since`` lists timeline events added or occurring after a
 given time, for alerts and personal briefings.
@@ -45,7 +53,7 @@ from newsren.intelligence.clustering import (
     assign_stories,
     best_member_title,
 )
-from newsren.intelligence.events import classify_event, event_label
+from newsren.intelligence.events import classify_event, event_label, event_phrase
 from newsren.llm import StructuredTask
 from newsren.models import Article, DocType, EventType, Story, StoryEvent, TrustTier
 from newsren.schemas import CitationRef, EvidenceDoc, StoryUpdateOut, TimelineEventOut
@@ -140,9 +148,131 @@ def member_fingerprint(articles: Iterable[Article]) -> str:
     return hashlib.sha256(",".join(str(i) for i in ids).encode()).hexdigest()
 
 
+# --------------------------------------------------------------------------
+# Source sentences (shared with newsren.agents.brief)
+# --------------------------------------------------------------------------
+
+# Section labels that abstracts and feed summaries put in front of a sentence ("Purpose:",
+# "Design/methodology/approach:", "Originality/value:", "Research limitations/implications:", "Summary:").
+ABSTRACT_LABEL = re.compile(
+    r"^(?:(?:Research|Practical|Social|Theoretical|Policy|Main|Key)\s+)?"
+    r"(?:Abstract|Background|Context|Introduction|Purpose|Objectives?|Aims?|Goals?|Problem|Motivation|Design|"
+    r"Methods?|Methodology|Approach|Setting|Participants|Sample|Interventions?|Measures|Analysis|Outcomes?|"
+    r"Results?|Findings?|Limitations?|Implications?|Conclusions?|Discussion|Significance|Originality|Value|"
+    r"Recommendations?|Contributions?|Summary|Update)"
+    r"(?:\s*(?:/|and|&)\s*[A-Za-z]+){0,3}\s*:\s+"
+)
+_MONTH_ABBREVIATION = re.compile(r"(?:^|\s)(?:Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept?|Oct|Nov|Dec)\.$")
+_ABBREVIATION = re.compile(
+    r"(?:^|\s)(?:Dr|Mr|Mrs|Ms|Prof|Sen|Rep|Gov|Gen|St|Jr|Sr|vs|No|Mt|Ft|U\.S|e\.g|i\.e)\.$|"
+    r"(?:^|\s)(?i:Inc|Corp|Co|Ltd|LLC|plc|Bros)\.$"
+)
+_QUOTE_BOUNDARY = re.compile(r"(?<=[.!?][”\"’])\s+(?=[A-Z0-9“\"(])")
+
+
+def source_sentences(text: str | None) -> list[str]:
+    """Sentences of a source text, with abstract section labels stripped.
+
+    Unlike ``split_sentences``, this re-joins sentences broken after an
+    abbreviation ("on Nov. 19", "RELIANCE, INC. (CIK ...)", "said Dr. Felix
+    Amundsen"), splits after a closing quotation mark ("... networks.” Summary:
+    Researchers ..."), and removes leading labels such as "Purpose:" or
+    "Design/methodology/approach:".
+    """
+    chunks: list[str] = []
+    for chunk in split_sentences(text):
+        previous = chunks[-1] if chunks else ""
+        if previous and (
+            _ABBREVIATION.search(previous) or (_MONTH_ABBREVIATION.search(previous) and chunk[:1].isdigit())
+        ):
+            chunks[-1] = f"{previous} {chunk}"
+        else:
+            chunks.append(chunk)
+    out: list[str] = []
+    for chunk in chunks:
+        for raw in _QUOTE_BOUNDARY.split(chunk):
+            sentence = ABSTRACT_LABEL.sub("", raw.strip()).strip()
+            if sentence:
+                out.append(sentence[0].upper() + sentence[1:])
+    return out
+
+
+# A sentence that is only a quotation, with nobody named as saying it ("“After years of combat, ...”").
+_BARE_QUOTE = re.compile(r"^[“\"‘'][^“”\"]+[.!?,]?[”\"’'][.!?]?$")
+# A photo caption at the top of a feed summary ("Reporter X, upper left, hosted ...", "... speaks outside ...").
+CAPTION = re.compile(
+    r",\s*(?:(?:upper|lower|top|bottom|far|second\s+from|center)\s+)?(?:left|right|center|centre)\s*,|"
+    r"\((?:left|right|center|centre|from\s+left|pictured)\)|^(?:a|an)\s+(?:collage|photo|photograph|image|view)\s+"
+    r"of\b|\b(?:speaks|talks|stands|sits|walks|poses|smiles|listens|gestures|waves|rally|rallies)\s+(?:with|outside|"
+    r"at|in|on|during|before|after|near|as|to)\b|\blisten\s+in\b|\blooks?\s+on\b",
+    re.IGNORECASE,
+)
+# What a study did ("This study examined ...", "We collected ...", "The researchers surveyed ...").
+STUDY_CUE = re.compile(
+    r"\b(?:this|the|our)\s+(?:(?!(?:and|or|of|on|in|to|for)\b)[\w-]+\s+){0,2}?(?:study|paper|article|review|"
+    r"chapter|research|survey|analysis|project|report|evaluation|experiment|trial)\b|\bwe\s+[a-z]+(?:ed|ted)\b|"
+    r"\b(?:the\s+)?(?:researchers|authors)\s+[a-z]+(?:ed)\b",
+    re.IGNORECASE,
+)
+# What a study found ("The results show ...", "Findings revealed ...", "... were found to be ...").
+FINDING_CUE = re.compile(
+    r"\b(?:findings|results|analys[ie]s|data|study|evidence)\s+(?:also\s+)?(?:show|showed|shows|indicate[sd]?|"
+    r"suggest(?:s|ed)?|reveal(?:s|ed)?|demonstrate[sd]?|confirm(?:s|ed)?)\b|\bfound\s+that\b|"
+    r"\b(?:were|was)\s+found\b|\brevealed\s+that\b",
+    re.IGNORECASE,
+)
+# A stated aim is not what a study did: "This study aims to investigate ...".
+STUDY_AIM = re.compile(r"\b(?:aims?|aimed|seeks?|sought|intends?|intended)\s+to\b", re.IGNORECASE)
+_RESEARCH_DOC_TYPES = frozenset(
+    {DocType.RESEARCH_PREPRINT, DocType.RESEARCH_PEER_REVIEWED, DocType.EDUCATION_REPORT}
+)
+
+
+def is_bare_quote(sentence: str) -> bool:
+    """The sentence is a quotation with no speaker named (a feed teaser, not a reportable statement)."""
+    return bool(_BARE_QUOTE.match(normalize_space(sentence)))
+
+
+def study_sentences(sentences: Sequence[str], limit: int = 300) -> tuple[str | None, str | None]:
+    """(what the study did, what it found) from an abstract's sentences, or None for either.
+
+    A design sentence names the study ("This study examined ...", "The authors surveyed ...") and is
+    not only a stated aim; a finding sentence reports results ("The results show ..."). Both need at
+    least eight words and, when possible, at most ``limit`` characters.
+    """
+
+    def first(predicate) -> str | None:
+        fitting = [x for x in sentences if predicate(x) and len(re.findall(r"\w+", x)) >= 8]
+        short = [x for x in fitting if len(x) <= limit]
+        return (short or fitting or [None])[0]
+
+    design = first(lambda x: bool(STUDY_CUE.search(x)) and not (STUDY_AIM.search(x) and not FINDING_CUE.search(x)))
+    finding = first(lambda x: bool(FINDING_CUE.search(x)) and x != design)
+    return design, finding
+
+
 def _lead_sentence(article: Article, limit: int = 260) -> str:
-    sentences = split_sentences(article.summary) or split_sentences(article.content)
-    return truncate(sentences[0] if sentences else article.title, limit)
+    """The sentence that best says what the document reports.
+
+    The first sentence of the summary (or body), except that a research
+    abstract's background opener gives way to its sentence about what the study
+    did (or else found), and a photo caption or a bare quotation gives way to
+    the next sentence, or to the headline when nothing else is left.
+    """
+    sentences = source_sentences(article.summary) or source_sentences(article.content)
+    if not sentences:
+        return truncate(article.title, limit)
+    if article.doc_type in _RESEARCH_DOC_TYPES:
+        design, finding = study_sentences(sentences)
+        return truncate(design or finding or sentences[0], limit)
+    reportable = [x for x in sentences if not is_bare_quote(x) and not CAPTION.search(x)]
+    lead = reportable[0] if reportable else clean_headline(article.title)
+    return truncate(lead, limit)
+
+
+def clean_headline(title: str) -> str:
+    """A headline as plain text, without trailing whitespace or a final period."""
+    return normalize_space(title).rstrip(".")
 
 
 def _sync_events(story: Story, members: Sequence[Article]) -> dict[int, StoryEvent]:
@@ -306,9 +436,12 @@ _SCENARIO = re.compile(
     re.IGNORECASE,
 )
 _DISPUTE = re.compile(
-    r"\b(?:disput\w*|contradict\w*|questioned|questioning|raises?\s+questions|"
+    r"\b(?:disput\w*|contradict\w*|questioned|questioning|raises?\s+questions|not\s+(?:directly\s+)?comparable|"
     r"could\s+not\s+(?:replicate|reproduce|verify|confirm)|failed\s+to\s+(?:replicate|reproduce)|"
-    r"did\s+not\s+(?:replicate|hold\s+up|match)|den(?:y|ies|ied)|challeng(?:e|es|ed)|refut\w*|overstat\w*|"
+    r"did\s+not\s+(?:replicate|hold\s+up|match)|den(?:y|ies|ied)|refut\w*|overstat\w*|"
+    # "challenges the findings" disputes a claim; "opportunities and challenges" does not.
+    r"challeng(?:es|ed|ing)\s+(?:the\s+|its\s+|their\s+|this\s+|these\s+)?(?:company's\s+|vendor's\s+)?"
+    r"(?:claims?|findings?|results?|figures?|numbers?|accuracy|account|methodology|methods?|conclusions?|data)\b|"
     r"(?:lower|smaller|weaker|worse)\s+than\s+(?:\w+\s+){0,3}(?:claimed|reported|advertised|promised)|"
     r"below\s+(?:the\s+)?[^.]{0,40}?\b(?:claimed|reported|advertised|projected|promised|forecast)|"
     r"short\s+of\s+[^.]{0,40}?\b(?:claimed|reported|projected|promised|forecast|target|guidance|expectations)|"
@@ -391,6 +524,39 @@ def _with_article(label: str) -> str:
     return ("an " if label[:1].lower() in "aeiou" else "a ") + label
 
 
+# Short, pluralizable names for document types ("two peer-reviewed papers", "a single news report").
+_KIND_NOUNS: dict[str, tuple[str, str]] = {
+    DocType.NEWS: ("news report", "news reports"),
+    DocType.PRESS_RELEASE: ("press release", "press releases"),
+    DocType.RESEARCH_PREPRINT: ("preprint", "preprints"),
+    DocType.RESEARCH_PEER_REVIEWED: ("peer-reviewed paper", "peer-reviewed papers"),
+    DocType.FILING: ("regulatory filing", "regulatory filings"),
+    DocType.EARNINGS_CALL: ("earnings call transcript", "earnings call transcripts"),
+    DocType.REGULATORY: ("regulatory release", "regulatory releases"),
+    DocType.POLICY: ("policy document", "policy documents"),
+    DocType.EDUCATION_REPORT: ("education report", "education reports"),
+    DocType.ADVISORY: ("security advisory", "security advisories"),
+    DocType.OPINION: ("opinion piece", "opinion pieces"),
+    DocType.BLOG: ("blog post", "blog posts"),
+}
+_COUNT_WORDS = {1: "a single", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight"}
+
+
+def count_phrase(doc_types: Sequence[str]) -> str:
+    """How many documents of which kind: "a single news report", "two peer-reviewed papers", "3 reports"."""
+    n = len(doc_types)
+    kinds = set(doc_types)
+    count = _COUNT_WORDS.get(n, str(n))
+    if len(kinds) == 1:
+        singular, plural = _KIND_NOUNS.get(next(iter(kinds)), ("report", "reports"))
+        return f"{count} {singular if n == 1 else plural}"
+    return f"{count} {'report' if n == 1 else 'reports'} of different kinds"
+
+
+def _ordinal_more(n: int) -> str:
+    return {1: "A second", 2: "Two more", 3: "Three more"}.get(n, f"{n} more")
+
+
 def _offline_title(members: Sequence[Article]) -> str:
     return best_member_title(members) or (members[0].title if members else "Developing story")
 
@@ -398,9 +564,20 @@ def _offline_title(members: Sequence[Article]) -> str:
 def _what_happened_first(items: Sequence[_Item]) -> str:
     first = items[0]
     return (
-        f"The story began on {first.date} with {_with_article(first.label)} from "
+        f"The story began on {first.date} with {event_phrase(first.event_type)} from "
         f"{_source_desc(first.article)}: {_quote(_lead_sentence(first.article))} [{first.cid}]."
     )
+
+
+def _is_study(item: _Item) -> bool:
+    return item.article.doc_type in _RESEARCH_DOC_TYPES
+
+
+def _study_line(item: _Item) -> str:
+    """A study by its title: what was published, by whom it was listed, and when."""
+    kind = _KIND_NOUNS.get(item.article.doc_type, ("study", "studies"))[0]
+    title = truncate(clean_headline(item.article.title), 200)
+    return f"“{title}” ({kind}, {item.publisher}, {item.date}) [{item.cid}]"
 
 
 _COMMENTARY = {EventType.OPINION, EventType.ANALYSIS}
@@ -418,19 +595,37 @@ def _whats_new(items: Sequence[_Item]) -> str:
     progression: dict[str, _Item] = {}
     for it in material:
         if it.event_type not in (items[0].event_type, EventType.OTHER):
-            progression.setdefault(it.label, it)
+            progression.setdefault(event_phrase(it.event_type), it)
     if progression:
         cites = "".join(f"[{it.cid}]" for it in progression.values())
         parts.append(
-            f"Since the first report, the story has moved from {_with_article(items[0].label)} to "
+            f"Since the first report, the story has moved from {event_phrase(items[0].event_type)} to "
             f"{_join(list(progression))} {cites}."
         )
-    latest = list(reversed(material or later))[:LATEST_COUNT]
-    for it in latest:
+    # Further studies of the same kind as the first are listed by title: a paper's opening sentence is
+    # background, and "the story has moved from research to research" says nothing.
+    studies = [
+        it for it in material if _is_study(it) and _is_study(items[0]) and it.event_type == items[0].event_type
+    ]
+    if studies:
+        verb = "was" if len(studies) == 1 else "were"
+        noun = "study" if len(studies) == 1 else "studies"
         parts.append(
-            f"On {it.date} ({it.label}), {_source_desc(it.article)} reported: {_quote(_lead_sentence(it.article))} [{it.cid}]."
+            f"{_ordinal_more(len(studies))} {noun} on the same topic {verb} published: "
+            + "; ".join(_study_line(it) for it in reversed(studies[-LATEST_COUNT:]))
+            + "."
         )
-    commentary = [it for it in later if it.event_type in _COMMENTARY and it not in latest]
+    latest = [it for it in reversed(material or later) if it not in studies][:LATEST_COUNT]
+    for it in latest:
+        if _is_study(it):
+            parts.append(f"On {it.date}, {event_phrase(it.event_type)} was published: {_study_line(it)}.")
+            continue
+        label = "" if it.event_type == EventType.OTHER else f" ({it.label})"
+        parts.append(
+            f"On {it.date}{label}, {_source_desc(it.article)} reported: "
+            f"{_quote(_lead_sentence(it.article))} [{it.cid}]."
+        )
+    commentary = [it for it in later if it.event_type in _COMMENTARY and it not in latest and it not in studies]
     if commentary:
         cites = "".join(f"[{it.cid}]" for it in commentary)
         parts.append(f"Commentary since then offers interpretation rather than new evidence {cites}.")
@@ -447,12 +642,26 @@ def _doc_sentences(article: Article) -> list[str]:
     text = " ".join(x for x in (article.summary, (article.content or "")[:1500]) if x)
     seen: set[str] = set()
     out: list[str] = []
-    for sentence in split_sentences(text):
+    for sentence in source_sentences(text):
         key = normalize_space(sentence).lower()
         if key not in seen:
             seen.add(key)
             out.append(sentence)
     return out
+
+
+_NEGATION_BEFORE = re.compile(
+    r"\b(?:not|no|never|nor|without)\s+(?:\w+\s+)?$|n['’]t\s+(?:\w+\s+)?$", re.IGNORECASE
+)
+
+
+def _disputes(sentence: str) -> bool:
+    """A dispute cue that is not itself negated ("did not dispute the finding" is no dispute)."""
+    return any(
+        m.group(0).lower().startswith("not ")
+        or not _NEGATION_BEFORE.search(sentence[max(0, m.start() - 25) : m.start()])
+        for m in _DISPUTE.finditer(sentence)
+    )
 
 
 def _disputed(items: Sequence[_Item]) -> list[str]:
@@ -462,7 +671,7 @@ def _disputed(items: Sequence[_Item]) -> list[str]:
     for it in items:
         if it.event_type in (EventType.OPINION, EventType.ANALYSIS):
             continue  # commentary is compared separately below
-        hits = [s for s in _doc_sentences(it.article) if _DISPUTE.search(s)][:2]
+        hits = [s for s in _doc_sentences(it.article) if _disputes(s)][:2]
         for sentence in hits:
             key = normalize_space(sentence).lower()
             if key in seen:
@@ -586,8 +795,8 @@ def _evidence_changes(items: Sequence[_Item]) -> list[str]:
         cites = "".join(f"[{it.cid}]" for it in items[:3])
         noun = "report" if len(items) == 1 else "reports"
         out.append(
-            f"No change in the evidence base yet: the story rests on {len(items)} {noun} of "
-            f"{_with_article(first.label)} kind {cites}."
+            f"No change in the evidence base yet: the story rests on "
+            f"{count_phrase([it.article.doc_type for it in items])} {cites}."
             if len({it.event_type for it in items}) == 1
             else f"The story draws on {len(items)} {noun} so far, with no corrections or independent "
             f"evaluations yet {cites}."
@@ -598,6 +807,10 @@ def _evidence_changes(items: Sequence[_Item]) -> list[str]:
 def _performance_basis(items: Sequence[_Item]) -> str:
     """How performance claims in the story are labelled: backtest, simulated, or live (finance guardrail)."""
     found: dict[str, list[str]] = {"a backtest": [], "simulated (paper-trading) results": [], "live results": []}
+    # Only a story that reports investment or strategy performance needs the label ("simulation" in a
+    # bibliometric study is not a paper-trading result).
+    if not any(_PERFORMANCE.search(" ".join(_doc_sentences(it.article))) for it in items):
+        return ""
     for it in items:
         if it.event_type in _COMMENTARY:
             continue

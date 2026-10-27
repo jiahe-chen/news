@@ -132,6 +132,35 @@ POSITIVE = [
         "",
         dict(company_name="Lattice Labs", amount_usd=12e6, investors=["Granite Fund"]),
     ),
+    # Precision fixes: the round amount, not a valuation or a cumulative total; the company as the subject.
+    (
+        "Harlow Labs raises $20M at a $100M valuation",
+        "",
+        dict(company_name="Harlow Labs", amount_text="$20M", amount_usd=20e6),
+    ),
+    (
+        "Harlow Labs update",
+        "Harlow Labs raised $45 million in a Series B round, bringing its total funding to $63 million.",
+        dict(company_name="Harlow Labs", stage="series_b", amount_text="$45 million"),
+    ),
+    (
+        "Harlow Labs nabs unicorn valuation",
+        "Fintech startup Harlow Labs nabbed a unicorn valuation on Monday, announcing a $108 million Series B "
+        "round led by Aster Fund.",
+        dict(
+            company_name="Harlow Labs", stage="series_b", amount_text="$108 million", lead_investors=["Aster Fund"]
+        ),
+    ),
+    (
+        "In 2026, Pellwick, a payments fintech, raised a $20 million Series A",
+        "",
+        dict(company_name="Pellwick", stage="series_a", amount_usd=20e6),
+    ),
+    (
+        "Fraud-detection startup Fernbrook raises $70M Series C to fund acquisitions",
+        "",
+        dict(company_name="Fernbrook", stage="series_c", amount_usd=70e6),
+    ),
 ]
 
 
@@ -158,6 +187,21 @@ NEGATIVE = [
     ("Acme has not raised a Series A round yet", "", None),
     ("Regulator fines adviser $310,000 for claiming AI agents it did not use", "", None),
     ("Opinion: Quillfield raises $45 million, but what for?", "A columnist argues...", DocType.OPINION),
+    # Valuation-only, cumulative totals, enforcement, and amounts not tied to a round.
+    ("Harlow Labs nabs $1B valuation", "Harlow Labs is now valued at $1 billion.", None),
+    ("Harlow Labs has raised $50 million to date", "", None),
+    ("Harlow Labs profile", "Harlow Labs raised $411 million in funding according to PitchBook data.", None),
+    (
+        "Wire digest",
+        "Jane Roe, for an alleged fraudulent investment scheme that raised approximately $860,000 from at least 18 "
+        "investors.",
+        None,
+    ),
+    ("Regulator charges founder who raised $5 million for a fake startup", "", None),
+    ("Harlow Labs announces $500 million investment in Ohio plant", "", None),
+    ("Harlow Labs raises $25M Series A after settling lawsuit with rival", "", None),
+    ("Harlow Labs files its quarterly report", "Harlow Labs raised $45 million in a Series B.", DocType.FILING),
+    ("Commission order", "Harlow Labs raised $45 million in a Series B.", DocType.REGULATORY),
 ]
 
 

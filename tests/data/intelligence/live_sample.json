@@ -1,0 +1,1346 @@
+{
+ "_about": "Real headlines and summaries from approved live sources (feeds fetched 2026-10-27), copied from a live Newsren database for story-clustering regression tests. hours_ago is relative to the newest item. Filings keep only their EDGAR identifiers.",
+ "sources": [
+  {
+   "slug": "federal-reserve-press",
+   "name": "Federal Reserve Board - Press Releases",
+   "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+   "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
+   "vertical": "finance",
+   "trust_tier": "primary",
+   "default_doc_type": "regulatory"
+  },
+  {
+   "slug": "sec-press-releases",
+   "name": "SEC Press Releases",
+   "url": "https://www.sec.gov/news/pressreleases.rss",
+   "homepage": "https://www.sec.gov/newsroom/press-releases",
+   "vertical": "finance",
+   "trust_tier": "primary",
+   "default_doc_type": "regulatory"
+  },
+  {
+   "slug": "nist-news",
+   "name": "NIST News",
+   "url": "https://www.nist.gov/news-events/news/rss.xml",
+   "homepage": "https://www.nist.gov/news-events/news",
+   "vertical": "technology",
+   "trust_tier": "primary",
+   "default_doc_type": "press_release"
+  },
+  {
+   "slug": "sec-edgar-10q",
+   "name": "SEC EDGAR current filings - Form 10-Q",
+   "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=10-Q&company=&dateb=&owner=include&start=0&count={edgar_count}&output=atom",
+   "homepage": "https://www.sec.gov/edgar/search/",
+   "vertical": "finance",
+   "trust_tier": "primary",
+   "default_doc_type": "filing"
+  },
+  {
+   "slug": "sec-edgar-8k",
+   "name": "SEC EDGAR current filings - Form 8-K",
+   "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&company=&dateb=&owner=include&start=0&count={edgar_count}&output=atom",
+   "homepage": "https://www.sec.gov/edgar/search/",
+   "vertical": "finance",
+   "trust_tier": "primary",
+   "default_doc_type": "filing"
+  },
+  {
+   "slug": "bbc-technology",
+   "name": "BBC News - Technology",
+   "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+   "homepage": "https://www.bbc.co.uk/news/technology",
+   "vertical": "technology",
+   "trust_tier": "independent",
+   "default_doc_type": "news"
+  },
+  {
+   "slug": "ncsc-uk-news",
+   "name": "UK National Cyber Security Centre - News",
+   "url": "https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml",
+   "homepage": "https://www.ncsc.gov.uk/section/keep-up-to-date/ncsc-news",
+   "vertical": "technology",
+   "trust_tier": "primary",
+   "default_doc_type": "news"
+  },
+  {
+   "slug": "mit-technology-review",
+   "name": "MIT Technology Review",
+   "url": "https://www.technologyreview.com/feed/",
+   "homepage": "https://www.technologyreview.com",
+   "vertical": "technology",
+   "trust_tier": "independent",
+   "default_doc_type": "news"
+  },
+  {
+   "slug": "ars-technica",
+   "name": "Ars Technica",
+   "url": "https://feeds.arstechnica.com/arstechnica/index",
+   "homepage": "https://arstechnica.com",
+   "vertical": "technology",
+   "trust_tier": "independent",
+   "default_doc_type": "news"
+  },
+  {
+   "slug": "crunchbase-news",
+   "name": "Crunchbase News",
+   "url": "https://news.crunchbase.com/feed/",
+   "homepage": "https://news.crunchbase.com",
+   "vertical": "finance",
+   "trust_tier": "independent",
+   "default_doc_type": "news"
+  },
+  {
+   "slug": "bbc-business",
+   "name": "BBC News - Business",
+   "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+   "homepage": "https://www.bbc.co.uk/news/business",
+   "vertical": "industry",
+   "trust_tier": "independent",
+   "default_doc_type": "news"
+  }
+ ],
+ "articles": [
+  {
+   "source": "federal-reserve-press",
+   "title": "Agencies seek comment on proposed third-party risk management guidance and issue statement on community bank engagement with core service providers",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 1111.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve issues FOMC statement",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 987.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board and Federal Open Market Committee release economic projections from the September 15-16 FOMC meeting",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 987.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 942.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board issues enforcement actions with former employee of Northstar Bank, former employee of American Express Travel Related Services Company, Inc., and former employee of Regions Bank",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 942.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 840.98,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board issues enforcement action with former employee of Sandy Spring Bank",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 798.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board requests public comment on two proposals related to establishing a regulatory framework for Board-supervised payment stablecoin issuers under the GENIUS Act",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 794.98,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces approval of application by Peoples Bancorp Inc.",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 768.98,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Agencies publish resolution plan feedback letters for 15 banking organizations",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 673.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board finalizes changes to enhance the transparency and public accountability of its stress test and reduce volatility in its stress test-related capital requirements",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 656.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board issues enforcement action with Ontario Bancorporation, Inc.",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 606.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces it will extend, until November 4, the comment period on its proposal to modernize Regulation O",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 601.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces approval of application by Fleur Capital Corporation",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 600.73,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces approval of application by Isabella Bank Corporation",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 528.98,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Minutes of the Federal Open Market Committee, September 15-16, 2026",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 483.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 456.98,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 439.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 339.48,
+   "extra": {}
+  },
+  {
+   "source": "federal-reserve-press",
+   "title": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+   "summary": "",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 270.48,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Proposes Rescission of Political Contribution Rule for Investment Advisers",
+   "summary": "The Securities and Exchange Commission today issued a proposal to rescind its “pay-to-play” rule that prohibits investment advisers from providing compensated investment advisory services to a government client for two years…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 1296.98,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Charges Founder and His Two New Jersey-Based Companies in Alleged $16 Million Ponzi Scheme",
+   "summary": "The Securities and Exchange Commission today charged Ernest Ossei Boateng and two New Jersey-based companies he controls, Intercontinental Wealth Network LLC and I Wealth Network LP, for allegedly raising approximately $16 million from more than 200…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 1131.72,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Proposes Rescission of Shareholder Proposal Rule and Reforms to Proxy Solicitation Process",
+   "summary": "The Securities and Exchange Commission today proposed to rescind Rule 14a-8 under the Securities Exchange Act of 1934, which exceeds the scope of the Commission's statutory authority and intrudes into matters of state law.The Commission outlined…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 991.48,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Charges South Florida Resident and His Company for Alleged Investment Scheme Defrauding Law Enforcement",
+   "summary": "The Securities and Exchange Commission today charged CMI Capital LLC and its founder and manager, Michael D. Williams, for an alleged fraudulent investment scheme that raised approximately $860,000 from at least 18 investors, many of whom are current or…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 821.48,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Charges Registered Investment Adviser Zoe Financial for Failure to Disclose Conflict of Interest",
+   "summary": "The Securities and Exchange Commission today announced settled charges against New York-based investment adviser Zoe Financial Inc. for failing to fully and fairly disclose material facts concerning conflicts of interest to its clients and prospective…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 699.71,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Charges Multiple Entities in Fraud Schemes Totaling at Least $15 Million That Used WhatsApp and Other Platforms to Lure Investors",
+   "summary": "The Securities and Exchange Commission today charged multiple entities that are likely operated by individuals located overseas for defrauding hundreds of retail investors, including many in the U.S., through so-called investment confidence scams where…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 679.55,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Proposes Amendments to Expand Responsible Retailization of Private Markets",
+   "summary": "The Securities and Exchange Commission today voted to propose rule amendments that would facilitate capital formation in the public and private markets by expanding retail investor choice and promoting innovation in regulated fund structures while…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 653.73,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Charges Two Individuals With Orchestrating Fraud Scheme That Targeted Veterans",
+   "summary": "The Securities and Exchange Commission today announced charges against Christopher Kenji Dinelli and Jacob David “Kobe” Frankel for allegedly orchestrating a fraud scheme that raised more than $8.7 million from 35 investors through their fund, Beyond…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 652.78,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Charges Meyer Global Management and Its CEO With Defrauding Retail Investors in Private Funds That Held Interests in SpaceX and Other Pre-IPO Securities",
+   "summary": "The Securities and Exchange Commission today charged private fund adviser Meyer Global Management LLC (MGM) and its CEO, Owen E.H. Meyer, with defrauding investors and MGM-managed funds in connection with investments in SpaceX and other pre-IPO…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 650.98,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Proposal Would Address How Investment Advisers and Funds Can Custody Crypto Assets Under the Federal Securities Laws",
+   "summary": "The Securities and Exchange Commission today proposed new rules and amendments to provide a tailored framework for the custody of crypto assets for registered investment advisers and regulated funds, i.e. registered investment companies and business…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 629.21,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC to Host Virtual National Compliance Outreach Seminar for Investment Companies and Investment Advisers",
+   "summary": "The Securities and Exchange Commission’s Compliance Outreach Program announced today that it will host a virtual national seminar for investment companies and investment advisers on November 19, 2026. The purpose of the event is to help chief compliance…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 510.85,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Proposes Expanding Securities Eligible for Cross Trading by Registered Funds",
+   "summary": "The Securities and Exchange Commission today proposed amendments to the Investment Company Act “cross-trading rule,” which permits transactions in securities between a registered fund and its affiliates under certain conditions. The proposed amendments…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 438.5,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "Joint Readout of Principals’ Meeting of U.S. and UK Authorities Regarding Central Counterparty Resolution",
+   "summary": "Senior officials from the Securities and Exchange Commission, Federal Deposit Insurance Corporation, Commodity Futures Trading Commission, Federal Reserve Board, and Bank of England convened for a tabletop exercise on Sept. 3, 2026, to discuss certain…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 1110.48,
+   "extra": {}
+  },
+  {
+   "source": "sec-press-releases",
+   "title": "SEC Grants Exemptive Relief from Certain Inline XBRL Filing or Submission Requirements",
+   "summary": "The Securities and Exchange Commission issued an order granting exemptive relief from certain Inline XBRL requirements adopted on Dec. 16, 2024. More specifically, the Commission is granting exemptive relief from filing or submitting the following in…",
+   "vertical": "finance",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "hours_ago": 1036.7,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Expands AI Consortium’s Scope, Calls for New Members",
+   "summary": "The consortium will focus on AI innovation and adoption, with six task groups concentrating on different aspects of AI measurement science and evaluation.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 3633.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Researchers Discover a New Way to Whisk Alloys Together With Lasers",
+   "summary": "NIST also improved how X-rays are used to study the atomic structure of metals in real time during 3D printing, allowing researchers to observe how materials change under extreme conditions.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 3489.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Expands Its Library of ‘Chemical Fingerprints’ to Identify Unknown Substances",
+   "summary": "Researchers and manufacturers rely on the library to identify unknown compounds in food, drugs, cosmetics, the environment, body fluids, forensic evidence and even space rocks.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 3369.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Releases Technical Findings on What Caused the 2021 Partial Collapse of Champlain Towers South",
+   "summary": "In an investigation that began just days after the tragedy, the team examined two dozen possible scenarios for where and why the collapse started.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 3057.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Researchers Correct Common Error Confounding Nanotech Measurements",
+   "summary": "The scientists offer a practical solution that relies on accounting for measurement errors before testing materials or developing products.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 1977.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Researchers Supersize Quantum Technology to Help Detect Faint Photons",
+   "summary": "For cutting-edge technology, from quantum computing to deep-tissue imaging, detecting every single photon counts.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 1545.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Awards More Than $30 Million for MEP Centers in 11 States and Puerto Rico",
+   "summary": "The awards will help small and medium-sized manufacturers increase the adoption of advanced manufacturing technology.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 1017.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Awards More Than $1.7 Million to Support Cybersecurity Workforce Development Across 8 States",
+   "summary": "Projects will address local cybersecurity workforce needs and will offer practical learning opportunities including internships, apprenticeships and hands-on projects.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 945.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "New Chip-Based ‘Tape Measure’ for Light Could Revolutionize Mobile Timekeeping and Enhance National Security",
+   "summary": "The new device could help provide vital navigation signals when GPS is either unavailable or has been jammed.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 273.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "Any Color You Like: NIST Scientists Create ‘Any Wavelength’ Lasers in Tiny Circuits for Light",
+   "summary": "NIST scientists and collaborators have pioneered a way to make integrated circuits for light by depositing complex patterns of specialized materials onto silicon wafers.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 4689.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "NIST Weighs In on the Mystery of the Gravitational Constant",
+   "summary": "A NIST researcher has unveiled the results of a 10-year quest to measure the constant.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 4665.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "Wear and Tear Changes Measurable PFAS Levels in Firefighter Hoods, Gloves and Wildland Gear",
+   "summary": "In the fourth of an ongoing series of reports, NIST shows that wear and tear increased the levels of PFAS found in hoods and gloves.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 4017.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "Shooting for the Moon: Ultrastable Lasers in Dark Craters Could Enable Lunar Navigation, Precision Timekeeping, New Science",
+   "summary": "Lunar craters in permanent shadow could be ideal locations for building the most stable optical lasers ever made.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 3897.48,
+   "extra": {}
+  },
+  {
+   "source": "nist-news",
+   "title": "New AI Model Shows How to Evacuate for Fires One Safe Step at a Time",
+   "summary": "A NIST-led team has created a new AI model that can identify safe evacuation routes in a single-story floor plan during a fire, with a multilevel version in the works.",
+   "vertical": "technology",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "hours_ago": 3489.48,
+   "extra": {}
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "Knowles Corp files Form 10-Q (quarterly report)",
+   "summary": "Knowles Corp (CIK 0001587523) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001587523-26-000035. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:05:46Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.38,
+   "extra": {
+    "cik": "0001587523",
+    "company": "Knowles Corp",
+    "form_type": "10-Q",
+    "accession": "0001587523-26-000035",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "ENSIGN GROUP, INC files Form 10-Q (quarterly report)",
+   "summary": "ENSIGN GROUP, INC (CIK 0001125376) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001125376-26-000046. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:05:47Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.38,
+   "extra": {
+    "cik": "0001125376",
+    "company": "ENSIGN GROUP, INC",
+    "form_type": "10-Q",
+    "accession": "0001125376-26-000046",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "STAG Industrial, Inc. files Form 10-Q (quarterly report)",
+   "summary": "STAG Industrial, Inc. (CIK 0001479094) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001479094-26-000033. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:08:27Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.34,
+   "extra": {
+    "cik": "0001479094",
+    "company": "STAG Industrial, Inc.",
+    "form_type": "10-Q",
+    "accession": "0001479094-26-000033",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "AMERICAN TOWER CORP /MA/ files Form 10-Q (quarterly report)",
+   "summary": "AMERICAN TOWER CORP /MA/ (CIK 0001053507) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001053507-26-000157. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:08:31Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.34,
+   "extra": {
+    "cik": "0001053507",
+    "company": "AMERICAN TOWER CORP /MA/",
+    "form_type": "10-Q",
+    "accession": "0001053507-26-000157",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "PayPal Holdings, Inc. files Form 10-Q (quarterly report)",
+   "summary": "PayPal Holdings, Inc. (CIK 0001633917) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001633917-26-000088. Source: SEC EDGAR current filings feed; accepted 2026-10-27T21:05:11Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.39,
+   "extra": {
+    "cik": "0001633917",
+    "company": "PayPal Holdings, Inc.",
+    "form_type": "10-Q",
+    "accession": "0001633917-26-000088",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "Zurn Elkay Water Solutions Corp files Form 10-Q (quarterly report)",
+   "summary": "Zurn Elkay Water Solutions Corp (CIK 0001439288) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001628280-26-067577. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:08:21Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.34,
+   "extra": {
+    "cik": "0001439288",
+    "company": "Zurn Elkay Water Solutions Corp",
+    "form_type": "10-Q",
+    "accession": "0001628280-26-067577",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "DMC Global Inc. files Form 10-Q (quarterly report)",
+   "summary": "DMC Global Inc. (CIK 0000034067) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0000034067-26-000053. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:08:39Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.34,
+   "extra": {
+    "cik": "0000034067",
+    "company": "DMC Global Inc.",
+    "form_type": "10-Q",
+    "accession": "0000034067-26-000053",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-10q",
+   "title": "RELIANCE, INC. files Form 10-Q (quarterly report)",
+   "summary": "RELIANCE, INC. (CIK 0000861884) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001104659-26-119157. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:10:39Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 1.3,
+   "extra": {
+    "cik": "0000861884",
+    "company": "RELIANCE, INC.",
+    "form_type": "10-Q",
+    "accession": "0001104659-26-119157",
+    "items": [],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-8k",
+   "title": "Sunbelt Rentals Holdings, Inc. files Form 8-K (current report): Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers",
+   "summary": "Sunbelt Rentals Holdings, Inc. (CIK 0002083785) filed Form 8-K (current report) with the SEC on 2026-10-27, accession number 0001193125-26-434400. Items reported: Item 5.02 Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers. Source: SEC EDGAR current filings feed; accepted 2026-10-27T21:00:21Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.47,
+   "extra": {
+    "cik": "0002083785",
+    "company": "Sunbelt Rentals Holdings, Inc.",
+    "form_type": "8-K",
+    "accession": "0001193125-26-434400",
+    "items": [
+     {
+      "number": "5.02",
+      "title": "Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers"
+     }
+    ],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-8k",
+   "title": "AEI INCOME & GROWTH FUND 25 LLC files Form 8-K (current report): Completion of Acquisition or Disposition of Assets",
+   "summary": "AEI INCOME & GROWTH FUND 25 LLC (CIK 0001185198) filed Form 8-K (current report) with the SEC on 2026-10-27, accession number 0001185198-26-000013. Items reported: Item 2.01 Completion of Acquisition or Disposition of Assets; Item 9.01 Financial Statements and Exhibits. Source: SEC EDGAR current filings feed; accepted 2026-10-27T21:26:31Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.04,
+   "extra": {
+    "cik": "0001185198",
+    "company": "AEI INCOME & GROWTH FUND 25 LLC",
+    "form_type": "8-K",
+    "accession": "0001185198-26-000013",
+    "items": [
+     {
+      "number": "2.01",
+      "title": "Completion of Acquisition or Disposition of Assets"
+     },
+     {
+      "number": "9.01",
+      "title": "Financial Statements and Exhibits"
+     }
+    ],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-8k",
+   "title": "RUSH ENTERPRISES INC \\TX\\ files Form 8-K (current report): Results of Operations and Financial Condition",
+   "summary": "RUSH ENTERPRISES INC \\TX\\ (CIK 0001012019) filed Form 8-K (current report) with the SEC on 2026-10-27, accession number 0001437749-26-033667. Items reported: Item 2.02 Results of Operations and Financial Condition; Item 7.01 Regulation FD Disclosure; Item 9.01 Financial Statements and Exhibits. Source: SEC EDGAR current filings feed; accepted 2026-10-27T21:28:51Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.0,
+   "extra": {
+    "cik": "0001012019",
+    "company": "RUSH ENTERPRISES INC \\TX\\",
+    "form_type": "8-K",
+    "accession": "0001437749-26-033667",
+    "items": [
+     {
+      "number": "2.02",
+      "title": "Results of Operations and Financial Condition"
+     },
+     {
+      "number": "7.01",
+      "title": "Regulation FD Disclosure"
+     },
+     {
+      "number": "9.01",
+      "title": "Financial Statements and Exhibits"
+     }
+    ],
+    "is_earnings_release": true
+   }
+  },
+  {
+   "source": "sec-edgar-8k",
+   "title": "Antares Strategic Credit Fund files Form 8-K (current report): Unregistered Sales of Equity Securities",
+   "summary": "Antares Strategic Credit Fund (CIK 0001993402) filed Form 8-K (current report) with the SEC on 2026-10-27, accession number 0001193125-26-434386. Items reported: Item 3.02 Unregistered Sales of Equity Securities; Item 7.01 Regulation FD Disclosure; Item 8.01 Other Events. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:55:42Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.55,
+   "extra": {
+    "cik": "0001993402",
+    "company": "Antares Strategic Credit Fund",
+    "form_type": "8-K",
+    "accession": "0001193125-26-434386",
+    "items": [
+     {
+      "number": "3.02",
+      "title": "Unregistered Sales of Equity Securities"
+     },
+     {
+      "number": "7.01",
+      "title": "Regulation FD Disclosure"
+     },
+     {
+      "number": "8.01",
+      "title": "Other Events"
+     }
+    ],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-8k",
+   "title": "Cricut, Inc. files Form 8-K (current report): Entry into a Material Definitive Agreement",
+   "summary": "Cricut, Inc. (CIK 0001828962) filed Form 8-K (current report) with the SEC on 2026-10-27, accession number 0001828962-26-000054. Items reported: Item 1.01 Entry into a Material Definitive Agreement; Item 1.02 Termination of a Material Definitive Agreement; Item 9.01 Financial Statements and Exhibits. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:55:43Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.55,
+   "extra": {
+    "cik": "0001828962",
+    "company": "Cricut, Inc.",
+    "form_type": "8-K",
+    "accession": "0001828962-26-000054",
+    "items": [
+     {
+      "number": "1.01",
+      "title": "Entry into a Material Definitive Agreement"
+     },
+     {
+      "number": "1.02",
+      "title": "Termination of a Material Definitive Agreement"
+     },
+     {
+      "number": "9.01",
+      "title": "Financial Statements and Exhibits"
+     }
+    ],
+    "is_earnings_release": false
+   }
+  },
+  {
+   "source": "sec-edgar-8k",
+   "title": "First Carolina Financial Services, Inc. files Form 8-K (current report): Results of Operations and Financial Condition",
+   "summary": "First Carolina Financial Services, Inc. (CIK 0001531193) filed Form 8-K (current report) with the SEC on 2026-10-27, accession number 0001628280-26-067640. Items reported: Item 2.02 Results of Operations and Financial Condition; Item 9.01 Financial Statements and Exhibits. Source: SEC EDGAR current filings feed; accepted 2026-10-27T20:58:37Z. EDGAR times are filing acceptance times.",
+   "vertical": "finance",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "hours_ago": 0.5,
+   "extra": {
+    "cik": "0001531193",
+    "company": "First Carolina Financial Services, Inc.",
+    "form_type": "8-K",
+    "accession": "0001628280-26-067640",
+    "items": [
+     {
+      "number": "2.02",
+      "title": "Results of Operations and Financial Condition"
+     },
+     {
+      "number": "9.01",
+      "title": "Financial Statements and Exhibits"
+     }
+    ],
+    "is_earnings_release": true
+   }
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Now",
+   "summary": "Adrienne Murray follows NASA scientists in Iceland researching a rare total solar eclipse.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 932.48,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Now",
+   "summary": "Ammie Sekhon explores tech used to identify and remove counterfeit products online.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 764.48,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Now",
+   "summary": "Alasdair Keane heads to the Pokémon World Championships in San Francisco.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 596.48,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Life",
+   "summary": "What is a supercomputer for? How does it work? And who gets to use it? We explain all",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 505.98,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Now",
+   "summary": "Shiona McCallum visits Cairngorms National Park to see tech monitor wildfire damage.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 428.48,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Life",
+   "summary": "The plan for an orbiting data centre involves linking satellites around Earth.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 337.73,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Life",
+   "summary": "The next generation of chip is thinner and flexible when compared to traditional silicon.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 169.73,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "'500 new vulnerabilities' found in government, says AI minister",
+   "summary": "",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 131.34,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Zoe Kleinman: PHP is the cyber equivalent of an unexploded bomb",
+   "summary": "It has been a dramatic, public and global response, but the cyber event hasn't happened yet.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 131.19,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Race to update services' computer systems after cyber-security flaw found",
+   "summary": "Websites were taken offline after the developers of programming language PHP said \"critical vulnerabilities\" had been discovered.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 124.27,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Zuckerberg wins Meta deal to help him foot bill for possible California billionaire tax",
+   "summary": "The Meta boss had said he would exit the state over a wealth tax that has not yet come into force.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 123.03,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "'It's been relentless' say IT workers on frontline of PHP cyber-security scramble",
+   "summary": "IT and cyber experts have told the BBC about their struggles in the last 48 hours to update their systems.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 105.47,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "What is PHP and why did it spark a global cyber-security scramble?",
+   "summary": "AI uncovered long-hidden programming flaws, triggering a rare global cyber-security response.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 105.08,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "UK to invest £100m in 'world first' AI Biosecurity Lab",
+   "summary": "The chancellor will unveil AI spending aimed at shoring up the UK's defences in Wednesday's Budget.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 93.39,
+   "extra": {}
+  },
+  {
+   "source": "bbc-technology",
+   "title": "Tech Life",
+   "summary": "We hear from Ondřej Surý, the programmer whose PHP patches helped avert a cyber crisis.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 0.98,
+   "extra": {}
+  },
+  {
+   "source": "ncsc-uk-news",
+   "title": "Executive Summary: Defending against China-nexus covert networks of compromised devices",
+   "summary": "Organisations should map and baseline their edge device traffic, especially VPN and remote access connections, and adopt dynamic threat feed filtering that includes known covert network indicators.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "primary",
+   "hours_ago": 4497.48,
+   "extra": {}
+  },
+  {
+   "source": "ncsc-uk-news",
+   "title": "Defending against China-nexus covert networks of compromised devices",
+   "summary": "Explaining the widespread shift in tactics, techniques and procedures (TTPs) towards networks of compromised infrastructure, and how to defend against it",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "primary",
+   "hours_ago": 4497.48,
+   "extra": {}
+  },
+  {
+   "source": "ncsc-uk-news",
+   "title": "Iranian cyber targeting of dissidents, activists and journalists",
+   "summary": "Advisory on CHOSEN BRICK malware, including technical analysis and advice to help individuals and organisations protect themselves.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "primary",
+   "hours_ago": 1017.48,
+   "extra": {}
+  },
+  {
+   "source": "ncsc-uk-news",
+   "title": "UK and allies expose spyware used by Iranian state actors to target dissidents, activists and journalists",
+   "summary": "UK and allies provide advice to help organisations and individuals at risk detect and counter the threat from CHOSEN BRICK malware.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "primary",
+   "hours_ago": 1017.48,
+   "extra": {}
+  },
+  {
+   "source": "ncsc-uk-news",
+   "title": "Critical security issue affecting PHP",
+   "summary": "Updated: The NCSC is encouraging UK organisations to take immediate action to mitigate a security issue affecting PHP (CVE-2026-109618 and CVE-2026-109619).",
+   "vertical": "technology",
+   "doc_type": "advisory",
+   "trust_tier": "primary",
+   "hours_ago": 153.48,
+   "extra": {}
+  },
+  {
+   "source": "ncsc-uk-news",
+   "title": "APT28 exploit routers to enable DNS hijacking operations",
+   "summary": "Russian cyber actor APT28 exploit vulnerable routers to hijack DNS, enabling adversary‑in‑the‑middle attacks and theft of passwords and authentication tokens.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "primary",
+   "hours_ago": 4881.48,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "The Foundations of Scalable AI",
+   "summary": "A scalable AI system requires a strong foundation. Data, engineering, platforms, operating models, and governance must converge to work as one. This session from MIT Technology Review’s EmTech Future conference explores what it takes to build that foundation in a highly regulated environment and how a responsible, trustworthy implementation can turn emerging capabilities, including agentic…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 122.68,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "Designing an AI serving harness built to last",
+   "summary": "The next competitive advantage in enterprise AI has less to do with which model you choose than with what you build around it. That’s an important shift. For the past several years, much of the AI conversation has centered on model capability: bigger models, better reasoning, larger context windows, higher benchmark scores. Those advances have…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 120.19,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "In the biotech world, you can’t see everything",
+   "summary": "Earlier this week, I attended a screening of You Can See Everything, the buzzy new documentary about the disgraced former biotech CEO Elizabeth Holmes. I went in not really knowing what to expect. I’d avoided spoilers (and won’t be giving anything away here, either!). I was wondering what new information this film could reveal, given…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 108.48,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "The Download: testing six tech promises and biotech’s blind spots",
+   "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Are we there yet? A reality check on six big tech promises Some seemingly impossible feats are too good to give up on. Decoding a pet’s yowls and yips? Absolutely. Scrubbing…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 105.31,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "The focus on AI safety disasters ignores everyday harms",
+   "summary": "Consider what passes for success in technology policy. An AI company promises that its chatbot will not encourage suicide. A social media platform makes it more difficult for children to buy fentanyl. These are important protections, and they should have existed all along. But companies can clear these low bars while continuing to make products…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 36.46,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "The Download: everyday AI harms and the race to nuclear spaceflight",
+   "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Opinion: The focus on AI safety disasters ignores everyday harms —Sam Hiner, cofounder of the Young People’s Alliance, and Emma Leiken, executive director of the Responsible Technology Youth Power Fund at…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 32.81,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "Will the real Anthropic please stand up",
+   "summary": "This story originally appeared in The Algorithm, our weekly newsletter on AI. To get stories like this in your inbox first, sign up here. After weeks of frenzied speculation, Anthropic has filed its IPO prospectus. The 335-page document (100 pages or so are focused on risks) lays out the company’s unique view of the technology it…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 27.72,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "How solid-state transformers could help power the AI boom",
+   "summary": "Transformers are a crucial but nearly invisible part of our grid. The devices help efficiently move power across long distances, but they’re complicated and in short supply. And given that their basic design hasn’t changed much for about a century, they could use an upgrade. As the world races to meet rising electricity demand from…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 12.48,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "Industrial Intelligence: The next growth opportunity for manufacturing",
+   "summary": "Every manufacturer has its own industrial intelligence. Some is documented, and some resides in the knowledge of experienced workers. Consider an experienced operator preparing to restart a line after a changeover. The machine settings matter, but so does knowing how a particular material behaves, what happened during the previous shift, and when an apparently minor…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 10.16,
+   "extra": {}
+  },
+  {
+   "source": "mit-technology-review",
+   "title": "The Download: Anthropic’s IPO, smarter power grids, and exercise pills",
+   "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Will the real Anthropic please stand up? After weeks of frenzied speculation, Anthropic has filed its IPO prospectus. The 335-page document (100 pages or so are focused on risks) lays out…",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 9.31,
+   "extra": {}
+  },
+  {
+   "source": "ars-technica",
+   "title": "Highway thieves are spoofing GPS to steal millions in data center-bound cargo",
+   "summary": "Investigators explain how highway thieves stole $100M in data center equipment.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 28.04,
+   "extra": {}
+  },
+  {
+   "source": "ars-technica",
+   "title": "F1 in Texas: The American race that fans love to attend",
+   "summary": "Ars spends the weekend with the Audi Revolut F1 team at the Circuit of the Americas.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 30.67,
+   "extra": {}
+  },
+  {
+   "source": "ars-technica",
+   "title": "Musk accuses Ukraine of violating Starlink terms with deadly drone strikes",
+   "summary": "Ukraine says Starshield back to normal, denies misuse of Starlink commercial service.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 27.33,
+   "extra": {}
+  },
+  {
+   "source": "ars-technica",
+   "title": "ICE plan to buy robot dogs spurs protest from hundreds of Boston Dynamics employees",
+   "summary": "US robotics company stands by ICE deal as more than 300 employees warn of risk.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 26.64,
+   "extra": {}
+  },
+  {
+   "source": "ars-technica",
+   "title": "Apple reveals updated iPad mini with a bigger OLED screen for $700",
+   "summary": "Apple claims this is the most significant update ever for the iPad mini line.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 26.4,
+   "extra": {}
+  },
+  {
+   "source": "ars-technica",
+   "title": "Apple releases iOS and macOS 27.2 with new Siri AI features, new Music logo",
+   "summary": "Included is the ability to limit which applications Siri can directly access.",
+   "vertical": "technology",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 25.41,
+   "extra": {}
+  },
+  {
+   "source": "crunchbase-news",
+   "title": "The AI IPO Wave Is The Dot-Com Bubble’s Evil Twin. Anthropic’s Delay Just Proved It.",
+   "summary": "In this guest article from Airrived co-founder and CEO Anurag Gurtu, he contends that Anthropic’s rapid revenue growth does not justify its proposed $2 trillion IPO valuation, given enormous infrastructure commitments, safety concerns, customer concentration and competition from cheaper open-weight models, saying instead that lasting enterprise AI value will come from proprietary data, reliable deployment and measurable customer outcomes rather than expensive models alone.",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 130.47,
+   "extra": {}
+  },
+  {
+   "source": "crunchbase-news",
+   "title": "Some Observations About Anthropic’s IPO Filing",
+   "summary": "In an S-1 filing today preceding what could be the largest IPO ever, Anthropic laid out extensive new details about its earnings, growth, key stakeholders and the risks it faces going forward. Clocking in at 335 pages, the document wasn’t exactly light reading. However, in a preliminary once-over, we highlight some of the more intriguing disclosures.",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 25.3,
+   "extra": {}
+  },
+  {
+   "source": "crunchbase-news",
+   "title": "Exclusive: Slingshot Raises $27M In Seed Funding To Build An Insurer For Those Small Policies Sold At Checkout",
+   "summary": "Slingshot Insurance, a Minneapolis-based AI-native embedded insurance startup, is emerging from stealth with $27 million in a seed funding round co-led by Rally Ventures and Skyward Group, it tells Crunchbase News exclusively.",
+   "vertical": "finance",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 128.47,
+   "extra": {}
+  },
+  {
+   "source": "bbc-business",
+   "title": "Four ways Labour could raise money in the Budget without hiking income tax",
+   "summary": "Chancellor John Healey may need to raise money to boost his fiscal headroom - BBC Verify examines what options could be on the table.",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 63.48,
+   "extra": {}
+  },
+  {
+   "source": "bbc-business",
+   "title": "Budget to include £1bn for social and affordable housing",
+   "summary": "The move will take funding for the 10-year programme to more than £40bn.",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 59.43,
+   "extra": {}
+  },
+  {
+   "source": "bbc-business",
+   "title": "Healey's Budget needs to sustain the stronger economy through gathering clouds",
+   "summary": "The economic is positive now but come January things could become trickier for the Labour government",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 45.03,
+   "extra": {}
+  },
+  {
+   "source": "bbc-business",
+   "title": "Healey to shield low-income pensioners from income tax in the Budget",
+   "summary": "Changes are needed to prevent the full, flat-rate state pension becoming liable for income tax after it rises in April.",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 35.01,
+   "extra": {}
+  },
+  {
+   "source": "bbc-business",
+   "title": "Salon owners urge Budget VAT cut as staffing pressures grow",
+   "summary": "Marcus Perkins, who owns a hair and beauty salon in Brierley Hill, says he is scared for the future.",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 34.67,
+   "extra": {}
+  },
+  {
+   "source": "bbc-business",
+   "title": "Tax on banks, energy bill help and minimum wage rise - what could be in the Budget?",
+   "summary": "Chancellor John Healey will set out his plans for UK taxes on 28 October.",
+   "vertical": "industry",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "hours_ago": 2.72,
+   "extra": {}
+  }
+ ]
+}

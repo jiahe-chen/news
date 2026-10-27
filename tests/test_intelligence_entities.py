@@ -6,7 +6,10 @@ import pytest
 from sqlalchemy import func, select
 
 from newsren.intelligence.entities import (
+    ORG,
+    entity_head,
     extract_entities,
+    is_generic_name,
     normalize_entity,
     tag_article_entities,
 )
@@ -94,6 +97,55 @@ def test_generic_acronyms_are_ignored_but_specific_ones_kept():
     assert "CEO" not in found and "AI" not in found and "GPU" not in found
     assert found["CISA"] == "organization"
     assert found["OECD"] == "organization"
+
+
+@pytest.mark.parametrize(
+    ("text", "absent"),
+    [
+        # Real live items (NIST News, SEC EDGAR, SEC press): identifiers and technologies are not names.
+        (
+            "New Chip-Based ‘Tape Measure’ for Light Could Revolutionize Mobile Timekeeping and Enhance National "
+            "Security. The new device could help provide vital navigation signals when GPS is either unavailable "
+            "or has been jammed.",
+            "GPS",
+        ),
+        (
+            "HUNTINGTON BANCSHARES INC /MD/ (CIK 0000049196) filed Form 10-Q (quarterly report) with the SEC on "
+            "2026-10-27, accession number 0000049196-26-000090.",
+            "CIK",
+        ),
+        (
+            "The U.S. Securities and Exchange Commission (SEC) and the French Autorité des Marchés Financiers (AMF) "
+            "announced that they have entered into a Memorandum of Understanding (MOU) designed to facilitate "
+            "consultation.",
+            "MOU",
+        ),
+        (
+            "SEC to Host Virtual National Compliance Outreach Seminar for Investment Companies and Investment "
+            "Advisers. The Securities and Exchange Commission’s Compliance Outreach Program announced today that it "
+            "will host a virtual national seminar for investment companies and investment advisers.",
+            "Investment Advisers",
+        ),
+    ],
+)
+def test_generic_identifiers_and_classes_are_not_entities(text, absent):
+    found = kinds(text)
+    assert absent not in found
+    assert "Investment Companies" not in found
+
+
+def test_is_generic_name_matches_the_extractor_vocabulary():
+    for name in ("GPS", "CIK", "Investment Advisers", "AI", "Investment Companies and Funds"):
+        assert is_generic_name(name), name
+    for name in ("SEC", "Federal Reserve", "Investment Advisers Act", "Fidelity Investments", "PayPal Holdings"):
+        assert not is_generic_name(name), name
+
+
+def test_generic_class_words_are_not_brand_heads():
+    assert entity_head("Investment Company Institute", ORG) is None
+    assert entity_head("Compliance Outreach Program", ORG) is None
+    assert entity_head("Fidelity Investments", ORG) == "fidelity"
+    assert entity_head("Corvane Semiconductor", ORG) == "corvane"
 
 
 def test_title_case_headline_does_not_produce_topic_noise():

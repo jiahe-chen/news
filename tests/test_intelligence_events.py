@@ -2,12 +2,21 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from newsren.intelligence.events import classify_event, classify_event_with_reason, event_label
+from newsren.intelligence.events import classify_event, classify_event_with_reason, event_label, event_phrase
 from newsren.models import EventType
+
+LIVE = {
+    row["key"]: row
+    for row in json.loads((Path(__file__).parent / "data" / "briefs" / "live_samples.json").read_text())[
+        "articles"
+    ]
+}
 
 
 def subject(title: str, summary: str = "", doc_type: str = "news", trust_tier: str = "independent"):
@@ -261,3 +270,56 @@ def test_event_labels_are_reader_facing():
     assert event_label("independent_evaluation") == "independent evaluation"
     assert event_label("benchmark") == "benchmark claim"
     assert event_label(None) == "development"
+
+
+def test_event_phrases_take_the_right_article_in_running_text():
+    assert event_phrase("independent_evaluation") == "an independent evaluation"
+    assert event_phrase("research_publication") == "a research publication"
+    assert event_phrase("adoption") == "adoption"
+    assert event_phrase("earnings") == "earnings"
+    assert event_phrase("opinion") == "an opinion piece"
+    assert event_phrase(None) == "a development"
+
+
+# --------------------------------------------------------------------------
+# Regressions from the live run (real titles and summaries, tests/data/briefs/live_samples.json)
+# --------------------------------------------------------------------------
+
+LIVE_CASES = [
+    # ERIC papers: "Evaluation" as a topic in a title or the study design is not an evaluation of claims.
+    ("eric_literacy_1", EventType.RESEARCH_PUBLICATION),  # "... Student Adoption, Interaction, Evaluation and ..."
+    ("evaluation_study_1", EventType.RESEARCH_PUBLICATION),  # "...: An Evaluation Study"
+    ("arxiv_off_policy_evaluation", EventType.RESEARCH_PUBLICATION),  # off-policy evaluation is a method
+    ("arxiv_model_evaluation", EventType.INDEPENDENT_EVALUATION),  # "Evaluating DeepSeek V4.1 ..."
+    ("arxiv_vulnerability_detection", EventType.RESEARCH_PUBLICATION),  # a paper, not a security advisory
+    ("imec_research_summary", EventType.RESEARCH_PUBLICATION),  # "Researchers at imec published ..."
+    # A superintendent's job review is not an independent evaluation.
+    ("denver_board_1", EventType.OTHER),
+    # "Code-execution flaw ... allows attackers to execute code" is a security story.
+    ("uefi_flaw_1", EventType.SECURITY_ADVISORY),
+    # "energy bill help" is not legislation; "- what could be in the Budget?" is a preview.
+    ("bbc_budget_2", EventType.ANALYSIS),
+    # Benchmark the venture firm.
+    ("benchmark_firm_partners", EventType.OTHER),
+    ("benchmark_firm_pact", EventType.OTHER),
+    # A statement about AI evaluations, and "a shift toward more deliberate evaluation" in a summary.
+    ("ncsc_statement", EventType.ANNOUNCEMENT),
+    ("school_ai_bans", EventType.POLICY),
+]
+
+
+@pytest.mark.parametrize(("key", "expected"), LIVE_CASES)
+def test_live_articles_are_classified_by_what_they_are(key, expected):
+    row = LIVE[key]
+    article = subject(row["title"], row["summary"] or "", row["doc_type"], row["trust_tier"])
+    event_type, rule = classify_event_with_reason(article)
+    assert event_type == expected, f"rule {rule!r} fired for {row['title']!r}"
+
+
+def test_two_research_index_papers_are_both_research_publications():
+    """The live story that read "moved from an independent evaluation to research publication"."""
+    types = {
+        classify_event(subject(LIVE[k]["title"], LIVE[k]["summary"], LIVE[k]["doc_type"], LIVE[k]["trust_tier"]))
+        for k in ("eric_literacy_1", "eric_literacy_2")
+    }
+    assert types == {EventType.RESEARCH_PUBLICATION}

@@ -1,0 +1,1310 @@
+{
+ "description": "Real articles from the approved live sources (headline + feed summary, as ingested on 2026-10-27), used to pin Ask Newsren's offline answer quality on live-shaped data.",
+ "articles": [
+  {
+   "live_id": 247,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-98-sec-charges-meyer-global-management-its-ceo-defrauding-retail-investors-private-funds-held-interests",
+   "title": "SEC Charges Meyer Global Management and Its CEO With Defrauding Retail Investors in Private Funds That Held Interests in SpaceX and Other Pre-IPO Securities",
+   "summary": "The Securities and Exchange Commission today charged private fund adviser Meyer Global Management LLC (MGM) and its CEO, Owen E.H. Meyer, with defrauding investors and MGM-managed funds in connection with investments in SpaceX and other pre-IPO…",
+   "content": "",
+   "published_at": "2026-09-30T18:30:01Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 248,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-97-sec-charges-two-individuals-orchestrating-fraud-scheme-targeted-veterans",
+   "title": "SEC Charges Two Individuals With Orchestrating Fraud Scheme That Targeted Veterans",
+   "summary": "The Securities and Exchange Commission today announced charges against Christopher Kenji Dinelli and Jacob David “Kobe” Frankel for allegedly orchestrating a fraud scheme that raised more than $8.7 million from 35 investors through their fund, Beyond…",
+   "content": "",
+   "published_at": "2026-09-30T16:42:15Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 250,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-95-sec-charges-multiple-entities-fraud-schemes-totaling-least-15-million-used-whatsapp-other-platforms",
+   "title": "SEC Charges Multiple Entities in Fraud Schemes Totaling at Least $15 Million That Used WhatsApp and Other Platforms to Lure Investors",
+   "summary": "The Securities and Exchange Commission today charged multiple entities that are likely operated by individuals located overseas for defrauding hundreds of retail investors, including many in the U.S., through so-called investment confidence scams where…",
+   "content": "",
+   "published_at": "2026-09-29T13:55:53Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 251,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-94-sec-charges-registered-investment-adviser-zoe-financial-failure-disclose-conflict-interest",
+   "title": "SEC Charges Registered Investment Adviser Zoe Financial for Failure to Disclose Conflict of Interest",
+   "summary": "The Securities and Exchange Commission today announced settled charges against New York-based investment adviser Zoe Financial Inc. for failing to fully and fairly disclose material facts concerning conflicts of interest to its clients and prospective…",
+   "content": "",
+   "published_at": "2026-09-28T17:46:30Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 253,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-92-sec-charges-south-florida-resident-his-company-alleged-investment-scheme-defrauding-law-enforcement",
+   "title": "SEC Charges South Florida Resident and His Company for Alleged Investment Scheme Defrauding Law Enforcement",
+   "summary": "The Securities and Exchange Commission today charged CMI Capital LLC and its founder and manager, Michael D. Williams, for an alleged fraudulent investment scheme that raised approximately $860,000 from at least 18 investors, many of whom are current or…",
+   "content": "",
+   "published_at": "2026-09-23T16:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 259,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-86-sec-charges-founder-his-two-new-jersey-based-companies-alleged-16-million-ponzi-scheme",
+   "title": "SEC Charges Founder and His Two New Jersey-Based Companies in Alleged $16 Million Ponzi Scheme",
+   "summary": "The Securities and Exchange Commission today charged Ernest Ossei Boateng and two New Jersey-based companies he controls, Intercontinental Wealth Network LLC and I Wealth Network LP, for allegedly raising approximately $16 million from more than 200…",
+   "content": "",
+   "published_at": "2026-09-10T17:45:22Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 252,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-93-sec-publishes-updated-market-statistics-highlighting-increase-ipos-proceeds-raised",
+   "title": "SEC Publishes Updated Market Statistics, Highlighting Increase in IPOs and Proceeds Raised",
+   "summary": "The Securities and Exchange Commission’s Division of Economic and Risk Analysis (DERA) published updated statistics and data visualizations covering key segments of the U.S. capital markets, including a notable increase in the number of initial public…",
+   "content": "",
+   "published_at": "2026-09-23T18:27:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 246,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-99-secs-division-examinations-announces-new-exam-handbook",
+   "title": "SEC’s Division of Examinations Announces New Exam Handbook",
+   "summary": "The Securities and Exchange Commission’s Division of Examinations today published its new handbook, “The SEC Exam Handbook: A Practical Guide on Process and Engagement,” which replaces and expands upon the previous examination brochure by providing…",
+   "content": "",
+   "published_at": "2026-10-01T15:03:35Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 258,
+   "source": {
+    "slug": "sec-press-releases",
+    "name": "SEC Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.sec.gov/news/pressreleases.rss",
+    "homepage": "https://www.sec.gov/newsroom/press-releases"
+   },
+   "url": "https://www.sec.gov/newsroom/press-releases/2026-87-joint-readout-principals-meeting-us-uk-authorities-regarding-central-counterparty-resolution",
+   "title": "Joint Readout of Principals’ Meeting of U.S. and UK Authorities Regarding Central Counterparty Resolution",
+   "summary": "Senior officials from the Securities and Exchange Commission, Federal Deposit Insurance Corporation, Commodity Futures Trading Commission, Federal Reserve Board, and Bank of England convened for a tabletop exercise on Sept. 3, 2026, to discuss certain…",
+   "content": "",
+   "published_at": "2026-09-11T15:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 146,
+   "source": {
+    "slug": "federal-reserve-press",
+    "name": "Federal Reserve Board - Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm"
+   },
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+   "title": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank",
+   "summary": "",
+   "content": "",
+   "published_at": "2026-10-16T15:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 149,
+   "source": {
+    "slug": "federal-reserve-press",
+    "name": "Federal Reserve Board - Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm"
+   },
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+   "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm’s failure to sufficiently detect and report certain suspicious activity related to money laundering",
+   "summary": "",
+   "content": "",
+   "published_at": "2026-10-08T20:30:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 154,
+   "source": {
+    "slug": "federal-reserve-press",
+    "name": "Federal Reserve Board - Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm"
+   },
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261002a.htm",
+   "title": "Federal Reserve Board issues enforcement action with Ontario Bancorporation, Inc.",
+   "summary": "",
+   "content": "",
+   "published_at": "2026-10-02T15:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 159,
+   "source": {
+    "slug": "federal-reserve-press",
+    "name": "Federal Reserve Board - Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm"
+   },
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260924a.htm",
+   "title": "Federal Reserve Board issues enforcement action with former employee of Sandy Spring Bank",
+   "summary": "",
+   "content": "",
+   "published_at": "2026-09-24T15:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 161,
+   "source": {
+    "slug": "federal-reserve-press",
+    "name": "Federal Reserve Board - Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm"
+   },
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20260918b.htm",
+   "title": "Federal Reserve Board announces termination of enforcement action with SNB Bancshares and Bank of Eufaula",
+   "summary": "",
+   "content": "",
+   "published_at": "2026-09-18T15:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 160,
+   "source": {
+    "slug": "federal-reserve-press",
+    "name": "Federal Reserve Board - Press Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.federalreserve.gov/feeds/press_all.xml",
+    "homepage": "https://www.federalreserve.gov/newsevents/pressreleases.htm"
+   },
+   "url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20260922a.htm",
+   "title": "Federal Reserve Board announces approval of application by BancFirst Corporation",
+   "summary": "",
+   "content": "",
+   "published_at": "2026-09-22T20:30:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 517,
+   "source": {
+    "slug": "nist-news",
+    "name": "NIST News",
+    "vertical": "technology",
+    "trust_tier": "primary",
+    "default_doc_type": "press_release",
+    "url": "https://www.nist.gov/news-events/news/rss.xml",
+    "homepage": "https://www.nist.gov/news-events/news"
+   },
+   "url": "https://www.nist.gov/news-events/news/2026/10/nist-report-provides-guidelines-transition-post-quantum-cryptography",
+   "title": "NIST Report Provides Guidelines for Transition to Post-Quantum Cryptography Standards",
+   "summary": "This report describes the timelines and migration activities for federal agencies, and it can serve as a key resource for technology providers and organizations that are developing their quantum-readiness road maps.",
+   "content": "",
+   "published_at": "2026-10-27T12:00:00Z",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 528,
+   "source": {
+    "slug": "nist-news",
+    "name": "NIST News",
+    "vertical": "technology",
+    "trust_tier": "primary",
+    "default_doc_type": "press_release",
+    "url": "https://www.nist.gov/news-events/news/rss.xml",
+    "homepage": "https://www.nist.gov/news-events/news"
+   },
+   "url": "https://www.nist.gov/news-events/news/2026/08/nist-national-construction-safety-team-advisory-committee-meeting-scheduled",
+   "title": "NIST National Construction Safety Team Advisory Committee Meeting Scheduled for Sept. 23 and 24, 2026",
+   "summary": "Anyone wishing to attend the virtual meeting must register by 5 p.m. EDT on Wednesday, Sept. 16.",
+   "content": "",
+   "published_at": "2026-08-13T12:00:00Z",
+   "doc_type": "press_release",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 370,
+   "source": {
+    "slug": "supply-chain-dive",
+    "name": "Supply Chain Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.supplychaindive.com/feeds/news/",
+    "homepage": "https://www.supplychaindive.com"
+   },
+   "url": "https://www.supplychaindive.com/news/ups-gears-up-for-peak-season-with-less-amazon-volume-in-tow/872845/",
+   "title": "UPS gears up for peak season with less Amazon volume in tow",
+   "summary": "The carrier expects U.S. volume to dip year over year in Q4, but packages from other customer segments are projected to boost revenue.",
+   "content": "",
+   "published_at": "2026-10-27T16:06:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 375,
+   "source": {
+    "slug": "supply-chain-dive",
+    "name": "Supply Chain Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.supplychaindive.com/feeds/news/",
+    "homepage": "https://www.supplychaindive.com"
+   },
+   "url": "https://www.supplychaindive.com/news/usps-to-debut-weekly-fuel-fee-in-2027-matching-fedex-ups-practices/872778/",
+   "title": "USPS to debut weekly fuel fee in 2027, matching FedEx, UPS practices",
+   "summary": "The surcharge for package shipping services will be tied to diesel and jet fuel prices, which have been climbing this year.",
+   "content": "",
+   "published_at": "2026-10-26T19:12:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 377,
+   "source": {
+    "slug": "supply-chain-dive",
+    "name": "Supply Chain Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.supplychaindive.com/feeds/news/",
+    "homepage": "https://www.supplychaindive.com"
+   },
+   "url": "https://www.supplychaindive.com/news/ups-plans-59-rate-increase-on-dec-21/872751/",
+   "title": "UPS plans 5.9% rate increase on Dec. 21",
+   "summary": "The carrier's average rate bump will match FedEx's upcoming increase, but UPS also has additional changes in store.",
+   "content": "",
+   "published_at": "2026-10-26T15:10:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 307,
+   "source": {
+    "slug": "bbc-business",
+    "name": "BBC News - Business",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "homepage": "https://www.bbc.co.uk/news/business"
+   },
+   "url": "https://www.bbc.co.uk/news/articles/cvgyexx4g8ro?at_medium=RSS&at_campaign=rss",
+   "title": "The start-ups hoping to return battery making to the US",
+   "summary": "Batteries based on sodium-ion technology could be made in the US with locally sourced materials.",
+   "content": "",
+   "published_at": "2026-09-29T23:06:50Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 61,
+   "source": {
+    "slug": "eric-ai-learning",
+    "name": "ERIC (IES) - AI in education research",
+    "vertical": "education",
+    "trust_tier": "primary",
+    "default_doc_type": "education_report",
+    "url": "https://api.ies.ed.gov/eric/?search=(%22artificial%20intelligence%22%20OR%20%22generative%20AI%22%20OR%20%22AI%20literacy%22)%20AND%20publicationdateyear:%5B{prev_year}%20TO%20{year}%5D&rows={max_items}&format=json",
+    "homepage": "https://eric.ed.gov"
+   },
+   "url": "https://eric.ed.gov/?id=EJ1464545",
+   "title": "Exploring Generative AI Literacy in Higher Education: Student Adoption, Interaction, Evaluation and Ethical Perceptions",
+   "summary": "Purpose: Current knowledge and research on students' utilization and interaction with generative artificial intelligence (AI) tools in their academic work is limited. This study aims to investigate students' engagement with these tools. Design/methodology/approach: This research used survey-based research to investigate generative AI literacy (utilization, interaction, evaluation of output and ethics) among students enrolled in a four-year public university in the southeastern USA. This article focuses on the respondents who have used generative AI (218; 47.2%). Findings: Most respondents used generative AI to generate ideas for papers, projects or assignments, and they also used AI to assist with their original ideas. Despite their use of AI assistance, most students were critical of generative AI output, and this mindset was reflected in their reported interactions with ChatGPT. Respondents expressed a need for explicit guidance from course syllabi and university policies regarding generative AI's ethical and appropriate use. Originality/value: Literature related to generative AI use in higher education specific to ChatGPT is predominantly from educators' viewpoints. This study provides empirical evidence about how university students report using generative AI in the context of generative AI literacy.",
+   "content": "",
+   "published_at": null,
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "extra": {
+    "publication_year": 2025,
+    "date_precision": "year",
+    "peer_reviewed": true
+   }
+  },
+  {
+   "live_id": 62,
+   "source": {
+    "slug": "eric-ai-learning",
+    "name": "ERIC (IES) - AI in education research",
+    "vertical": "education",
+    "trust_tier": "primary",
+    "default_doc_type": "education_report",
+    "url": "https://api.ies.ed.gov/eric/?search=(%22artificial%20intelligence%22%20OR%20%22generative%20AI%22%20OR%20%22AI%20literacy%22)%20AND%20publicationdateyear:%5B{prev_year}%20TO%20{year}%5D&rows={max_items}&format=json",
+    "homepage": "https://eric.ed.gov"
+   },
+   "url": "https://eric.ed.gov/?id=EJ1520263",
+   "title": "Exploring AI Literacy, Reliance, and Ethical Practices of Secondary Level Students in Using Generative AI",
+   "summary": "Generative artificial intelligence (AI) is rapidly changing education, creating opportunities and challenges. With this technology now widely available to secondary students, it is crucial to explore how they are using it. To explore secondary level students' AI literacy, AI reliance, and ethical practices when using generative AI, the researchers collected data from a sample of 595 secondary level students from a private institution using an adopted 20-item Generative AI Literacy Assessment (GLAT) and a researcher made tool for AI reliance and ethical practices with 5-point rating scale. Findings revealed that the students' mean AI literacy score was 8.71 out of 20, indicating a limited understanding of generative AI. The mean for AI reliance was found to be 2.91, while the mean for ethical practices was 3.88. Multiple linear regression analyses indicated that AI literacy and ethical practices significantly predict AI reliance, accounting for 6.02% of the variance in reliance (R[subscript 2] = 0.0602, p-value < 0.001). Specifically, AI literacy was a significant negative predictor of AI reliance, suggesting that as students' knowledge increases, their reliance decreases. However, ethical practices was a significant positive predictor of AI reliance, suggesting that more ethical students tend to also be more reliant on the technology. Furthermore, both AI literacy and AI reliance were found to be significant positive predictors of ethical practices, explaining 9.13% of the variance in ethical practices (R[subscript 2] = 0.0913, p-value < 0.001). This suggests a direct link where higher AI literacy leads to more ethical behavior, and that students who are more reliant on AI also tend to exhibit more ethical practices. The findings highlight the complex relationship between students' AI knowledge, reliance, and behavior, providing a foundation for targeted educational interventions.",
+   "content": "",
+   "published_at": null,
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "extra": {
+    "publication_year": 2026,
+    "date_precision": "year",
+    "peer_reviewed": true
+   }
+  },
+  {
+   "live_id": 67,
+   "source": {
+    "slug": "eric-ai-learning",
+    "name": "ERIC (IES) - AI in education research",
+    "vertical": "education",
+    "trust_tier": "primary",
+    "default_doc_type": "education_report",
+    "url": "https://api.ies.ed.gov/eric/?search=(%22artificial%20intelligence%22%20OR%20%22generative%20AI%22%20OR%20%22AI%20literacy%22)%20AND%20publicationdateyear:%5B{prev_year}%20TO%20{year}%5D&rows={max_items}&format=json",
+    "homepage": "https://eric.ed.gov"
+   },
+   "url": "https://eric.ed.gov/?id=EJ1520876",
+   "title": "What Impact Does AI Literacy Have on University Students' Behavioral Intention to Use Generative AI in Art Education? A Quantitative Analysis Based on the UTAUT Model",
+   "summary": "In the age of Artificial Intelligence (AI), a significant transformation is taking place in art education for university students. AI literacy has become a crucial element for them to navigate the intricate digital landscape. However, existing AI literacy research has primarily focused on general education, STEM education, or workplace contexts, while studies specifically examining AI literacy in art education and creative learning environments remain relatively limited. This study employed the PLS-SEM method to uncover the factors that influence university students' behavioral intention (BI) to use Generative AI (GenAI), based on the UTAUT model, and to examine the mediating role of AI literacy. This study recruited university students on a voluntary basis who had previously used GenAI to complete art assignments. A total of 703 valid responses were gathered and analyzed using SmartPLS 4 software. The findings revealed that performance expectancy (ß = 0.651, p < 0.001), effort expectancy (ß = 0.292, p < 0.001), and social influence (ß = -0.093, p = 0.009) significantly influenced AI literacy, while AI literacy strongly predicted behavioral intention to use GenAI (ß = 0.386, p < 0.001). This research assists educational institutions in understanding how UTAUT-related factors and AI literacy jointly shape students' behavioral intention to use GenAI in art education. It not only offers a valuable reference for constructing an AI literacy framework for university students majoring in art education in the digital age but also provides a theoretical underpinning for the digital transformation of university art education courses.",
+   "content": "",
+   "published_at": null,
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "extra": {
+    "publication_year": 2026,
+    "date_precision": "year",
+    "peer_reviewed": true
+   }
+  },
+  {
+   "live_id": 68,
+   "source": {
+    "slug": "eric-ai-learning",
+    "name": "ERIC (IES) - AI in education research",
+    "vertical": "education",
+    "trust_tier": "primary",
+    "default_doc_type": "education_report",
+    "url": "https://api.ies.ed.gov/eric/?search=(%22artificial%20intelligence%22%20OR%20%22generative%20AI%22%20OR%20%22AI%20literacy%22)%20AND%20publicationdateyear:%5B{prev_year}%20TO%20{year}%5D&rows={max_items}&format=json",
+    "homepage": "https://eric.ed.gov"
+   },
+   "url": "https://eric.ed.gov/?id=EJ1520685",
+   "title": "Developing Higher Education Students' Artificial Intelligence (AI) Literacy for Academic Writing: A Pilot Study in a First-Year Seminar",
+   "summary": "As generative AI tools like ChatGPT become increasingly integrated into higher education contexts, the need to equip students with critical AI literacy has become urgent. This pilot study investigates how a four-lesson instructional module shaped undergraduate students' understanding of the ethical use, potentials, and limitations of generative AI tools, particularly in relation to academic reading and writing. Implemented in a First-Year Seminar (FYS) course at a U.S. university, the study employed a mixed-methods design, drawing on pre- and post-module AI Literacy Surveys (n=7), a post-semester instructor interview, and the researcher's reflection journal. Findings revealed a notable shift in students' awareness of ethical considerations, collaborative engagement with AI, and development of authorial voice when scaffolded through structured activities. However, these gains did not consistently transfer to independent academic tasks, pointing to the limitations of short-term interventions and the importance of integrating AI literacy instruction within foundational academic writing curricula. As an exploratory pilot study, the findings provide preliminary insight into the pedagogical potentials and constraints of early AI literacy intervention for college-level academic writing, suggesting the need for sustained, curriculum-embedded approaches to cultivate critical and ethical AI engagement among higher education students.",
+   "content": "",
+   "published_at": null,
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "extra": {
+    "publication_year": 2026,
+    "date_precision": "year",
+    "peer_reviewed": true
+   }
+  },
+  {
+   "live_id": 88,
+   "source": {
+    "slug": "eric-ai-learning",
+    "name": "ERIC (IES) - AI in education research",
+    "vertical": "education",
+    "trust_tier": "primary",
+    "default_doc_type": "education_report",
+    "url": "https://api.ies.ed.gov/eric/?search=(%22artificial%20intelligence%22%20OR%20%22generative%20AI%22%20OR%20%22AI%20literacy%22)%20AND%20publicationdateyear:%5B{prev_year}%20TO%20{year}%5D&rows={max_items}&format=json",
+    "homepage": "https://eric.ed.gov"
+   },
+   "url": "https://eric.ed.gov/?id=ED671128",
+   "title": "GenAI-101: What Undergraduate Students Need to Know and Actually Know about Generative AI. EdWorkingPaper No. 25-1119",
+   "summary": "In November 2022, OpenAI released ChatGPT, a groundbreaking generative AI chatbot backed by large language models (LLMs). Since then, these models have seen various applications in education, from Socratic tutoring and writing assistance to teacher training and essay scoring. Despite their widespread use among high school and college students in the United States, there is limited research on students' understanding and perception of these technologies. This study aims to fill that gap by developing a novel framework for generative artificial intelligence (GenAI) literacy, focusing on what undergraduate students know about generative AI and how they perceive the capabilities of AI chatbots. We designed a GenAI literacy survey to measure students' knowledge and perceptions, collecting data from 568 undergraduate students. The results show that about 60% of students use AI chatbots regularly for academic tasks, but they often overestimate the capabilities of these tools. However, increased knowledge about how generative AI works correlates with more accurate estimation of its capabilities in real-world tasks. Our findings highlight the need for enhanced GenAI and AI literacy to ensure students use these tools effectively and responsibly. This research underscores the importance of developing educational strategies and policies that prepare students for critical and informed engagement with AI technologies.",
+   "content": "",
+   "published_at": null,
+   "doc_type": "education_report",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "extra": {
+    "publication_year": 2025,
+    "date_precision": "year",
+    "peer_reviewed": false
+   }
+  },
+  {
+   "live_id": 89,
+   "source": {
+    "slug": "eric-ai-learning",
+    "name": "ERIC (IES) - AI in education research",
+    "vertical": "education",
+    "trust_tier": "primary",
+    "default_doc_type": "education_report",
+    "url": "https://api.ies.ed.gov/eric/?search=(%22artificial%20intelligence%22%20OR%20%22generative%20AI%22%20OR%20%22AI%20literacy%22)%20AND%20publicationdateyear:%5B{prev_year}%20TO%20{year}%5D&rows={max_items}&format=json",
+    "homepage": "https://eric.ed.gov"
+   },
+   "url": "https://eric.ed.gov/?id=EJ1513396",
+   "title": "The Implications of Generative Artificial Intelligence for Mathematics Education",
+   "summary": "Generative artificial intelligence has become prevalent in discussions of educational technology, particularly in the context of mathematics education. These AI models can engage in human-like conversation and generate answers to complex questions in real-time, with education reports accentuating their potential to make teachers' work more efficient and improve student learning. This paper provides a review of the current literature on generative AI in mathematics education, focusing on four areas: generative AI for mathematics problem-solving, generative AI for mathematics tutoring and feedback, generative AI to adapt mathematical tasks, and generative AI to assist mathematics teachers in planning. The paper discusses ethical and logistical issues that arise with the application of generative AI in mathematics education, and closes with some observations, recommendations, and future directions.",
+   "content": "",
+   "published_at": null,
+   "doc_type": "research_peer_reviewed",
+   "trust_tier": "primary",
+   "vertical": "education",
+   "extra": {
+    "publication_year": 2026,
+    "date_precision": "year",
+    "peer_reviewed": true
+   }
+  },
+  {
+   "live_id": 92,
+   "source": {
+    "slug": "hechinger-report",
+    "name": "The Hechinger Report",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://hechingerreport.org/feed/",
+    "homepage": "https://hechingerreport.org"
+   },
+   "url": "https://hechingerreport.org/proof-points-ai-education-meta-analysis/",
+   "title": "39 meta-analyses, 39 positive findings: An audit finds serious flaws in research on AI in education",
+   "summary": "Does artificial intelligence help students learn? That’s a question many teachers and parents want answered, as the new educational technology is rapidly spreading in classrooms. Normally, meta-analyses would be the right place to look, since they’re supposed to gather a scattered body of research and make sense of it by pointing to where the preponderance",
+   "content": "",
+   "published_at": "2026-10-26T10:00:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 288,
+   "source": {
+    "slug": "bbc-business",
+    "name": "BBC News - Business",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "homepage": "https://www.bbc.co.uk/news/business"
+   },
+   "url": "https://www.bbc.co.uk/news/articles/ck98zp7zeq65o?at_medium=RSS&at_campaign=rss",
+   "title": "Healey to shield low-income pensioners from income tax in the Budget",
+   "summary": "Changes are needed to prevent the full, flat-rate state pension becoming liable for income tax after it rises in April.",
+   "content": "",
+   "published_at": "2026-10-26T10:28:12Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 296,
+   "source": {
+    "slug": "bbc-business",
+    "name": "BBC News - Business",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "homepage": "https://www.bbc.co.uk/news/business"
+   },
+   "url": "https://www.bbc.co.uk/news/articles/c65yn9p55np2o?at_medium=RSS&at_campaign=rss",
+   "title": "Four ways Labour could raise money in the Budget without hiking income tax",
+   "summary": "Chancellor John Healey may need to raise money to boost his fiscal headroom - BBC Verify examines what options could be on the table.",
+   "content": "",
+   "published_at": "2026-10-25T06:00:15Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 286,
+   "source": {
+    "slug": "bbc-business",
+    "name": "BBC News - Business",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "homepage": "https://www.bbc.co.uk/news/business"
+   },
+   "url": "https://www.bbc.co.uk/news/articles/c6x2zrjl7kjno?at_medium=RSS&at_campaign=rss",
+   "title": "Tax on banks, energy bill help and minimum wage rise - what could be in the Budget?",
+   "summary": "Chancellor John Healey will set out his plans for UK taxes on 28 October.",
+   "content": "",
+   "published_at": "2026-10-27T18:45:56Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 369,
+   "source": {
+    "slug": "supply-chain-dive",
+    "name": "Supply Chain Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.supplychaindive.com/feeds/news/",
+    "homepage": "https://www.supplychaindive.com"
+   },
+   "url": "https://www.supplychaindive.com/news/kroger-taps-rfid-computer-vision-data-to-boost-inventory-management/872819/",
+   "title": "Kroger taps RFID, computer vision data to boost inventory management",
+   "summary": "The grocery chain is providing machine learning insights to suppliers to improve availability while piloting radio frequency identification at 1,500 store bakeries.",
+   "content": "",
+   "published_at": "2026-10-27T17:49:36Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 331,
+   "source": {
+    "slug": "ieee-spectrum",
+    "name": "IEEE Spectrum",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://spectrum.ieee.org/feeds/feed.rss",
+    "homepage": "https://spectrum.ieee.org"
+   },
+   "url": "https://content.knowledgehub.wiley.com/edge-ai-for-smart-cities-from-real-time-insights-to-cognitive-urban-systems/?utm_source=IEEE",
+   "title": "Edge AI for Smart Cities: From Insight to Cognitive Action",
+   "summary": "This white paper explains how edge AI and physical AI help cities move beyond passive monitoring. It shows how urban infrastructure can sense, reason, and act on real-time conditions across public safety, mobility, and infrastructure management. What you will learn about: How the shift from smart cities to cognitive cities depends on infrastructure that reasons and acts, rather than infrastructure that only monitors. Why edge AI supports low-latency decisions, keeps sensitive data within city boundaries, and reduces dependency on centralized cloud infrastructure. How computer vision, multimodal sensing, and generative and agentic systems work together to support public safety, mobility, and infrastructure applications. How a tiered edge architecture assigns monitoring, planning, and action tasks across the far edge, regional, and cloud layers, and what durability, security, and interoperability requirements this places on hardware and software. Download this free whitepaper now!",
+   "content": "",
+   "published_at": "2026-10-19T10:00:04Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 379,
+   "source": {
+    "slug": "ars-technica",
+    "name": "Ars Technica",
+    "vertical": "technology",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.arstechnica.com/arstechnica/index",
+    "homepage": "https://arstechnica.com"
+   },
+   "url": "https://arstechnica.com/security/2026/10/code-execution-flaw-in-uefi-firmware-threatens-most-servers-on-planet-earth/",
+   "title": "Code-execution flaw in UEFI firmware threatens most servers on planet Earth",
+   "summary": "Critical flaw in EDK2 allows attackers to execute code early in the boot process.",
+   "content": "",
+   "published_at": "2026-10-27T20:25:55Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 497,
+   "source": {
+    "slug": "ncsc-uk-news",
+    "name": "UK National Cyber Security Centre - News",
+    "vertical": "technology",
+    "trust_tier": "primary",
+    "default_doc_type": "news",
+    "url": "https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml",
+    "homepage": "https://www.ncsc.gov.uk/section/keep-up-to-date/ncsc-news"
+   },
+   "url": "https://www.ncsc.gov.uk/news/critical-security-issue-affecting-php",
+   "title": "Critical security issue affecting PHP",
+   "summary": "Updated: The NCSC is encouraging UK organisations to take immediate action to mitigate a security issue affecting PHP (CVE-2026-109618 and CVE-2026-109619).",
+   "content": "",
+   "published_at": "2026-10-21T12:00:00Z",
+   "doc_type": "advisory",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 500,
+   "source": {
+    "slug": "ncsc-uk-news",
+    "name": "UK National Cyber Security Centre - News",
+    "vertical": "technology",
+    "trust_tier": "primary",
+    "default_doc_type": "news",
+    "url": "https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml",
+    "homepage": "https://www.ncsc.gov.uk/section/keep-up-to-date/ncsc-news"
+   },
+   "url": "https://www.ncsc.gov.uk/news/exploitation-of-vulnerabilities-affecting-citrix-netscaler-adc-and-citrix-netscaler-gateway",
+   "title": "Exploitation of vulnerabilities affecting Citrix NetScaler ADC and Citrix NetScaler Gateway",
+   "summary": "The NCSC is urging UK organisations to promptly mitigate vulnerabilities affecting Citrix NetScaler ADC and Gateway, two of which are being actively exploited.",
+   "content": "",
+   "published_at": "2026-09-28T12:00:00Z",
+   "doc_type": "advisory",
+   "trust_tier": "primary",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 1,
+   "source": {
+    "slug": "chalkbeat",
+    "name": "Chalkbeat",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.chalkbeat.org/arc/outboundfeeds/rss/",
+    "homepage": "https://www.chalkbeat.org"
+   },
+   "url": "https://www.chalkbeat.org/2026/10/27/election-2026-education-issues-were-watching/",
+   "title": "Election 2026: The education issues we’re watching",
+   "summary": "Democratic gubernatorial candidate Gina Hinojosa speaks outside the Texas Governor's Mansion in Austin on Thursday, Oct. 15, 2026, after inviting Republican Gov. Greg Abbott to debate. Hinojosa is one of several red-state Democrats running against vouchers this cycle.",
+   "content": "",
+   "published_at": "2026-10-27T21:29:44Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 9,
+   "source": {
+    "slug": "chalkbeat",
+    "name": "Chalkbeat",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.chalkbeat.org/arc/outboundfeeds/rss/",
+    "homepage": "https://www.chalkbeat.org"
+   },
+   "url": "https://www.chalkbeat.org/2026/10/26/backlash-to-ai-screen-time-ed-tech-factors-into-midterm-elections/",
+   "title": "Midterm elections show Democrats, Republicans jockeying to capitalize on ed-tech backlash",
+   "summary": "Boston-area students, professors, and concerned citizens rally outside of the Massachusetts State House for a national freeze on AI development on October 20, 2026. Amid broader concerns about data centers and the power of tech companies, screen time and AI in the classroom are emerging as election issues.",
+   "content": "",
+   "published_at": "2026-10-26T12:13:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 12,
+   "source": {
+    "slug": "chalkbeat",
+    "name": "Chalkbeat",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.chalkbeat.org/arc/outboundfeeds/rss/",
+    "homepage": "https://www.chalkbeat.org"
+   },
+   "url": "https://www.chalkbeat.org/indiana/2026/10/23/ips-school-board-candidates-raise-money-from-political-action-committees/",
+   "title": "IPS school board candidates raise over $150,000 from political action committees",
+   "summary": "There are 15 candidates for five spots on the IPS school board on the ballot Nov. 3.",
+   "content": "",
+   "published_at": "2026-10-23T17:57:14Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 281,
+   "source": {
+    "slug": "bbc-business",
+    "name": "BBC News - Business",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.bbci.co.uk/news/business/rss.xml",
+    "homepage": "https://www.bbc.co.uk/news/business"
+   },
+   "url": "https://www.bbc.co.uk/news/articles/cwvg0ddz1z77o?at_medium=RSS&at_campaign=rss",
+   "title": "Donald Trump's biggest economic problem looks strangely familiar",
+   "summary": "Donald Trump heads into the US midterm elections with an issue similar to his political foe Joe Biden.",
+   "content": "",
+   "published_at": "2026-10-27T06:01:11Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 334,
+   "source": {
+    "slug": "ieee-spectrum",
+    "name": "IEEE Spectrum",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://spectrum.ieee.org/feeds/feed.rss",
+    "homepage": "https://spectrum.ieee.org"
+   },
+   "url": "https://spectrum.ieee.org/electric-truck-battery-design-simulation",
+   "title": "Simulation App Speeds Up Electric Truck Battery Design",
+   "summary": "This article is brought to you by COMSOL . These days, no one blinks an eye at two-day, one-day, and even same-day package deliveries. Despite the plethora of localized fulfillment and distributi on centers that have cropped up to meet the demand, delivery trucks still need to make considerably long drives, often over highways. To reduce fuel and maintenance costs as well as carbon emissions, companies are investing in electric trucks for their delivery fleets. While turning to electric trucks is a promising solution, the battery packs incorporated into these automotive designs often fall short in the lifetime needed to make long-distance highway travel feasible. To help overcome the issue of battery lifetime, a consortium of universities and industry partners incorporated multiscale simulation and a custom simulation app into the battery manufacturing process. The organizations involved in this project were Aurobay, Resolvent, the European Commission, the Technical University of Denmark (DTU), Vinnova (the Swedish Agency for Innovation Systems), Innovation Fund Denmark, and Volvo Group Trucks Operations. The simulation app, built by Resolvent, a Denmark-based engineering consultancy that specializes in green energy, enables the R&D department at Volvo to easily test battery lifetime performance. Laser Who? The Multiscale Simulation of Laser Welding for Optimal Battery Pack Manufacturing project — referred to as “LaserBATMAN” — was initiated in May 2022 and wrapped up in…",
+   "content": "",
+   "published_at": "2026-10-16T16:49:18Z",
+   "doc_type": "blog",
+   "trust_tier": "vendor",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 136,
+   "source": {
+    "slug": "crunchbase-news",
+    "name": "Crunchbase News",
+    "vertical": "finance",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://news.crunchbase.com/feed/",
+    "homepage": "https://news.crunchbase.com"
+   },
+   "url": "https://news.crunchbase.com/venture/q3-2026-us-china-robotics-startup-funding-jumps-physical-ai-push/",
+   "title": "Crunchbase Data Shows Q3 Robotics Startup Funding Jumps 185% As US And China Lead Physical AI Push",
+   "summary": "Venture funding to robotics startups has soared in 2026, with the bulk of investment going to companies based in China and the U.S., Crunchbase data shows. All told, global venture funding to robotics startups totaled $9.9 billion in Q3, more than double the $4.3 billion invested in Q3 2025, per Crunchbase data.",
+   "content": "",
+   "published_at": "2026-10-27T11:00:53Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 144,
+   "source": {
+    "slug": "crunchbase-news",
+    "name": "Crunchbase News",
+    "vertical": "finance",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://news.crunchbase.com/feed/",
+    "homepage": "https://news.crunchbase.com"
+   },
+   "url": "https://news.crunchbase.com/fintech-ecommerce/insuretech/startup-slingshot-insurance-seed-funding-genteman/",
+   "title": "Exclusive: Slingshot Raises $27M In Seed Funding To Build An Insurer For Those Small Policies Sold At Checkout",
+   "summary": "Slingshot Insurance, a Minneapolis-based AI-native embedded insurance startup, is emerging from stealth with $27 million in a seed funding round co-led by Rally Ventures and Skyward Group, it tells Crunchbase News exclusively.",
+   "content": "",
+   "published_at": "2026-10-22T13:00:23Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 143,
+   "source": {
+    "slug": "crunchbase-news",
+    "name": "Crunchbase News",
+    "vertical": "finance",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://news.crunchbase.com/feed/",
+    "homepage": "https://news.crunchbase.com"
+   },
+   "url": "https://news.crunchbase.com/venture/interesting-startup-deals-robots-ai-gaming-clean-tech/",
+   "title": "5 Interesting Startup Deals You May Have Missed: Robot Training, Space Lasers And Greener Cement",
+   "summary": "From teaching robots to do everyday household chores to using lasers to track satellites in space, this month's crop of interesting startup deals spans some decidedly different corners of tech.",
+   "content": "",
+   "published_at": "2026-10-23T11:00:08Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 166,
+   "source": {
+    "slug": "finra-news-releases",
+    "name": "FINRA News Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.finra.org/media-center/newsreleases/rss",
+    "homepage": "https://www.finra.org/media-center/newsreleases"
+   },
+   "url": "https://www.finra.org/media-center/newsreleases/2026/finra-makes-investor-education-content-available-zogo-financial",
+   "title": "FINRA Makes Investor Education Content Available on Zogo Financial Learning Platform",
+   "summary": "WASHINGTON—As part of its commitment to expanding investors’ access to trusted information, FINRA announced today that its investor education content is now available on Zogo, a gamified financial learning platform.",
+   "content": "",
+   "published_at": "2026-10-21T12:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 167,
+   "source": {
+    "slug": "finra-news-releases",
+    "name": "FINRA News Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.finra.org/media-center/newsreleases/rss",
+    "homepage": "https://www.finra.org/media-center/newsreleases"
+   },
+   "url": "https://www.finra.org/media-center/newsreleases/2026/finra-launches-enhanced-investor-education-and-protection-tools-help",
+   "title": "FINRA Launches Enhanced Investor Education and Protection Tools to Help Research Markets and Recognize Fraud",
+   "summary": "WASHINGTON—In a continuing effort to empower investors with the tools and knowledge they need to make informed financial decisions and avoid fraud, FINRA announced today the launch of the Market Data and Investments Explorer, as well as enhanced Risk and Scam Meters.",
+   "content": "",
+   "published_at": "2026-10-13T12:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 168,
+   "source": {
+    "slug": "finra-news-releases",
+    "name": "FINRA News Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.finra.org/media-center/newsreleases/rss",
+    "homepage": "https://www.finra.org/media-center/newsreleases"
+   },
+   "url": "https://www.finra.org/media-center/newsreleases/2026/report-finra-board-governors-september-meeting",
+   "title": "Report From FINRA Board of Governors’ September Meeting",
+   "summary": "WASHINGTON—At its meeting Sept. 29-30, the FINRA Board of Governors approved four rule proposals for filing with the SEC and received briefings on key initiatives, including FINRA's ongoing rule modernization efforts.",
+   "content": "",
+   "published_at": "2026-10-08T12:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 171,
+   "source": {
+    "slug": "finra-news-releases",
+    "name": "FINRA News Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.finra.org/media-center/newsreleases/rss",
+    "homepage": "https://www.finra.org/media-center/newsreleases"
+   },
+   "url": "https://www.finra.org/media-center/newsreleases/2026/finra-foundation-and-afcper-select-2026-finra-foundation-military",
+   "title": "FINRA Foundation and AFCPE® Select the 2026 FINRA Foundation Military Spouse Fellows",
+   "summary": "WASHINGTON—The FINRA Investor Education Foundation (FINRA Foundation) and the Association for Financial Counseling and Planning Education® (AFCPE®) are excited to announce the selection of the 2026 cohort of the FINRA Foundation Military Spouse Fellowship. This year, 30 military spouses will take steps toward achieving their Accredited Financial Counselor® (AFC®) designation, setting the groundwork for meaningful careers in financial counseling.",
+   "content": "",
+   "published_at": "2026-09-29T12:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 174,
+   "source": {
+    "slug": "finra-news-releases",
+    "name": "FINRA News Releases",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "regulatory",
+    "url": "https://www.finra.org/media-center/newsreleases/rss",
+    "homepage": "https://www.finra.org/media-center/newsreleases"
+   },
+   "url": "https://www.finra.org/media-center/newsreleases/2026/finra-fines-ubs-financial-20-million-anti-money-laundering",
+   "title": "FINRA Fines UBS Financial $20 Million for Anti-Money Laundering Violations",
+   "summary": "WASHINGTON—FINRA has fined UBS Financial Services Inc. (UBS Financial) $20 million for anti-money laundering (AML) violations.",
+   "content": "",
+   "published_at": "2026-08-03T12:00:00Z",
+   "doc_type": "regulatory",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 179,
+   "source": {
+    "slug": "sec-edgar-10q",
+    "name": "SEC EDGAR current filings - Form 10-Q",
+    "vertical": "finance",
+    "trust_tier": "primary",
+    "default_doc_type": "filing",
+    "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=10-Q&company=&dateb=&owner=include&start=0&count={edgar_count}&output=atom",
+    "homepage": "https://www.sec.gov/edgar/search/"
+   },
+   "url": "https://www.sec.gov/Archives/edgar/data/1633917/000163391726000088/0001633917-26-000088-index.htm",
+   "title": "PayPal Holdings, Inc. files Form 10-Q (quarterly report)",
+   "summary": "PayPal Holdings, Inc. (CIK 0001633917) filed Form 10-Q (quarterly report) with the SEC on 2026-10-27, accession number 0001633917-26-000088. Source: SEC EDGAR current filings feed; accepted 2026-10-27T21:05:11Z. EDGAR times are filing acceptance times.",
+   "content": "",
+   "published_at": "2026-10-27T21:05:11Z",
+   "doc_type": "filing",
+   "trust_tier": "primary",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 91,
+   "source": {
+    "slug": "hechinger-report",
+    "name": "The Hechinger Report",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://hechingerreport.org/feed/",
+    "homepage": "https://hechingerreport.org"
+   },
+   "url": "https://hechingerreport.org/when-community-colleges-close-rural-students-get-shut-out-of-the-liberal-arts/",
+   "title": "When community colleges close, rural students get shut out of the liberal arts",
+   "summary": "This story was originally published by Barn Raiser and is reprinted with permission. Last May, just weeks before the end of the semester, students, staff and faculty at the University of Wisconsin—Platteville Baraboo Sauk County received the devastating news that the school was closing. Students scrambled to arrange transfers to other colleges, while employees tried to",
+   "content": "",
+   "published_at": "2026-10-27T05:00:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 319,
+   "source": {
+    "slug": "ieee-spectrum",
+    "name": "IEEE Spectrum",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://spectrum.ieee.org/feeds/feed.rss",
+    "homepage": "https://spectrum.ieee.org"
+   },
+   "url": "https://spectrum.ieee.org/ai-robot-safety-cybersecurity-vicone",
+   "title": "Your Robot’s Safety Functions Already Work. What If the Input Lies?",
+   "summary": "This article is brought to you by VicOne . A mobile robot slows for someone in a hallway. A collaborative arm eases its movement as a worker approaches. A humanoid pauses to let a person pass. Each response depends on information about the robot or its surroundings: a distance reading, a position estimate, or a stop signal. But what happens when one of those inputs is wrong, and the robot still responds exactly as designed? The mobile robot reads the hallway as clear while someone is still there. The arm estimates that the worker is farther away. The humanoid does not receive a stop signal as a person crosses its path. In each case, a fault could cause that mismatch. So could deliberate manipulation . At VicOne LAB R7 , we examine how manipulated inputs can change robot behavior — and what that means for the systems meant to keep people safe. How an untrusted input can change a robot’s behavior A robot does more than measure its surroundings. It may interpret what it sees and hears to decide what to do next. Information placed in its environment can therefore influence its actions. Published research shows how this can happen. In a study of vision-language-action (VLA) models , a patch in a camera’s view reduced task success in simulated robot tests. FreezeVLA found that an adversarial image could cause tested models to ignore later instructions. Although the studies used different methods, both demonstrate how visual input can interfere with a robot’s intended task. In a…",
+   "content": "",
+   "published_at": "2026-10-27T16:14:39Z",
+   "doc_type": "blog",
+   "trust_tier": "vendor",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 487,
+   "source": {
+    "slug": "mit-technology-review",
+    "name": "MIT Technology Review",
+    "vertical": "technology",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.technologyreview.com/feed/",
+    "homepage": "https://www.technologyreview.com"
+   },
+   "url": "https://www.technologyreview.com/2026/10/27/1147693/the-download-anthropic-ipo-smarter-power-grids-exercise-pills/",
+   "title": "The Download: Anthropic’s IPO, smarter power grids, and exercise pills",
+   "summary": "This is today’s edition of The Download, our weekday newsletter that provides a daily dose of what’s going on in the world of technology. Will the real Anthropic please stand up? After weeks of frenzied speculation, Anthropic has filed its IPO prospectus. The 335-page document (100 pages or so are focused on risks) lays out…",
+   "content": "",
+   "published_at": "2026-10-27T12:10:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 134,
+   "source": {
+    "slug": "the-74",
+    "name": "The 74",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.the74million.org/feed/",
+    "homepage": "https://www.the74million.org"
+   },
+   "url": "https://www.the74million.org/article/new-accreditation-rule-downgrades-dozens-of-oklahoma-districts-for-academics/",
+   "title": "New Accreditation Rule Downgrades Dozens of Oklahoma Districts for Academics",
+   "summary": "OKLAHOMA CITY — Fifty-nine school districts, including the three largest in the state, have had their accreditation status downgraded over poor reading and math test scores. The Oklahoma State Board of Education voted Thursday to designate the districts as “accredited with warning” along with eight others that had non-academic deficiencies. Accredited with warning is defined",
+   "content": "",
+   "published_at": "2026-10-24T16:30:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 350,
+   "source": {
+    "slug": "manufacturing-dive",
+    "name": "Manufacturing Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.manufacturingdive.com/feeds/news/",
+    "homepage": "https://www.manufacturingdive.com"
+   },
+   "url": "https://www.manufacturingdive.com/news/tesla-begins-optimus-humanoid-production-california-shipments-2027/872864/",
+   "title": "Tesla begins humanoid production in California",
+   "summary": "Elon Musk said in an earnings call that customer shipments could be ready by next year as Tesla makes progress on its Optimus robotics line in Fremont.",
+   "content": "",
+   "published_at": "2026-10-27T15:47:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 351,
+   "source": {
+    "slug": "manufacturing-dive",
+    "name": "Manufacturing Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.manufacturingdive.com/feeds/news/",
+    "homepage": "https://www.manufacturingdive.com"
+   },
+   "url": "https://www.manufacturingdive.com/news/audi-investing-4b-to-build-its-first-us-plant-in-georgia/872769/",
+   "title": "Audi investing $4B to build its first US plant in Georgia",
+   "summary": "The factory will have a production capacity of up to 200,000 vehicles a year, with construction slated to begin in 2027 and the first vehicles built in the early 2030s.",
+   "content": "",
+   "published_at": "2026-10-26T16:25:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 486,
+   "source": {
+    "slug": "bbc-technology",
+    "name": "BBC News - Technology",
+    "vertical": "technology",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://feeds.bbci.co.uk/news/technology/rss.xml",
+    "homepage": "https://www.bbc.co.uk/news/technology"
+   },
+   "url": "https://www.bbc.co.uk/iplayer/episode/m0032301?at_medium=RSS&at_campaign=rss",
+   "title": "Tech Now",
+   "summary": "Adrienne Murray follows NASA scientists in Iceland researching a rare total solar eclipse.",
+   "content": "",
+   "published_at": "2026-09-19T01:00:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "technology",
+   "extra": {}
+  },
+  {
+   "live_id": 352,
+   "source": {
+    "slug": "manufacturing-dive",
+    "name": "Manufacturing Dive",
+    "vertical": "industry",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.manufacturingdive.com/feeds/news/",
+    "homepage": "https://www.manufacturingdive.com"
+   },
+   "url": "https://www.manufacturingdive.com/news/fcc-grants-intel-1-year-waiver-permit-use-foreign-produced-robots/872745/",
+   "title": "FCC grants Intel 1-year waiver to permit use of foreign-made robots",
+   "summary": "The chipmaker petitioned the agency to avoid potential operational disruptions due to a lack of domestic robotics alternatives.",
+   "content": "",
+   "published_at": "2026-10-26T15:24:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "industry",
+   "extra": {}
+  },
+  {
+   "live_id": 130,
+   "source": {
+    "slug": "the-74",
+    "name": "The 74",
+    "vertical": "education",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://www.the74million.org/feed/",
+    "homepage": "https://www.the74million.org"
+   },
+   "url": "https://www.the74million.org/zero2eight/when-a-child-is-absent-should-the-childcare-provider-still-get-paid/",
+   "title": "When a Child Is Absent, Should the Childcare Provider Still Get Paid?",
+   "summary": "In January 2025, Missouri Gov. Mike Kehoe made a pledge in his first State of the State address to childcare providers in his state: starting later that year, those who accept subsidies were going to get paid based on how many children they had enrolled in their programs, “just like private pay,” he said. “Together,",
+   "content": "",
+   "published_at": "2026-10-26T12:30:00Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "education",
+   "extra": {}
+  },
+  {
+   "live_id": 138,
+   "source": {
+    "slug": "crunchbase-news",
+    "name": "Crunchbase News",
+    "vertical": "finance",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://news.crunchbase.com/feed/",
+    "homepage": "https://news.crunchbase.com"
+   },
+   "url": "https://news.crunchbase.com/public/anthropic-ipo-filing-ai-earnings-growth-risks/",
+   "title": "Some Observations About Anthropic’s IPO Filing",
+   "summary": "In an S-1 filing today preceding what could be the largest IPO ever, Anthropic laid out extensive new details about its earnings, growth, key stakeholders and the risks it faces going forward. Clocking in at 335 pages, the document wasn’t exactly light reading. However, in a preliminary once-over, we highlight some of the more intriguing disclosures.",
+   "content": "",
+   "published_at": "2026-10-26T20:10:57Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "extra": {}
+  },
+  {
+   "live_id": 264,
+   "source": {
+    "slug": "techcrunch-venture",
+    "name": "TechCrunch - Venture",
+    "vertical": "finance",
+    "trust_tier": "independent",
+    "default_doc_type": "news",
+    "url": "https://techcrunch.com/category/venture/feed/",
+    "homepage": "https://techcrunch.com/category/venture/"
+   },
+   "url": "https://techcrunch.com/2026/10/23/what-some-of-anthropics-backers-are-reportedly-worth-before-its-ipo/",
+   "title": "What some of Anthropic’s backers are worth before its IPO",
+   "summary": "Early-stage and follow-on investors in the AI lab are already sitting on major paper returns.",
+   "content": "",
+   "published_at": "2026-10-23T16:02:43Z",
+   "doc_type": "news",
+   "trust_tier": "independent",
+   "vertical": "finance",
+   "extra": {}
+  }
+ ]
+}

@@ -36,6 +36,7 @@ not support ``minimum``/``maximum``.
 from __future__ import annotations
 
 import json
+import math
 import re
 import time
 from collections import Counter
@@ -46,7 +47,8 @@ from typing import Any
 from urllib.parse import urlencode
 
 import httpx
-from sqlalchemy import select
+from sqlalchemy import func, select
+from sqlalchemy import text as sql_text
 from sqlalchemy.orm import Session
 
 from newsren.agents.base import article_text, citation_for
@@ -71,7 +73,7 @@ from newsren.textutil import (
 )
 
 ARCHIVE_RESULT_LIMIT = 8
-ARCHIVE_CANDIDATES = 80
+ARCHIVE_CANDIDATES = 200
 ARTICLE_TEXT_LIMIT = 6000
 FETCH_TEXT_LIMIT = 6000
 PAPER_RESULT_LIMIT = 6
@@ -213,11 +215,394 @@ def query_terms(text: str | None) -> list[str]:
     """Distinct topic words of a query or question, in order (stopwords, filler, possessives removed)."""
     out: list[str] = []
     for token in tokenize(text):
-        if token.endswith("'s"):
+        if token.endswith("'s") or token.endswith("’s"):
             token = token[:-2]
         if len(token) > 1 and token not in QUESTION_FILLER and token not in out:
             out.append(token)
     return out
+
+
+# --------------------------------------------------------------------------
+# Query analysis shared by archive ranking and the offline research builder
+# --------------------------------------------------------------------------
+
+_SUFFIXES = (
+    "ational", "ations", "ation", "ately", "ating", "ated", "ates", "ate", "ings", "ing", "ions", "ion", "ments",
+    "ment", "ness", "ies", "ied", "ers", "er", "es", "ed", "ly", "s", "y",
+)  # fmt: skip
+
+# Words that shape a question ("what did X announce", "is Y getting ...") or name a generic category
+# ("firms", "issues") rather than its subject. They still count toward relevance, but weakly, and their
+# absence is never reported as a gap.
+WEAK_TERMS = frozenset(
+    """
+    confirm confirmed verify verified prove proved proven compare compared differ affect affected affects change
+    changed changes changing work worked cause caused describe described expect expected reach reached become
+    became get gets getting got make file filed announce announced announces announcing announcement publish
+    published publishes publishing release released releases status decide decided decides go goes went going
+    plan plans planned planning say says saying said report reported reporting happen happening tell told look
+    looking stand know learn affecting doing done warn warns warned warning urge urges urged ask asks asked call
+    calls called
+    firm firms company companies business businesses organization organizations organisation organisations
+    people group groups entity entities individual individuals thing things issue issues option options detail
+    details
+    """.split()
+)
+
+# Words that describe the kind of evidence asked for rather than the topic. They rank weakly; only the
+# ones that name a checkable property ("independent", "peer-reviewed") are reported when unsupported.
+META_TERMS = frozenset(
+    """
+    research researchers study studies paper papers preprint preprints evidence independent independently
+    findings finding data analysis literature results evaluation evaluations peer-reviewed review reviews
+    """.split()
+)
+UNREPORTED_META_TERMS = META_TERMS - {"independent", "independently", "peer-reviewed", "evaluation", "evaluations"}
+
+# Acronyms and their spelled-out forms (and the reverse). Acronym aliases match case-sensitively.
+TERM_ALIASES: dict[str, tuple[str, ...]] = {
+    "sec": ("Securities and Exchange Commission",),
+    "securities and exchange commission": ("SEC",),
+    "fed": ("Federal Reserve",),
+    "federal reserve": ("Fed",),
+    "nist": ("National Institute of Standards and Technology",),
+    "ncsc": ("National Cyber Security Centre", "National Cyber Security Center"),
+    "finra": ("Financial Industry Regulatory Authority",),
+    "ai": ("artificial intelligence",),
+    "artificial intelligence": ("AI",),
+    "ecb": ("European Central Bank",),
+    "european central bank": ("ECB",),
+    "uk": ("United Kingdom", "U.K.", "Britain", "British"),
+    "eu": ("European Union",),
+    "pqc": ("post-quantum cryptography",),
+    "ipo": ("initial public offering",),
+    "fcc": ("Federal Communications Commission",),
+    "ftc": ("Federal Trade Commission",),
+    "cisa": ("Cybersecurity and Infrastructure Security Agency",),
+    "llm": ("large language model",),
+    "llms": ("large language models",),
+}
+
+# Capitalized words that open a question; they are not names.
+_QUESTION_OPENERS = frozenset(
+    """
+    what how why when where which who whom whose is are was were do does did will would can could should shall
+    has have had may might must tell explain show give list please summarize summarise describe compare any
+    """.split()
+)
+# Leading region acronyms are split off a capitalized run ("UK Budget" -> "UK" + "Budget").
+_REGION_PREFIXES = frozenset({"UK", "US", "U.S.", "U.K.", "EU", "USA"})
+_REGION_NAMES = frozenset(p.lower() for p in _REGION_PREFIXES)
+_NAME_WORD = r"(?:[A-Z][\w\-&.]*[\w&]|[A-Z])"
+_NAME_RUN = re.compile(rf"{_NAME_WORD}(?:\s+(?:(?:of|and|for|&|de|del|la|le)\s+)?{_NAME_WORD})*")
+_ACRONYM_WORD = re.compile(r"^[A-Z][A-Z0-9&]{1,7}$")
+
+
+def stem_word(word: str) -> str:
+    """Crude suffix stripping so "evaluation"/"evaluated" and "benchmarks"/"benchmark" meet."""
+    w = word.lower()
+    if w.endswith("'s") or w.endswith("’s"):
+        w = w[:-2]
+    for suffix in _SUFFIXES:
+        if w.endswith(suffix) and len(w) - len(suffix) >= 4:
+            return w[: -len(suffix)]
+    return w
+
+
+def text_stems(text: str | None) -> set[str]:
+    """Stems of the topic words in ``text``."""
+    return {stem_word(t) for t in tokenize(text)}
+
+
+# Endings that turn a word into a related form ("robot" -> "robotic", "literate" -> "literacy"); a longer
+# word that merely starts with a shorter one ("elect" -> "electric") is a different word.
+_DERIVED_ENDINGS = frozenset(
+    "ic ics ical al ally ist ists ism ive ives ity or ors ry ries ship e es ce ces cy ian ians".split()
+)
+
+
+def stem_supported(term_stem: str, stems: set[str]) -> bool:
+    """Exact stem match, or a derived form ("robot" ~ "robotic") when the shorter stem has 4+ letters, is at
+    least half as long as the longer one, and the longer one only adds a derivational ending."""
+    if term_stem in stems:
+        return True
+    if len(term_stem) < 4:
+        return False
+    for s in stems:
+        if s[:2] != term_stem[:2]:
+            continue
+        short, long_ = (s, term_stem) if len(s) <= len(term_stem) else (term_stem, s)
+        if (
+            len(short) >= 4
+            and 2 * len(short) >= len(long_)
+            and long_.startswith(short)
+            and long_[len(short) :] in _DERIVED_ENDINGS
+        ):
+            return True
+    return False
+
+
+def _phrase_pattern(phrase: str, *, case_sensitive: bool) -> re.Pattern[str]:
+    words = [re.escape(w) for w in re.findall(r"[\w&.]+", phrase)]
+    body = r"[\s\-]+".join(words)
+    return re.compile(rf"(?<![\w]){body}(?:['’]s)?(?![\w])", 0 if case_sensitive else re.IGNORECASE)
+
+
+@dataclass(frozen=True)
+class QueryUnit:
+    """One thing a question asks about: a word, a multi-word name, or an acronym (with aliases)."""
+
+    text: str  # display form, as the reader wrote it
+    stem: str  # stem key (words) or lower-cased text (names, acronyms)
+    kind: str  # "word" | "name" | "acronym"
+    weight: float = 1.0
+    weak: bool = False  # question-shaping verb ("announce", "getting")
+    meta: bool = False  # evidence-type word ("research", "independent")
+    patterns: tuple[re.Pattern[str], ...] = ()
+    df: int | None = None  # archive documents mentioning it (None when not measured)
+
+    @property
+    def is_name(self) -> bool:
+        return self.kind in ("name", "acronym")
+
+    def matches(self, text: str, stems: set[str] | None = None) -> bool:
+        """True when ``text`` mentions this unit (stems of ``text`` may be passed to save work)."""
+        if not text:
+            return False
+        if self.patterns:
+            if any(p.search(text) for p in self.patterns):
+                return True
+            if self.kind != "word":
+                return False
+        return stem_supported(self.stem, stems if stems is not None else text_stems(text))
+
+
+@dataclass
+class QueryProfile:
+    """The weighted units of a question or search query.
+
+    Weights are inverse document frequencies over the archive (rare words such
+    as "UPS" or "post-quantum" count more than "learning" or "rates"), scaled
+    down for question-shaping verbs and evidence-type words.
+    """
+
+    units: list[QueryUnit]
+
+    @property
+    def total(self) -> float:
+        return sum(u.weight for u in self.units) or 1.0
+
+    @property
+    def anchors(self) -> list[QueryUnit]:
+        """Units an archived source must mention to be on topic: the names, or else the most specific words.
+
+        Units no archived article mentions cannot anchor anything (they are
+        still counted, as gaps, in ``coverage``).
+        """
+        return self._anchors(archive=True)
+
+    def _anchors(self, archive: bool) -> list[QueryUnit]:
+        if archive and self.subject_absent:
+            return []
+        present = [u for u in self.units if u.df != 0] if archive else list(self.units)
+        names = [u for u in present if u.is_name and not u.meta]
+        if names:
+            top = max(u.weight for u in names)
+            # A very common name ("AI") anchors only together with the most specific other words.
+            strong = [u for u in names if u.weight >= 0.5 * top]
+            words = [u for u in present if not u.is_name and not u.weak and not u.meta]
+            if words and top < 0.6 * max(u.weight for u in words):
+                best = max(u.weight for u in words)
+                strong += [u for u in words if u.weight >= 0.75 * best]
+            return strong
+        topical = [u for u in present if not u.weak and not u.meta] or present
+        if not topical:
+            return []
+        best = max(u.weight for u in topical)
+        return [u for u in topical if u.weight >= 0.6 * best]
+
+    def matched(self, text: str) -> list[QueryUnit]:
+        stems = text_stems(text)
+        return [u for u in self.units if u.matches(text, stems)]
+
+    def coverage(self, title: str, body: str = "", *, count_absent: bool = False) -> float:
+        """Weighted share of the units mentioned (a title mention counts fully, a body mention 0.8).
+
+        A word that no archived article contains cannot tell archived sources apart, so by default it counts
+        only for a document that has it (an arXiv abstract, say); it is still reported as a gap. Names always
+        count: a source that lacks the question's subject does not answer it. ``count_absent=True`` gives the
+        share of the whole question instead.
+        """
+        if not self.units:
+            return 0.0
+        t_stems, b_stems = text_stems(title), text_stems(body)
+        got = total = 0.0
+        for u in self.units:
+            if u.matches(title, t_stems):
+                got += u.weight
+                total += u.weight
+            elif u.matches(body, b_stems):
+                got += 0.8 * u.weight
+                total += u.weight
+            elif count_absent or not (u.kind == "word" and u.df == 0):
+                total += u.weight
+        return got / total if total else 0.0
+
+    @property
+    def subject_absent(self) -> bool:
+        """True when the question names its subject and no archived article mentions any of those names."""
+        names = [u for u in self.units if u.is_name and not u.meta and u.text.lower() not in _REGION_NAMES]
+        return bool(names) and all(u.df == 0 for u in names)
+
+    def on_topic(self, text: str, *, archive: bool = True) -> bool:
+        """Whether ``text`` mentions the question's subject. ``archive=False`` for documents from outside the
+        archive (arXiv, EDGAR), where archive document frequencies say nothing about what they mention."""
+        if archive and self.subject_absent:
+            return False
+        anchors = self._anchors(archive)
+        if not anchors:
+            return True
+        stems = text_stems(text)
+        return any(u.matches(text, stems) for u in anchors)
+
+    def fts_terms(self) -> list[str]:
+        """Words for an OR full-text query: every unit word plus the words of its aliases."""
+        out: list[str] = []
+        for u in self.units:
+            for word in [*re.findall(r"[\w\-]+", u.text), *_alias_words(u)]:
+                w = word.lower()
+                if len(w) > 1 and w not in out:
+                    out.append(w)
+        return out
+
+
+def _alias_words(unit: QueryUnit) -> list[str]:
+    words: list[str] = []
+    for alias in TERM_ALIASES.get(unit.text.lower(), ()):
+        words.extend(t for t in tokenize(alias) if t not in words)
+    return words
+
+
+def _name_runs(text: str) -> list[tuple[int, int, str]]:
+    """(start, end, text) of capitalized runs that read as names, question openers removed."""
+    runs: list[tuple[int, int, str]] = []
+    for match in _NAME_RUN.finditer(text):
+        words = match.group(0).split()
+        # Drop leading question words ("Is Intel", "What NIST") and trailing connectors.
+        opener = False
+        while words and words[0].lower() in _QUESTION_OPENERS:
+            words = words[1:]
+            opener = True
+        while words and words[-1].lower() in {"of", "and", "for", "&", "de", "del", "la", "le"}:
+            words = words[:-1]
+        if not words:
+            continue
+        sentence_start = not opener and (
+            match.start() == 0 or bool(re.search(r"[.!?:]\s*$", text[: match.start()]))
+        )
+        if len(words) == 1 and sentence_start and not _ACRONYM_WORD.match(words[0]):
+            continue  # ordinary capitalization at the start of a sentence
+        # "UK Budget" -> "UK" + "Budget"
+        if len(words) > 1 and words[0] in _REGION_PREFIXES:
+            runs.append((match.start(), match.start() + len(words[0]), words[0]))
+            words = words[1:]
+        name = " ".join(words).rstrip(".")
+        if len(name) >= 2:
+            runs.append((match.start(), match.end(), name))
+    return runs
+
+
+def _fts_count(session: Session, expression: str) -> int:
+    try:
+        value = session.execute(
+            sql_text("SELECT count(*) FROM articles_fts WHERE articles_fts MATCH :q"), {"q": expression}
+        ).scalar()
+    except Exception:  # noqa: BLE001 - a malformed MATCH expression must never break a search
+        return 0
+    return int(value or 0)
+
+
+def _fts_phrase(text: str) -> str:
+    words = [w for w in re.findall(r"[\w]+", text.lower()) if w]
+    return '"' + " ".join(words) + '"' if words else ""
+
+
+def _unit_weight(session: Session | None, unit_text: str, n_docs: int) -> tuple[float, int | None]:
+    """(inverse document frequency weight, document frequency) of a unit; (1.0, None) without an archive."""
+    if session is None or n_docs <= 0:
+        return 1.0, None
+    expressions = [_fts_phrase(unit_text), *(_fts_phrase(a) for a in TERM_ALIASES.get(unit_text.lower(), ()))]
+    expression = " OR ".join(e for e in expressions if e)
+    df = _fts_count(session, expression) if expression else 0
+    return max(0.25, math.log((n_docs + 1) / (df + 1)) + 0.25), df
+
+
+def query_profile(session: Session | None, query: str | None) -> QueryProfile:
+    """Weighted units of ``query``: capitalized names and acronyms (kept whole, with aliases) plus topic words.
+
+    With a session, each unit is weighted by its inverse document frequency in
+    the archive; without one, all units weigh 1. Question-shaping verbs weigh
+    0.3 and evidence-type words 0.5 of that.
+    """
+    text = normalize_space(query)
+    units: list[QueryUnit] = []
+    covered: set[str] = set()
+    for _start, _end, name in _name_runs(text):
+        key = name.lower()
+        if key in covered or key in QUESTION_FILLER:
+            continue
+        covered.add(key)
+        covered.update(t.lower() for t in re.findall(r"[\w\-]+", name))
+        acronym = bool(_ACRONYM_WORD.match(name))
+        patterns = [_phrase_pattern(name, case_sensitive=acronym)]
+        for alias in TERM_ALIASES.get(key, ()):
+            patterns.append(_phrase_pattern(alias, case_sensitive=bool(_ACRONYM_WORD.match(alias))))
+        if acronym:
+            kind = "acronym"
+        elif " " in name or "-" in name:
+            kind = "name"
+        else:
+            # A single capitalized word is a proper noun: it matches as written or in capitals ("Kroger's",
+            # "KROGER"), never as a common noun ("Carrier" is not "the carrier's rate bump").
+            kind = "name"
+            forms = "|".join(re.escape(f) for f in dict.fromkeys([name, name.upper()]))
+            patterns = [re.compile(rf"(?<![\w])(?:{forms})(?:['’]s|s)?(?![\w])"), *patterns[1:]]
+        stem = stem_word(name) if kind == "name" and " " not in name and "-" not in name else key
+        units.append(QueryUnit(text=name, stem=stem, kind=kind, patterns=tuple(patterns)))
+    for term in query_terms(text):
+        if term in covered or term.isdigit():
+            continue
+        covered.add(term)
+        alias_patterns = tuple(
+            _phrase_pattern(a, case_sensitive=bool(_ACRONYM_WORD.match(a))) for a in TERM_ALIASES.get(term, ())
+        )
+        units.append(
+            QueryUnit(
+                text=term,
+                stem=stem_word(term),
+                kind="word",
+                weak=term in WEAK_TERMS or stem_word(term) in {stem_word(w) for w in WEAK_TERMS},
+                meta=term in META_TERMS,
+                patterns=alias_patterns,
+            )
+        )
+    n_docs = 0
+    if session is not None:
+        try:
+            n_docs = int(session.scalar(select(func.count()).select_from(Article)) or 0)
+        except Exception:  # noqa: BLE001
+            n_docs = 0
+    weighted: list[QueryUnit] = []
+    for unit in units:
+        weight, df = _unit_weight(session, unit.text, n_docs)
+        if unit.weak:
+            weight *= 0.3
+        elif unit.meta:
+            weight *= 0.5
+        weighted.append(
+            QueryUnit(unit.text, unit.stem, unit.kind, round(weight, 3), unit.weak, unit.meta, unit.patterns, df)
+        )
+    return QueryProfile(weighted)
 
 
 def doc_type_label(doc_type: str | None) -> str:
@@ -363,18 +748,38 @@ def archive_search(
     since_days: int | None = None,
     limit: int = ARCHIVE_RESULT_LIMIT,
 ) -> list[Article]:
-    """Best-matching archived articles from approved, active sources (duplicates collapse to the original)."""
+    """Best-matching archived articles from approved, active sources (duplicates collapse to the original).
+
+    Full-text search (with acronym aliases, e.g. SEC / Securities and Exchange
+    Commission) finds candidates; they are then ranked by how much of the
+    query they cover, weighting rare words above common ones and headline
+    mentions above body mentions, with the full-text score breaking ties.
+    """
+    return [article for article, _ in ranked_archive_search(session, query, vertical, since_days, limit)]
+
+
+def ranked_archive_search(
+    session: Session,
+    query: str,
+    vertical: str | None = None,
+    since_days: int | None = None,
+    limit: int = ARCHIVE_RESULT_LIMIT,
+    profile: QueryProfile | None = None,
+) -> list[tuple[Article, float]]:
+    """``archive_search`` with each article's query coverage (0 to 1)."""
     terms = query_terms(query)
     if not terms:
         return []
-    hits = search_article_ids(session, " ".join(terms), limit=ARCHIVE_CANDIDATES)
+    profile = profile or query_profile(session, query)
+    fts_terms = profile.fts_terms() or terms
+    hits = search_article_ids(session, " ".join(fts_terms), limit=ARCHIVE_CANDIDATES)
     if not hits:
         return []
     rows = {a.id: a for a in session.scalars(select(Article).where(Article.id.in_([aid for aid, _ in hits])))}
     cutoff = utcnow() - timedelta(days=since_days) if since_days else None
-    out: list[Article] = []
+    scored: list[tuple[float, int, Article, float]] = []
     seen: set[int] = set()
-    for aid, _score in hits:
+    for rank, (aid, _score) in enumerate(hits):
         article = rows.get(aid)
         if article is not None and article.duplicate_of_id is not None:
             article = session.get(Article, article.duplicate_of_id)
@@ -387,14 +792,30 @@ def archive_search(
             continue
         if cutoff is not None and article.display_time < cutoff:
             continue
-        out.append(article)
-        if len(out) >= limit:
-            break
-    return out
+        coverage = profile.coverage(article.title or "", _article_sentences(article))
+        if not profile.on_topic(f"{article.title} {_article_sentences(article)}"):
+            coverage *= 0.5
+        # The full-text rank only breaks near-ties between equally covering articles.
+        score = coverage + 0.05 * (1 - rank / len(hits))
+        scored.append((score, rank, article, coverage))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    return [(article, round(coverage, 3)) for _, _, article, coverage in scored[:limit]]
+
+
+def published_label(article: Article) -> str:
+    """Publication date as YYYY-MM-DD, the year alone when the source gives only a year, else ""."""
+    published = _day(article.published_at)
+    if published:
+        return published
+    year = (article.extra or {}).get("publication_year")
+    try:
+        return str(int(year)) if year else ""
+    except (TypeError, ValueError):
+        return ""
 
 
 def _article_meta(article: Article) -> str:
-    published = _day(article.published_at)
+    published = published_label(article)
     parts = [
         article.source.name if article.source else "",
         f"published {published}" if published else "publication date unknown",
@@ -440,6 +861,40 @@ def _article_sentences(article: Article) -> str:
 # --------------------------------------------------------------------------
 
 
+def arxiv_terms(query: str, max_terms: int = 5) -> list[str]:
+    """Topic terms for an arXiv keyword search.
+
+    Words that describe the kind of evidence ("research", "study",
+    "independent evidence") or shape the question ("say", "announce") are
+    dropped, because requiring them in every abstract hides relevant papers;
+    a short acronym is kept together with the word after it ("AI literacy",
+    "AI tutors") because on its own it matches most of arXiv.
+    """
+    q = normalize_space(query)
+    words = [w.lower().strip("'’-") for w in re.findall(r"[A-Za-z0-9][\w\-'’]*", q)]
+    words = [w[:-2] if w.endswith(("'s", "’s")) else w.rstrip("'’") for w in words]
+    keep = set(query_terms(q)) - META_TERMS - WEAK_TERMS
+    terms: list[str] = []
+    i = 0
+    while i < len(words):
+        word = words[i]
+        if word not in keep:
+            i += 1
+            continue
+        nxt = words[i + 1] if i + 1 < len(words) else ""
+        if len(word) <= 3 and nxt in keep:
+            terms.append(f"{word} {nxt}")
+            i += 2
+            continue
+        terms.append(word)
+        i += 1
+    out: list[str] = []
+    for term in terms:
+        if term not in out:
+            out.append(term)
+    return out[:max_terms] or query_terms(q)[:max_terms]
+
+
 def arxiv_query_params(query: str, max_terms: int = 5) -> dict[str, Any]:
     """arXiv API parameters for a free-text query, an arXiv id, or a query already in arXiv syntax."""
     q = normalize_space(query)
@@ -449,7 +904,7 @@ def arxiv_query_params(query: str, max_terms: int = 5) -> dict[str, Any]:
     if _ARXIV_FIELD.search(q):
         search_query = q
     else:
-        terms = query_terms(q)[:max_terms] or [q]
+        terms = arxiv_terms(q, max_terms) or [q]
         search_query = " AND ".join(f'all:"{t}"' if "-" in t or " " in t else f"all:{t}" for t in terms)
     return {
         "search_query": search_query,
@@ -835,7 +1290,9 @@ class ResearchToolbox:
         if not query_terms(query):
             return _error("search_archive needs a query with at least one meaningful keyword.")
 
-        articles = archive_search(self.session, query, vertical=vertical, since_days=since_days)
+        ranked = ranked_archive_search(self.session, query, vertical=vertical, since_days=since_days)
+        articles = [article for article, _ in ranked]
+        relevance = {article.id: cov for article, cov in ranked}
         filters = [f"vertical={vertical}" if vertical else "", f"last {since_days} days" if since_days else ""]
         filter_text = f"; filters: {', '.join(f for f in filters if f)}" if any(filters) else ""
         header = (
@@ -853,8 +1310,10 @@ class ResearchToolbox:
         data: list[dict[str, Any]] = []
         for index, article in enumerate(articles, start=1):
             handle = article_handle(article.id)
-            snippet = best_snippet(_article_sentences(article), query, SNIPPET_CHARS) or truncate(
-                article.summary, SNIPPET_CHARS
+            snippet = (
+                best_snippet(_article_sentences(article), query, SNIPPET_CHARS)
+                or truncate(article.summary, SNIPPET_CHARS)
+                or truncate(article.title, SNIPPET_CHARS)
             )
             lines.extend(
                 [
@@ -878,7 +1337,9 @@ class ResearchToolbox:
                     "doc_type": article.doc_type,
                     "trust_tier": article.trust_tier,
                     "published_at": iso(article.published_at),
+                    "date_label": published_label(article),
                     "story_id": article.story_id,
+                    "relevance": relevance.get(article.id, 0.0),
                     "citation": citation,
                 }
             )
@@ -927,6 +1388,7 @@ class ResearchToolbox:
             "url": article.url,
             "publisher": article.source.name if article.source else "",
             "published_at": iso(article.published_at),
+            "date_label": published_label(article),
             "doc_type": article.doc_type,
             "trust_tier": article.trust_tier,
             "vertical": article.vertical,
@@ -951,9 +1413,10 @@ class ResearchToolbox:
         items, error = self._arxiv(params)
         broadened = ""
         if error is None and not items and "search_query" in params and not _ARXIV_FIELD.search(query):
-            terms = query_terms(query)
+            terms = arxiv_terms(query)
             if len(terms) > 2:
-                params = arxiv_query_params(" ".join(terms[:2]))
+                narrower = " AND ".join(f'all:"{t}"' if "-" in t or " " in t else f"all:{t}" for t in terms[:2])
+                params = {**params, "search_query": narrower}
                 items, error = self._arxiv(params)
                 broadened = f' No paper matched every keyword; broadened to "{" ".join(terms[:2])}".'
         if error is not None:

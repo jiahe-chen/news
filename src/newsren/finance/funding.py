@@ -14,11 +14,32 @@ participated"), and a sector inferred from keywords. Amounts are converted to
 USD only when they are stated in US dollars; other currencies keep the
 reported text (``amount_text``) and leave ``amount_usd`` empty.
 
+Precision gates (live sources carry many "raised $X" sentences that are not
+startup rounds):
+
+- only news, press releases, and blog posts are read; opinion, regulatory,
+  filing, policy, advisory, earnings-call, and research documents are skipped,
+  as is anything published by a financial regulator (``REGULATOR_DOMAINS``:
+  an SEC complaint about a scheme that "raised $860,000 from investors" is an
+  enforcement action, not a round);
+- the funding verb's subject must be the company itself (the capitalised name
+  right before the verb, an appositive "Acme, a fintech, raised ...", or the
+  main subject of an "..., announcing a $X Series B round" participle);
+- the verb's object must be a round: an amount tied to the round or a round
+  noun / stage. Valuations ("at an $8.8B valuation", "nabs unicorn
+  valuation"), cumulative totals ("total funding to $63 million", "according
+  to PitchBook data"), funds, contracts, settlements, and revenue figures are
+  never taken as the round size;
+- negative contexts in the headline or in the funding sentence (charges,
+  fraud, schemes, lawsuits, settlements, penalties, bankruptcy, "no returns",
+  acquisitions) reject the article or sentence.
+
 ``update_funding_tracker`` can instead route extraction through the
 ``funding_extractor`` agent (``StructuredTask[FundingExtractOut]``) whose
-offline builder is ``extract_funding``. Agent output is checked against the
-article: the company and every investor must appear in its text, so a model
-cannot add names the announcement does not contain.
+offline builder is ``extract_funding``. The same document gates run before
+the agent is called. Agent output is checked against the article: the company
+and every investor must appear in its text, so a model cannot add names the
+announcement does not contain.
 """
 
 from __future__ import annotations
@@ -44,13 +65,32 @@ from newsren.agents.base import (
 from newsren.llm import StructuredTask
 from newsren.models import Article, DocType, FundingRound, Vertical, utcnow
 from newsren.schemas import FundingExtractOut
-from newsren.textutil import iso, normalize_space, split_sentences, truncate
+from newsren.textutil import domain_of, iso, normalize_space, split_sentences, truncate
 
 AGENT_NAME = "funding_extractor"
 CACHE_KIND = "finance:funding_extract"
 MIN_CONFIDENCE = 0.6
 TRACKED_VERTICALS = (Vertical.FINANCE, Vertical.INDUSTRY, Vertical.TECHNOLOGY)
-SKIP_DOC_TYPES = frozenset({DocType.OPINION})
+# Only news, press releases, and blog posts announce rounds; everything else is skipped.
+SKIP_DOC_TYPES = frozenset(
+    {
+        DocType.OPINION,
+        DocType.REGULATORY,
+        DocType.FILING,
+        DocType.POLICY,
+        DocType.ADVISORY,
+        DocType.EARNINGS_CALL,
+        DocType.RESEARCH_PREPRINT,
+        DocType.RESEARCH_PEER_REVIEWED,
+        DocType.EDUCATION_REPORT,
+    }
+)
+# Financial regulators and enforcement agencies: their releases describe charges, rules, and filings.
+REGULATOR_DOMAINS: tuple[str, ...] = (
+    "sec.gov", "finra.org", "federalreserve.gov", "cftc.gov", "fdic.gov", "occ.gov", "occ.treas.gov",
+    "consumerfinance.gov", "treasury.gov", "justice.gov", "ftc.gov", "nasaa.org", "fca.org.uk",
+    "bankofengland.co.uk", "esma.europa.eu", "ecb.europa.eu", "eba.europa.eu", "bis.org", "fsb.org", "iosco.org",
+)  # fmt: skip
 DUPLICATE_WINDOW_DAYS = 21
 
 STAGES: tuple[str, ...] = (
@@ -91,31 +131,95 @@ TRENDS_NOTE = (
 # Patterns
 # --------------------------------------------------------------------------
 
-_VERB = (
-    r"(?:raise[sd]?|raising|secure[sd]?|securing|close[sd]?|closing|land(?:s|ed)?|bag(?:s|ged)?|nab(?:s|bed)?|"
-    r"snag(?:s|ged)?|pull(?:s|ed)? in|gets?|got|receive[sd]?|lock(?:s|ed)? in|announce[sd]?|complete[sd]?)"
+_STRONG_VERB = (
+    r"raise[sd]?|raising|secure[sd]?|securing|close[sd]?|closing|land(?:s|ed)?|bag(?:s|ged)?|nab(?:s|bed)?|"
+    r"snag(?:s|ged)?|pull(?:s|ed)? in|lock(?:s|ed)? in"
 )
+# Weak verbs need a round noun ("announced a $66 million Series C round"), or an amount for get/receive.
+_WEAK_VERB = r"gets?|got|receive[sd]?|receiving|announce[sd]?|announcing|complete[sd]?|completing"
+_VERB = rf"(?:{_STRONG_VERB}|{_WEAK_VERB})"
 _FUNDING_VERB = re.compile(rf"\b{_VERB}\b", re.IGNORECASE)
 _ROUND_NOUN = re.compile(
-    r"\b(?:funding|financing|investment round|round|seed|pre-seed|series [a-h]\b|venture|capital raise|backing)",
+    r"\b(?:funding|financing|investment round|investment (?:from|led by)|round|seed|pre-seed|series [a-h]\b|"
+    r"venture|capital raise|backing)",
     re.IGNORECASE,
 )
 # Non-funding uses of the same verbs ("raised its guidance", "raises prices", "secured a contract").
 _NON_FUNDING_OBJECT = re.compile(
     r"\b(?:guidance|outlook|forecast|prices?|dividend|rates?|concerns?|questions?|stake in|contract|deal to acquire|"
-    r"penalty|fine|settlement|revenue|sales|wages?|tariffs?|capacity|bonds?|debt ceiling)\b",
+    r"penalty|fine|settlement|revenue|sales|wages?|tariffs?|capacity|bonds?|debt ceiling|awareness|alarms?|"
+    r"doubts|objections|eyebrows|taxes|fees|premiums|funding opportunit(?:y|ies))\b",
     re.IGNORECASE,
 )
 # Words right after the amount that show it is not a startup round ("$300 million fund", "$50 million contract").
 _NON_ROUND_TAIL = re.compile(
     r"^\s*(?:(?!(?:from|by|led|co-led|with)\b)[\w-]+\s+){0,2}"
     r"(?:fund|funds|vehicle|contracts?|orders?|settlement|penalty|fine|judgment|verdict|acquisition|buyback|"
-    r"bonus|bonds?|bond issue|grant from the|in (?:revenue|sales|net income|profit))\b",
+    r"bonus|bonds?|bond issue|grant from the|investments? (?:in|into)|in (?:revenue|sales|net income|profit)|"
+    r"in (?:annual )?(?:recurring )?revenue|ARR)\b",
+    re.IGNORECASE,
+)
+# A valuation is never the round size ("at an $8.8B valuation", "valuing it at $1 billion", "$1B valuation").
+_VALUATION_LEAD = re.compile(
+    r"(?:\bvalu(?:ation|ed|ing|es)\b[^.;$€£]{0,25}|\bat\s+an?\s+|\bworth\s+(?:about\s+|around\s+|roughly\s+|"
+    r"nearly\s+|over\s+|more than\s+)?)$",
+    re.IGNORECASE,
+)
+_VALUATION_TAIL = re.compile(
+    r"^\s*(?:[\w-]+\s+){0,2}?(?:valuation|post-money|pre-money|market (?:cap|capitalization|value))\b",
+    re.IGNORECASE,
+)
+# "nabs unicorn valuation", "secures a $2 billion valuation": the object is a valuation, not a round.
+_VALUATION_OBJECT = re.compile(r"^\W*(?:[\w$€£.,-]+\s+){0,3}?valuation\b", re.IGNORECASE)
+# Cumulative totals are not this round ("brings its total funding to $63 million", "$50 million to date").
+_CUMULATIVE_LEAD = re.compile(
+    r"\b(?:total(?:ling|ing)?|cumulative|altogether|lifetime)\b[^.;$€£]{0,30}$", re.IGNORECASE
+)
+_CUMULATIVE_TAIL = re.compile(
+    r"^\s*(?:[\w-]+\s+){0,3}?(?:to date|in total|so far|since (?:its )?(?:founding|launch|inception))\b",
+    re.IGNORECASE,
+)
+# Lifetime totals attributed to a data provider ("raised $411 million in funding according to PitchBook data").
+_DATA_PROVIDER = re.compile(
+    r"\b(?:according to|per|citing)\s+(?:PitchBook|Crunchbase|CB Insights|Dealroom|Tracxn|Preqin)\b|"
+    r"\b(?:PitchBook|Crunchbase|CB Insights|Dealroom|Tracxn|Preqin)(?:\s+data)?\s+(?:shows?|showed)\b",
+    re.IGNORECASE,
+)
+# The object of the funding verb ends at the next clause ("..., announcing ...", "..., but ...", "; ...").
+_CLAUSE_END = re.compile(
+    r"[,;:]\s+(?:but|while|whereas|although|though|and|announcing|according|bringing|taking|which|who|valuing|"
+    r"values|giving|making|after|as)\b|;|\s+but\s+|\s[—–]\s",
+    re.IGNORECASE,
+)
+# Enforcement, litigation, failure, and acquisition contexts: an amount there is not a startup round.
+_NEGATIVE_CONTEXT = re.compile(
+    r"\b(?:charged (?:with|for|in)|charges? (?:against|that)|"
+    r"(?:SEC|DOJ|FTC|CFTC|FINRA|FCA|prosecutors?|regulators?|authorities|Justice Department|attorneys? general)\s+"
+    r"(?:\w+\s+){0,2}?(?:charges?|sues|sued|fines?|fined|accuses?|accused)|"
+    r"fraudulent\w*|defraud\w*|(?:securities|wire|mail|bank|investment|investor|accounting|tax|insurance)[\s-]fraud|"
+    r"fraud (?:charges?|schemes?|case|trial|allegations?|convictions?|claims)|(?:charged with|accused of|committed|"
+    r"committing|admitted|pleaded guilty to) (?:\w+ )?fraud|"
+    r"(?:investment|fraudulent|ponzi|pyramid|alleged|offering) schemes?|ponzi|alleged(?:ly)?|"
+    r"lawsuits?|sues|sued|suing|class[- ]action|indict\w*|guilty plea|pleads? guilty|pleaded guilty|"
+    r"plea (?:deal|agreement)|convict\w*|sentenced|misappropriat\w*|embezzl\w*|"
+    r"(?:settle[sd]?|settling) (?:charges|claims|allegations|a lawsuit|the lawsuit|with)|"
+    r"settlement (?:with|over)|(?:legal|lawsuit|class[- ]action) settlement|penalt(?:y|ies)|fined|"
+    r"bankrupt\w*|insolven\w*|liquidat\w*|winds? down|winding down|shut(?:s|ting)? down|"
+    r"no returns?|wiped out|acquired by|acquisition (?:of|by|price)|(?:its|the|final|company[’']s) acquisition|"
+    r"(?:was|were|been|being) (?:sold|acquired)|agree[sd]? to (?:buy|acquire|be acquired)|takeover)\b",
+    re.IGNORECASE,
+)
+# Benign uses of the same words, removed before the check ("helps banks fight wire fraud", "to fund acquisitions").
+_BENIGN_CONTEXT = re.compile(
+    r"\b(?:(?:anti|counter)-\w*\s?fraud|(?:fight(?:s|ing)?|detect(?:s|ing)?|prevent(?:s|ing)?|stop(?:s|ping)?|"
+    r"combat(?:s|ing)?|tackl(?:e|es|ing)|reduc(?:e|es|ing)|catch(?:es|ing)?|flag(?:s|ging)?) (?:\w+[\s-]){0,2}fraud|"
+    r"(?:to|for) (?:fund|fuel|finance|pursue|support|accelerate) (?:its |further |more |future )?"
+    r"(?:acquisitions?|M&A))\b",
     re.IGNORECASE,
 )
 _FUNDING_CONTEXT = re.compile(
-    r"\b(?:round|funding|financing|investors?|investment|led by|venture|backed|backers|angels?|seed|series [a-h]|"
-    r"capital|fund|funds)\b",
+    r"\b(?:round|funding|financing|fundraising|investors?|investment|led by|venture|backed|backers|angels?|seed|"
+    r"series [a-h]|capital|fund|funds|valuation|(?:out of|from) stealth)\b",
     re.IGNORECASE,
 )
 _NEGATED_BEFORE = re.compile(
@@ -175,7 +279,10 @@ _NAME_LEADING_DESCRIPTORS = {
 _NOT_NAMES = {
     "The", "It", "Its", "This", "That", "These", "Those", "A", "An", "Series", "Seed", "Inc", "Founder",
     "Founders", "Chief", "CEO", "Company", "Startup", "Investors", "Funding", "Round",
+    "SEC", "FINRA", "NIST", "Government", "Congress", "Treasury", "Commission",
 }  # fmt: skip
+# An appositive between the company and its verb ("Blacksmith, a platform that ..., just announced ...").
+_APPOSITIVE = re.compile(r"^(?:[a-z]|(?:A|An|The|Which|Who|Its|Based|Headquartered|Founded)\b)")
 _COMPANY_STOP_PREFIX = re.compile(
     r"^(?:exclusive|breaking|update|report|funding|deals?|startups?|today|news)\s*[:\-–—]\s*", re.IGNORECASE
 )
@@ -358,11 +465,23 @@ def extract_investors(text: str) -> tuple[list[str], list[str]]:
 
 
 def _company_before(sentence: str, verb_start: int) -> str:
-    """Company name immediately before the funding verb ("Edtech startup Quillfield raised" -> "Quillfield")."""
+    """Company name that is the subject of the funding verb, or "" when the subject is not a name.
+
+    "Edtech startup Quillfield raised" -> "Quillfield"; "Tarnwell Compute, which designs chips, has
+    raised" -> "Tarnwell Compute"; "... Williams, for an alleged scheme that raised" -> "" (the
+    subject of "raised" is "scheme", not a company).
+    """
     subject = _COMPANY_STOP_PREFIX.sub("", sentence[:verb_start]).strip()
-    if "," in subject:
-        subject = subject.split(",")[0].strip()
-    words = subject.split()
+    segments = [seg.strip() for seg in subject.split(",")]
+    last = segments[-1].split()
+    while last and last[-1].lower() in _COMPANY_SUFFIX_WORDS:
+        last.pop()
+    if last:
+        words = last
+    elif len(segments) >= 3 and _APPOSITIVE.match(segments[-2]):
+        words = segments[-3].split()  # "Name, appositive, verb"
+    else:
+        return ""
     while words and words[-1].lower() in _COMPANY_SUFFIX_WORDS:
         words.pop()
     run: list[str] = []
@@ -391,38 +510,83 @@ class _Hit:
     from_title: bool
 
 
+def negative_context(text: str) -> bool:
+    """Enforcement, litigation, failure, or acquisition context ("SEC charges ...", "saw no returns")."""
+    return bool(_NEGATIVE_CONTEXT.search(_BENIGN_CONTEXT.sub(" ", text)))
+
+
+def _object_clause(after: str) -> str:
+    m = _CLAUSE_END.search(after)
+    return after[: m.start()] if m else after
+
+
+def _round_amount(clause: str) -> tuple[Amount | None, bool]:
+    """(round size, rejected) from the object of a funding verb.
+
+    Valuations and cumulative totals are skipped; ``rejected`` is True when
+    the nearest amount is a fund, contract, settlement, or revenue figure
+    (the verb does not describe a startup round at all).
+    """
+    for amount in parse_amounts(clause):
+        if amount.start > 60:
+            break
+        lead, tail = clause[: amount.start], clause[amount.start + len(amount.text) :]
+        if _VALUATION_LEAD.search(lead) or _VALUATION_TAIL.search(tail):
+            continue
+        if _CUMULATIVE_LEAD.search(lead) or _CUMULATIVE_TAIL.search(tail):
+            continue
+        if _NON_ROUND_TAIL.search(tail):
+            return None, True
+        return amount, False
+    return None, False
+
+
 def _funding_hit(sentence: str, from_title: bool) -> _Hit | None:
+    """The funding event in one sentence: a company raising a round, with the round's amount if stated."""
+    if negative_context(sentence):
+        return None
+    if _DATA_PROVIDER.search(sentence) and detect_stage(sentence) == "undisclosed":
+        return None  # a lifetime total from a data provider, not a new round
+    main_company = ""
     for verb in _FUNDING_VERB.finditer(sentence):
-        after = sentence[verb.end() : verb.end() + 160]
+        own_company = _company_before(sentence, verb.start())
+        main_company = main_company or own_company
+        after = sentence[verb.end() : verb.end() + 200]
         if _NEGATED_BEFORE.search(sentence[: verb.start()]) or _NEGATED_AFTER.search(after):
             continue
-        amounts = parse_amounts(after)
-        amount = amounts[0] if amounts and amounts[0].start <= 60 else None
-        window = after[: (amount.start if amount else 60)]
-        if _NON_FUNDING_OBJECT.search(window):
-            continue
-        if amount is not None and _NON_ROUND_TAIL.search(after[amount.start + len(amount.text) :]):
+        clause = _object_clause(after)
+        amount, rejected = _round_amount(clause)
+        if rejected:
             continue  # a fund close, contract, settlement, or revenue figure, not a startup round
-        if amount is None and not _ROUND_NOUN.search(after[:80]):
+        if _NON_FUNDING_OBJECT.search(clause[: (amount.start if amount else 60)]):
             continue
-        weak_verb = verb.group(0).lower().startswith(("announce", "complete", "get", "got", "receive"))
-        if (
-            amount is None
-            and weak_verb
-            and not re.search(r"\b(?:round|funding|financing|series [a-h])\b", after[:60], re.I)
-        ):
+        round_noun = _ROUND_NOUN.search(clause[:80])
+        if amount is None and not round_noun:
             continue
-        company = _company_before(sentence, verb.start())
+        if _VALUATION_OBJECT.match(clause) and not round_noun:
+            continue  # "nabs unicorn valuation": a valuation, not a round
+        verb_text = verb.group(0).lower()
+        weak_verb = verb_text.startswith(("announc", "complet", "get", "got", "receiv"))
+        named_round = re.search(r"\b(?:round|funding|financing|series [a-h]|seed)\b", clause[:60], re.I)
+        if weak_verb and not named_round and (amount is None or verb_text.startswith(("announc", "complet"))):
+            continue
+        company = own_company
+        if not company and verb_text.endswith("ing") and sentence[: verb.start()].rstrip().endswith(","):
+            company = main_company  # "Town nabbed a unicorn valuation, announcing a $108 million Series B round"
         if company:
             return _Hit(company, amount, sentence, from_title)
     return None
 
 
-def extract_funding_from_text(title: str, body: str = "", *, doc_type: str | None = None) -> FundingExtractOut:
-    """Rule-based funding-round extraction from a headline and body text."""
+def extract_funding_from_text(
+    title: str, body: str = "", *, doc_type: str | None = None, tags: Iterable[str] = ()
+) -> FundingExtractOut:
+    """Rule-based funding-round extraction from a headline and body text (``tags``: the publisher's topic tags)."""
     if doc_type in SKIP_DOC_TYPES:
         return FundingExtractOut(is_funding_round=False, confidence=0.9)
     title = normalize_space(title)
+    if negative_context(title):
+        return FundingExtractOut(is_funding_round=False, confidence=0.85)
     body = body or ""
     sentences = split_sentences(body)[:8]
     hit = _funding_hit(title, True)
@@ -431,19 +595,19 @@ def extract_funding_from_text(title: str, body: str = "", *, doc_type: str | Non
             hit = _funding_hit(sentence, False)
             if hit is not None:
                 break
-    if hit is None or not _FUNDING_CONTEXT.search(" ".join([title, hit.sentence, *sentences[:2]])):
+    context = " ".join([title, hit.sentence, *sentences[:2], *tags]) if hit else ""
+    if hit is None or not _FUNDING_CONTEXT.search(context):
         return FundingExtractOut(is_funding_round=False, confidence=0.8)
 
     full = f"{title}. {body}"
-    # Amount: the title's, else the first amount in a sentence that mentions the company and a funding verb.
+    # Amount: the title's, else the round amount of a later funding sentence by the same company.
     amount = hit.amount
     if amount is None:
         for sentence in sentences:
-            if hit.company in sentence and _FUNDING_VERB.search(sentence):
-                amounts = parse_amounts(sentence)
-                if amounts:
-                    amount = amounts[0]
-                    break
+            other = _funding_hit(sentence, False) if hit.company in sentence else None
+            if other is not None and other.amount is not None and _norm(other.company) == _norm(hit.company):
+                amount = other.amount
+                break
     lead_text = " ".join(t if t.endswith((".", "!", "?")) else f"{t}." for t in [title, *sentences[:4]] if t)
     stage = detect_stage(hit.sentence)
     if stage == "undisclosed":
@@ -478,13 +642,41 @@ def _article_body(article: Article) -> str:
     return " ".join(x for x in (summary, content) if x)
 
 
+def is_regulator_source(article: Article) -> bool:
+    """True for documents published by a financial regulator or enforcement agency (``REGULATOR_DOMAINS``)."""
+    source = getattr(article, "source", None)
+    hosts = {domain_of(article.url or "")}
+    if source is not None:
+        hosts |= {domain_of(source.homepage or ""), domain_of(source.url or "")}
+    return any(host == d or host.endswith(f".{d}") for host in hosts if host for d in REGULATOR_DOMAINS)
+
+
+def _excluded(article: Article) -> bool:
+    """Documents that never announce a startup round: skipped doc types, regulators, enforcement headlines."""
+    return (
+        article.doc_type in SKIP_DOC_TYPES
+        or is_regulator_source(article)
+        or negative_context(normalize_space(article.title))
+    )
+
+
+def _tags(article: Article) -> list[str]:
+    return [str(t) for t in (article.extra or {}).get("tags") or [] if t]
+
+
 def extract_funding(article: Article) -> FundingExtractOut:
     """Rule-based extraction of a funding round from an article (offline builder of ``funding_extractor``)."""
-    return extract_funding_from_text(article.title or "", _article_body(article), doc_type=article.doc_type)
+    if is_regulator_source(article):
+        return FundingExtractOut(is_funding_round=False, confidence=0.9)
+    return extract_funding_from_text(
+        article.title or "", _article_body(article), doc_type=article.doc_type, tags=_tags(article)
+    )
 
 
 def looks_like_funding(article: Article) -> bool:
     """Cheap pre-filter before calling the extraction agent."""
+    if _excluded(article):
+        return False
     head = f"{article.title} {article.summary or ''}"
     return bool(_FUNDING_VERB.search(head) and (_AMOUNT.search(head) or _ROUND_NOUN.search(head)))
 
@@ -500,8 +692,10 @@ report that the document does not announce one.
 
 Set is_funding_round to true only when the document reports that one named company raised (or closed, or \
 secured) a specific round of outside funding. Return false for: market or trend roundups covering many deals, \
-opinion and commentary, earnings reports, a venture firm closing its own fund, acquisitions, grants of stock to \
-employees, revenue or guidance changes, and articles that only mention a past round in passing.
+opinion and commentary, earnings reports, a venture firm closing its own fund, acquisitions and acquisition \
+prices, grants of stock to employees, revenue or guidance changes, enforcement actions, fraud or investment \
+schemes, lawsuits and settlements, a company's lifetime funding total or valuation without a new round, and \
+articles that only mention a past round in passing.
 
 Fields:
 - company_name: the company that raised the money, exactly as written in the document (no descriptors such as \
@@ -601,7 +795,7 @@ def extract_funding_with_agent(
 
 def _candidate_articles(session: Session) -> list[Article]:
     tracked = select(FundingRound.article_id).where(FundingRound.article_id.is_not(None))
-    return list(
+    articles = list(
         session.scalars(
             select(Article)
             .where(
@@ -613,6 +807,7 @@ def _candidate_articles(session: Session) -> list[Article]:
             .order_by(Article.published_at, Article.id)
         )
     )
+    return [a for a in articles if not _excluded(a)]
 
 
 def _norm(name: str) -> str:
@@ -646,9 +841,7 @@ def update_funding_tracker(
     else:
         tracked = set(session.scalars(select(FundingRound.article_id).where(FundingRound.article_id.is_not(None))))
         candidates = [
-            a
-            for a in articles
-            if a.id not in tracked and a.duplicate_of_id is None and a.doc_type not in SKIP_DOC_TYPES
+            a for a in articles if a.id not in tracked and a.duplicate_of_id is None and not _excluded(a)
         ]
     recent = list(session.scalars(select(FundingRound)))
     created: list[FundingRound] = []

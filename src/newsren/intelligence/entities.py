@@ -365,7 +365,8 @@ GENERIC_WORDS = frozenset(
     table appendix section part chapter series round stage phase grade page item form exhibit north south
     east west central eastern western northern southern american chinese european japanese korean
     taiwanese german french british indian canadian mexican russian israeli asian african english
-    spanish dutch swiss italian australian
+    spanish dutch swiss italian australian investment investments investor investors adviser advisers advisor
+    advisors funds companies
     """.split()
 )
 
@@ -383,7 +384,7 @@ GENERIC_ACRONYMS = frozenset(
     HTML URL AM PM ET PT GMT UTC EST PST EDT PDT CET FY Q1 Q2 Q3 Q4 H1 H2 R&D B2B B2C SAAS IT HR PR II III
     IV VI VII VIII IX XI XII AML KYC GDP CPI PCE SAT ACT AP ID IOT AR VR XR EV EVS OS RAM SSD HBM DRAM NAND
     RL RAG ASIC FPGA SOC NEW THE AND FOR LLC INC CORP LTD PLC USA DC NYC LA SF PHD BA BS MA MS JD MD RN K12
-    CO2 CEO's FAQS AKA TBD TBA FYI ASAP DIY EOD PDT CVE CVES SEO UI UX QA CI CD OSS VPN VPNS
+    CO2 CEO's FAQS AKA TBD TBA FYI ASAP DIY EOD PDT CVE CVES SEO UI UX QA CI CD OSS VPN VPNS CIK MOU GPS
     """.split()
 )
 
@@ -871,6 +872,22 @@ def _resolve_aliases(mentions: list[Mention]) -> list[Mention]:
     ]
 
 
+def is_generic_name(name: str) -> bool:
+    """True for a name that only uses generic vocabulary ("Investment Advisers", "GPS").
+
+    Mirrors the extractor's rules, so callers can ignore such entities when
+    they were stored before the vocabulary listed them.
+    """
+    words = [w for w in normalize_space(name).split() if w not in CONNECTORS]
+    if not words:
+        return True
+    if len(words) <= 2 and words[0].upper() in GENERIC_ACRONYMS:
+        return True
+    if len(words) == 1 and words[0].upper().rstrip("S") in GENERIC_ACRONYMS:
+        return True
+    return all(w.lower() in GENERIC_WORDS or w.lower() in STOPWORDS for w in words)
+
+
 def entity_head(name: str, kind: str) -> str | None:
     """Brand head of a multi-word organization/product name ("Corvane Semiconductor" -> "corvane").
 
@@ -902,7 +919,8 @@ _GENERIC_HEADS = frozenset(
     pacific atlantic western eastern northern southern metropolitan city county district board department
     university institute school college bank center centre office council committee association society
     foundation agency commission ministry bureau markets market capital ventures partners investments fab
-    plant factory line project program
+    plant factory line project program investment investments investor investors asset assets compliance
+    enforcement consumer business
     """.split()
 )
 

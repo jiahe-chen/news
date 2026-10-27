@@ -25,8 +25,20 @@ Evidence process:
   the most authoritative member, the summary from the pack's ledes, claims
   from the highest-scoring source sentences (typed by cues, cited to their
   source, corroborated or contested by comparing sources), sections per
-  vertical from pack sentences, uncertainty from hedged sentences, and
-  watch-next items from the story's event progression.
+  vertical from pack sentences, uncertainty from coverage gaps and hedged
+  sentences, and watch-next items from the story's event progression.
+* Real feeds are thinner than the demo corpus, so the offline builder never
+  claims more than they hold. A feed item stored without its article body
+  contributes its headline as an attributed statement ("Ars Technica's
+  headline: “...”."), and photo captions and bare quotations are not used as
+  statements. A research abstract leads with what the study did and found,
+  without section labels ("Purpose:") and with "we" read as "the authors".
+  Templates name a subject only when a key entity is a proper name the
+  coverage is about (never a paper-title phrase). Uncertainty says when only
+  one source has reported the story, or only abstracts or headlines are
+  available. Key points are claims cut to their main clause, distinct from
+  the summary. Story-summary sentences whose citations fall outside the
+  brief's pack are dropped rather than left uncited.
 
 The helpers below the "Shared source analysis" banner are also used by
 ``newsren.agents.evidence``.
@@ -38,7 +50,7 @@ import re
 from collections import Counter
 from collections.abc import Callable, Iterable, Sequence
 from collections.abc import Set as AbstractSet
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime
 
 from sqlalchemy import select
@@ -49,8 +61,20 @@ from newsren.editorial.guardrails import is_hedged, looks_like_performance
 from newsren.editorial.workflow import submit_for_review
 from newsren.finance.concepts import concepts_in_text
 from newsren.intelligence.clustering import article_time, clean_title
-from newsren.intelligence.events import classify_event, event_label
-from newsren.intelligence.timeline import DOC_LABELS, member_articles, member_fingerprint, story_citations
+from newsren.intelligence.events import classify_event, event_phrase
+from newsren.intelligence.timeline import (
+    CAPTION,
+    DOC_LABELS,
+    STUDY_CUE,
+    clean_headline,
+    count_phrase,
+    is_bare_quote,
+    member_articles,
+    member_fingerprint,
+    source_sentences,
+    story_citations,
+    study_sentences,
+)
 from newsren.llm import StructuredTask
 from newsren.models import (
     Article,
@@ -79,7 +103,6 @@ from newsren.schemas import (
 )
 from newsren.textutil import (
     cosine,
-    extractive_summary,
     jaccard,
     normalize_space,
     split_sentences,
@@ -256,7 +279,10 @@ _LABEL_PREFIX = re.compile(
 )
 _BOILERPLATE = re.compile(
     r"\bregrets\s+the\s+error\b|\b(?:article|story|announcement)\s+has\s+been\s+(?:updated|corrected)\b|"
-    r"^this\s+is\s+(?:an?\s+)?(?:opinion|commentary)\b",
+    r"^this\s+is\s+(?:an?\s+)?(?:opinion|commentary)\b|"
+    # Feed furniture: "Source: SEC EDGAR current filings feed; accepted ...", "Find the technical paper here".
+    r"^(?:source|keywords?|key\s+words|photo|credit|image|read\s+more)\s*:|\bfiling\s+acceptance\s+times?\b|"
+    r"\b(?:find|read|see)\s+the\s+(?:full\s+|technical\s+)?(?:paper|article|report|story)\s+here\b",
     _I,
 )
 ATTRIBUTION = re.compile(
@@ -292,9 +318,16 @@ _STAT_SIG = re.compile(r"\bstatistically\s+(?:in)?significant\b|\bsignificant\s+
 _HEDGE_CUES = re.compile(
     r"\b(?:may|might|could|preliminary|pre-?prints?|not\s+(?:yet\s+)?(?:been\s+)?peer[- ]reviewed|"
     r"has\s+not\s+(?:yet\s+)?(?:completed|undergone)\s+peer\s+review|small\s+sample|single\s+(?:district|school|"
-    r"site|state)|limitations?|in-sample|not\s+(?:statistically\s+)?significant|not\s+(?:directly\s+)?comparable|"
+    r"site|state)|"
+    # The study's limitations, not "the limitations of generative AI tools" it teaches about.
+    r"limitations?(?!\s+of\s+(?!(?:the|this|our|its|their)\s+(?:study|studies|research|analysis|sample|data|"
+    r"design|approach|evaluation|paper|findings|results|work|survey|trial|report)\b))|"
+    r"in-sample|not\s+(?:statistically\s+)?significant|not\s+(?:directly\s+)?comparable|"
     r"uncertain\w*|unclear|inconclusive|not\s+(?:yet\s+)?(?:been\s+)?(?:independently\s+)?(?:verified|reproduced|"
     r"replicated)|(?:did|does)\s+not\s+(?:disclose|say|name|publish|report)|not\s+disclosed|undisclosed|"
+    # A result that did not carry over: "these gains did not consistently transfer to independent tasks".
+    r"(?:did|does|do)\s+not\s+(?:consistently\s+|reliably\s+|necessarily\s+)?(?:transfer|generali[sz]e|"
+    r"persist|carry\s+over|translate)|"
     r"no\s+live\s+track\s+record|not\s+proof|caution\w*|depend\w*\s+on|open\s+questions?|remain\w*\s+open)\b",
     _I,
 )
@@ -624,12 +657,6 @@ class SourceDoc:
         return self._terms
 
 
-_ABBREVIATION_END = re.compile(
-    r"(?:^|\s)(?:Dr|Mr|Mrs|Ms|Prof|Sen|Rep|Gov|Gen|St|Inc|Corp|Co|Ltd|Jr|Sr|vs|No|Mt|Ft|U\.S|e\.g|i\.e)\.$"
-)
-_QUOTE_SPLIT = re.compile(r"(?<=[.!?][”\"’])\s+(?=[A-Z0-9“\"(])")
-
-
 def _balance_quotes(sentence: str) -> str:
     opened, closed = sentence.count("“"), sentence.count("”")
     if closed > opened:
@@ -640,31 +667,27 @@ def _balance_quotes(sentence: str) -> str:
 
 
 def _clean_sentences(text: str) -> list[str]:
-    """Sentences of a document body: section labels stripped, quotes balanced, boilerplate dropped."""
+    """Sentences of a document body: section labels stripped, quotes balanced, boilerplate dropped.
+
+    Splitting goes through ``newsren.intelligence.timeline.source_sentences``, which keeps "Nov. 19" and
+    "RELIANCE, INC. (CIK ...)" whole and strips abstract labels ("Purpose:", "Design/methodology/approach:").
+    """
     out: list[str] = []
     seen: set[str] = set()
-    chunks: list[str] = []
-    for chunk in split_sentences(text):
-        # split_sentences breaks after abbreviations ("said Dr. Felix Amundsen"); re-join those.
-        if chunks and _ABBREVIATION_END.search(chunks[-1]):
-            chunks[-1] = f"{chunks[-1]} {chunk}"
-        else:
-            chunks.append(chunk)
-    for chunk in chunks:
-        for raw in _QUOTE_SPLIT.split(chunk):
-            sentence = _LABEL_PREFIX.sub("", raw).strip()
-            if (
-                not sentence
-                or sentence.endswith("…")
-                or len(tokenize(sentence)) < 4
-                or _BOILERPLATE.search(sentence)
-            ):
-                continue
-            sentence = _balance_quotes(sentence[0].upper() + sentence[1:])
-            key = normalize_space(sentence).lower()
-            if key not in seen:
-                seen.add(key)
-                out.append(sentence)
+    for raw in source_sentences(text):
+        sentence = _LABEL_PREFIX.sub("", raw).strip()
+        if (
+            not sentence
+            or sentence.endswith(("…", "»"))
+            or len(tokenize(sentence)) < 4
+            or _BOILERPLATE.search(sentence)
+        ):
+            continue
+        sentence = _balance_quotes(sentence[0].upper() + sentence[1:])
+        key = normalize_space(sentence).lower()
+        if key not in seen:
+            seen.add(key)
+            out.append(sentence)
     return out
 
 
@@ -729,11 +752,16 @@ def _compare(claim_terms: set[str], terms: set[str]) -> tuple[int, float, bool]:
 
 
 def agreeing_sentence(claim: str, doc: SourceDoc, wrong: AbstractSet[str] = frozenset()) -> Match | None:
-    """The sentence in ``doc`` that states the same thing as ``claim`` (shared key terms and figures), if any."""
+    """The sentence in ``doc`` that states the same thing as ``claim`` (shared key terms and figures), if any.
+
+    Identifiers of six or more digits (a CIK, an accession number) must all reappear: two filings by
+    different companies on the same day share a date and a form name, not a fact.
+    """
     terms = key_terms(claim)
+    identifiers = {t for t in terms if t.startswith("#") and len(t) >= 7}
     best: Match | None = None
     for sentence, sterms in zip(doc.sentences, doc.sentence_terms(), strict=True):
-        if not usable(doc, sentence, wrong):
+        if not usable(doc, sentence, wrong) or not identifiers <= sterms:
             continue
         shared, ratio, num_ok = _compare(terms, sterms)
         if shared >= 3 and ratio >= 0.4 and num_ok and (best is None or ratio > best.ratio):
@@ -801,9 +829,56 @@ def possessive(name: str) -> str:
     return f"{name}'" if name.endswith("s") else f"{name}'s"
 
 
+_FIRST_PERSON = (
+    (re.compile(r"^We\b"), "The authors"),
+    (re.compile(r"^Our\b"), "The authors'"),
+    (re.compile(r"(?<=\s)we\b"), "the authors"),
+    (re.compile(r"(?<=\s)our\b"), "their"),
+    (re.compile(r"(?<=\s)us\b"), "them"),
+    (re.compile(r"(?<=\s)ourselves\b"), "themselves"),
+)
+
+
+_QUOTED_SPAN = re.compile(r"(“[^”]*”|\"[^\"]*\")")
+
+
+def third_person(doc: SourceDoc, sentence: str) -> str:
+    """A research abstract's "we" and "our" as "the authors" and "their" (quoted words are left alone)."""
+    if doc.doc_type not in _RESEARCH_DOCS or doc.needs_attribution:
+        return sentence
+    parts = _QUOTED_SPAN.split(sentence)
+    for i in range(0, len(parts), 2):
+        for pattern, replacement in _FIRST_PERSON:
+            if i and pattern.pattern.startswith("^"):
+                continue
+            parts[i] = pattern.sub(replacement, parts[i])
+    return "".join(parts)
+
+
+# A study's stated aim ("this study aims to", "six ethical scenarios") is not a forecast; a normative claim in a
+# paper ("will be vital to support a healthy democracy") is the authors' argument, not a projection.
+_STUDY_AIM = re.compile(
+    r"\b(?:aims?|aimed|seeks?|sought|intends?|intended)\s+to\b|\bscenarios?\b|"
+    r"\btarget\s+(?:language|group|population|audience|students?|learners?)\b",
+    _I,
+)
+NORMATIVE = re.compile(
+    r"\bwill\s+be\s+(?:vital|essential|crucial|critical|important|key|necessary|needed|central|instrumental|"
+    r"indispensable)\b",
+    _I,
+)
+
+
+def forecast_in(doc: SourceDoc, sentence: str) -> bool:
+    """``is_forecast``, except that a research paper's aims, scenarios, and normative arguments are not forecasts."""
+    if doc.doc_type in _RESEARCH_DOCS and not doc.needs_attribution:
+        return is_forecast(_STUDY_AIM.sub(" ", sentence)) and not NORMATIVE.search(sentence)
+    return is_forecast(sentence)
+
+
 def attribute(doc: SourceDoc, sentence: str) -> str:
     """Make a vendor sentence read as the organization's claim, and an opinion as an argument."""
-    sentence = normalize_space(sentence)
+    sentence = third_person(doc, normalize_space(sentence))
     if doc.is_commentary:
         if re.search(r"\bargu(?:e|es|ed|ing)\b", sentence, _I):
             return f"Opinion ({doc.speaker}): {sentence}"
@@ -829,6 +904,8 @@ def cite(text: str, cids: Iterable[str]) -> str:
     text = normalize_space(text)
     if not marks:
         return text
+    if text.endswith((".”", '."')):  # “... networks.” -> “... networks” [c1].
+        return f"{text[:-2]}{text[-1]} {marks}."
     if text.endswith("."):
         return f"{text[:-1]} {marks}."
     return f"{text} {marks}"
@@ -960,6 +1037,23 @@ def remap_citations(text: str | None, mapping: dict[str, str]) -> str:
     return normalize_space(re.sub(r"\s+([.,;:])", r"\1", out))
 
 
+_CITED_UNIT_END = re.compile(r"(?<=\]\.)\s+")
+
+
+def remap_cited_units(text: str | None, mapping: dict[str, str]) -> str:
+    """``remap_citations`` that keeps only statements still citing a source in the pack.
+
+    The story summary is cut after each "[cN]." (one cited statement per unit); a unit whose citations all
+    point outside this brief's evidence pack, or that cites nothing, is dropped rather than left uncited.
+    """
+    kept = [
+        remap_citations(unit, mapping)
+        for unit in _CITED_UNIT_END.split(normalize_space(text))
+        if any(cid in mapping for cid in _CITE_MARK.findall(unit))
+    ]
+    return " ".join(k for k in kept if k)
+
+
 @dataclass
 class StoryContext:
     """Everything the brief builders know about a story: its pack, timeline, and story-intelligence summary."""
@@ -985,11 +1079,11 @@ def _context(
     ctx = StoryContext(story=story, vertical=vertical, docs=docs, timeline=_timeline(story, members, types))
     mapping = _story_text_map(story, members, evidence)
     if mapping is not None:
-        ctx.first = remap_citations(story.what_happened_first, mapping)
-        ctx.new = remap_citations(story.whats_new, mapping)
-        ctx.disputed = [t for t in (remap_citations(x, mapping) for x in story.disputed or []) if t]
+        ctx.first = remap_cited_units(story.what_happened_first, mapping)
+        ctx.new = remap_cited_units(story.whats_new, mapping)
+        ctx.disputed = [t for t in (remap_cited_units(x, mapping) for x in story.disputed or []) if t]
         ctx.evidence_changes = [
-            t for t in (remap_citations(x, mapping) for x in story.evidence_changes or []) if t
+            t for t in (remap_cited_units(x, mapping) for x in story.evidence_changes or []) if t
         ]
     pack_text = " ".join(f"{d.title}. {d.text}" for d in docs)
     lowered = pack_text.lower()
@@ -1164,7 +1258,7 @@ class SentencePicker:
         ids: list[str] = []
         for cand in cands:
             text = attribute(cand.doc, truncate(cand.sentence, 360))
-            if label_forecasts and is_forecast(cand.sentence):
+            if label_forecasts and forecast_in(cand.doc, cand.sentence):
                 text = label_forecast(text)
             if cand.doc.is_preprint and not re.search(r"preprint|peer[- ]review", text, _I):
                 text = f"{text.rstrip('.')} (preprint, not yet peer reviewed)."
@@ -1173,12 +1267,229 @@ class SentencePicker:
         return " ".join(parts), list(dict.fromkeys(ids))
 
 
+_COUNT_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight"}
+
+
+def _join_phrases(items: Sequence[str]) -> str:
+    if len(items) <= 2:
+        return " and ".join(items)
+    return ", ".join(items[:-1]) + f", and {items[-1]}"
+
+
+_GERUND_START = re.compile(
+    r"^(?:Exploring|Using|Leveraging|Teaching|Building|Developing|Preparing|Transforming|Demystifying|Engaging|"
+    r"Learning|Scaffolding|Fostering|Examining|Investigating|Understanding|Assessing|Evaluating|Integrating|"
+    r"Enhancing|Supporting|Navigating|Rethinking|Reimagining|Designing|Measuring|Mapping|Bridging|Toward|Towards|"
+    r"Beyond|Extending|Adapting|Applying|Creating|Impact|Effects?|Role)\b"
+)
+# Words that mark a phrase lifted from a paper or form title rather than a name.
+_TITLE_WORDS = frozenset(
+    "analysis study studies review framework approach model theory scale survey guidelines practices seminar "
+    "literacy perspective students behaviours behaviors outcomes judgment engagement intensity evaluation "
+    "validation applications strategies curriculum statements condition events results operations directors "
+    "securities disclosure fair budget earth".split()
+)
+
+
+_FINDING = re.compile(
+    r"\b(?:found|finds|showed|shows|revealed|reveals|indicat(?:e|es|ed)|suggest(?:s|ed)?|demonstrat(?:e|es|ed)|"
+    r"results|findings)\b",
+    _I,
+)
+# An opening clause ends at the first comma followed by the main clause's subject ("..., the researchers
+# collected"); a comma inside a list ("To explore A, B, and C, the ...") is skipped over.
+_LEAD_CLAUSE = re.compile(
+    r"^(?:As|While|Although|Though|Because|Since|With|Building\s+on|By|In|Considering|Given|Despite|Through|"
+    r"Using|Drawing\s+on|Based\s+on|Taking|To)\b[^;:()“”\"]{8,200}?,\s+"
+    r"(?=(?:the|this|these|those|our|we|a|an|most|many|some|all|both|each|several)\b)",
+    _I,
+)
+# A main clause after an opening "As ..." clause starts with a determiner or a name, never with "and especially".
+_MAIN_CLAUSE_START = re.compile(r"^(?:the|this|these|a|an|most|many|some|all|both|each|several|[A-Z])", 0)
+# A trailing participle or "which" clause that runs to the end of the sentence with no further comma (a clause
+# followed by ", show how ..." is parenthetical: cutting it would drop the main verb).
+_TRAILING_CLAUSE = re.compile(
+    r",\s+(?:suggesting|indicating|underscoring|emphasi[sz]ing|highlighting|pointing|accounting|explaining|"
+    r"covering|including|reflecting|making|leaving|creating|driving|which|whereas|thereby|focusing|"
+    r"arguing)\b[^,;]*$",
+    _I,
+)
+_PARENTHETICAL = re.compile(r"\([^()]*\)")
+# A reported figure (money, a percentage, a count with units), as opposed to a date or a list number.
+_FIGURE = re.compile(r"[$€£]\s?\d|\d(?:\.\d+)?\s?%|\b\d[\d,.]*\s*(?:percent|million|billion|thousand|bn|m)\b", _I)
+_LABEL_SUFFIX = re.compile(r"\s*\((?:projection|preprint)[^)]*\)\.?$", _I)
+KEY_POINT_CHARS = 200
+
+
+def _plain(text: str) -> str:
+    """Sentence text for verbatim comparison: no citation markers, labels, or final punctuation."""
+    text = _LABEL_SUFFIX.sub("", _CITE_MARK.sub("", text))
+    return normalize_space(text).rstrip(" .").lower()
+
+
+def _balanced(text: str) -> bool:
+    return text.count("(") == text.count(")") and text.count("“") == text.count("”")
+
+
+def short_point(text: str, limit: int = KEY_POINT_CHARS) -> str:
+    """A key point: the sentence trimmed to its main clause when it is longer than ``limit``.
+
+    An opening clause ("As generative AI tools spread, ...", "By analysing 67 guidelines, ...") goes
+    when a full main clause follows it; then what follows a semicolon; then a trailing participle or
+    "which" clause. A cut that would leave a fragment or unbalanced brackets is not made. The result is
+    capped at ``limit`` + 40 characters, and a projection or preprint label is kept.
+    """
+    text = normalize_space(text)
+    label = ""
+    m = _LABEL_SUFFIX.search(text)
+    if m:
+        text, label = text[: m.start()], m.group(0).strip().rstrip(".")
+    body = text.rstrip(".")
+    if len(body) > limit:
+        lead = _LEAD_CLAUSE.match(body)
+        rest = body[lead.end() :] if lead else ""
+        if lead and len(tokenize(rest)) >= 6 and _MAIN_CLAUSE_START.match(rest) and _balanced(rest):
+            body = rest[0].upper() + rest[1:]
+    if len(body) > limit:
+        head = body.split(";", 1)[0]
+        if head != body and len(tokenize(head)) >= 6 and _balanced(head):
+            body = head
+    if len(body) > limit:
+        masked = _PARENTHETICAL.sub(lambda m: "x" * len(m.group(0)), body)
+        trailing = _TRAILING_CLAUSE.search(masked)
+        cut = body[: trailing.start()] if trailing else body
+        if cut != body and len(tokenize(cut)) >= 6 and _balanced(cut):
+            body = cut
+    body = truncate(body, limit + 40)
+    if body.endswith((".”", '."')):  # “... networks.” -> “... networks”.
+        body = body[:-2] + body[-1]
+    out = body if body.endswith(("…", "?", "!")) else f"{body}."
+    return f"{out.rstrip('.')} {label}." if label else out
+
+
+def _headline_statement(doc: SourceDoc) -> str | None:
+    """A feed item's headline as an attributed statement, or None when the headline says nothing on its own.
+
+    "Ars Technica's headline: “Google begins certifying ...”." A question headline or one of fewer than four
+    words ("Tech Life") is not a statement. An organization's own release "announced" its headline.
+    """
+    title = clean_headline(doc.title)
+    if not title or title.endswith("?") or len(title.split()) < 4:
+        return None
+    if doc.needs_attribution:
+        return f"{doc.speaker} announced: “{title}”."
+    # A publisher name with digits ("The 74") would read as a figure to the claim-support check.
+    owner = "The report's" if doc.speaker != doc.publisher else possessive(doc.publisher)
+    return f"{owner} headline: “{title}”."
+
+
 class _OfflineBrief(SentencePicker):
-    """Builds a ``BriefOut`` from the evidence pack without an LLM."""
+    """Builds a ``BriefOut`` from the evidence pack without an LLM.
+
+    Documents are prepared for reporting first: a feed item stored without its
+    article body (only a headline and a short summary) gets its headline as an
+    attributed statement ("Ars Technica's headline: “...”."), and photo captions
+    and bare quotations with no speaker are not used as statements.
+    """
 
     def __init__(self, ctx: StoryContext):
-        super().__init__(ctx.docs, ctx.vertical, ctx.keywords + ctx.entities)
+        self.statements: set[str] = set()
+        docs = [self._prepared(d) for d in ctx.docs]
+        super().__init__(docs, ctx.vertical, ctx.keywords + ctx.entities)
         self.ctx = ctx
+        self.summary_sentences: list[str] = []
+
+    @staticmethod
+    def teaser_only(doc: SourceDoc) -> bool:
+        """Only the headline and a short feed summary are stored (no article body), and it is not a paper."""
+        article = doc.article
+        return article is not None and not normalize_space(article.content) and doc.doc_type not in _RESEARCH_DOCS
+
+    def _prepared(self, doc: SourceDoc) -> SourceDoc:
+        if not self.teaser_only(doc) or doc.is_commentary:
+            return doc
+        sentences = [x for x in doc.sentences if not is_bare_quote(x) and not CAPTION.search(x)]
+        statement = _headline_statement(doc)
+        if statement and not any(similar(doc.title, x, 0.7) for x in sentences[:2]):
+            self.statements.add(statement)
+            sentences = [statement, *sentences]
+        if sentences == doc.sentences:
+            return doc
+        return replace(doc, sentences=sentences or [clean_headline(doc.title)], _terms=None)
+
+    def is_study(self, doc: SourceDoc) -> bool:
+        return doc.doc_type in _RESEARCH_DOCS and not doc.needs_attribution
+
+    @property
+    def research_only(self) -> bool:
+        return bool(self.material) and all(d.doc_type in _RESEARCH_DOCS for d in self.material)
+
+    def names(self, limit: int) -> list[str]:
+        """Key entities fit to name in running text: proper names the coverage is about, not title fragments.
+
+        A name qualifies when it is short (at most four words), does not open with a gerund or contain
+        generic title words ("Exploring AI Literacy", "Topic-Based Bibliometric Analysis"), is not a
+        publisher's name, appears in a headline, and appears at least twice in all. A single ordinary word
+        must also be used as a name somewhere: mid-sentence, capitalized, with no "the" in front ("pending
+        Google's approval", but not "in the Budget" or "the Denver school board"). Research-only stories get
+        no names: their "entities" are phrases from paper titles.
+        """
+        if self.research_only:
+            return []
+        story = self.ctx.story
+        candidates = [str(e) for e in (story.key_entities or [])] if story is not None else list(self.ctx.entities)
+        # Feed and outlet names ("SEC EDGAR current filings", "ERIC (IES) ...") are not subjects; a company's
+        # own newsroom ("Corvane Semiconductor Newsroom") does not disqualify the company's name.
+        publishers = {d.publisher.lower() for d in self.docs if not d.needs_attribution}
+        own = {d.publisher.lower() for d in self.docs if d.needs_attribution}
+        titles = [d.title for d in self.docs if d.title]
+        headlines = [clean_headline(t) for t in titles]
+        # Original sentences only (not the headline statements added for feed items).
+        bodies = [x for d in self.docs for x in d.sentences if not any(h and h in x for h in headlines)]
+        out: list[str] = []
+        for raw in candidates:
+            name = normalize_space(raw)
+            words = name.split()
+            if len(name) < 2 or len(words) > 4:
+                continue
+            if name.lower() in own or any(name.lower() in pub or pub in name.lower() for pub in publishers):
+                continue
+            if _GERUND_START.match(name) or any(w.strip(",.").lower() in _TITLE_WORDS for w in words):
+                continue
+            if any(w.islower() and w not in ("of", "and", "&", "de", "la", "for") for w in words[1:]):
+                continue
+            exact = re.compile(rf"(?<![\w-]){re.escape(name)}(?![\w-])")
+            if not any(exact.search(t) for t in titles):
+                continue
+            if sum(len(exact.findall(t)) for t in titles + bodies) < 2:
+                continue
+            coined = len(words) > 1 or bool(re.search(r"[A-Z].*[A-Z]|\d|-", name))
+            if not coined:
+                as_name = re.compile(rf"(?<=[\w,;)] )(?<!\b[Tt]he ){re.escape(name)}(?![\w-])")
+                if not any(as_name.search(t) for t in titles + bodies):
+                    continue
+            if any(name.lower() in o.lower() or o.lower() in name.lower() for o in out):
+                continue
+            out.append(name)
+            if len(out) >= limit:
+                break
+        return out
+
+    def subject(self) -> str | None:
+        """One key entity to name as the story's subject, or None (templates then read without one)."""
+        names = self.names(1)
+        return names[0] if names else None
+
+    def evidence_basis(self) -> tuple[str, list[str]]:
+        """What the evidence consists of so far ("a single news report from Ars Technica"), with its ids."""
+        material = self.material
+        publishers = list(dict.fromkeys(d.publisher for d in material))
+        what = count_phrase([d.doc_type for d in material])
+        if len(publishers) == 1:
+            what += f" from {publishers[0]}"
+        elif publishers:
+            what += f" from {len(publishers)} publishers"
+        return what, [d.cid for d in material[:4]]
 
     # ---------------------------------------------------------------- fields
 
@@ -1210,6 +1521,10 @@ class _OfflineBrief(SentencePicker):
             head = title.split(":", 1)[0].strip()
             if len(tokenize(head)) >= 4:
                 title = head
+        if len(title) > 100 and re.search(r"\s?(?:--|—)\s?", title):
+            head = re.split(r"\s?(?:--|—)\s?", title, maxsplit=1)[0].strip()
+            if len(tokenize(head)) >= 4:
+                title = head
         if doc.is_commentary:
             title = f"{title} (opinion)"
         elif doc.is_preprint and "preprint" not in title.lower():
@@ -1218,22 +1533,39 @@ class _OfflineBrief(SentencePicker):
             title = f"{title} ({'company' if doc.is_vendor else 'official'} announcement)"
         return truncate(title, 200)
 
+    def ledes(self, doc: SourceDoc) -> list[str]:
+        """A document's opening sentences; for a study whose abstract opens with background, what the study
+        did and what it found instead (``study_sentences``)."""
+        sentences = [x for x in doc.sentences if usable(doc, x, self.wrong)]
+        if (
+            self.is_study(doc)
+            and sentences
+            and not (STUDY_CUE.search(sentences[0]) or _FINDING.search(sentences[0]))
+        ):
+            design, finding = study_sentences(sentences)
+            study = [x for x in sentences if x in (design, finding)]
+            if study:
+                return study
+        return sentences[:2]
+
     def summary(self) -> str:
-        ledes: list[tuple[SourceDoc, str]] = []
-        for doc in self.material:
-            for sentence in doc.sentences[:2]:
-                if usable(doc, sentence, self.wrong):
-                    ledes.append((doc, sentence))
+        ledes = [(doc, sentence) for doc in self.material for sentence in self.ledes(doc)]
         if not ledes:
             return truncate(self.docs[0].title, 300)
-        owner = {}
-        for doc, sentence in ledes:
-            owner.setdefault(sentence, doc)
-        text = " ".join(s for _, s in ledes)
+        # Centrality over the ledes (as ``extractive_summary`` scores them), without re-splitting sentences.
+        tf = Counter(tokenize(" ".join(x for _, x in ledes)))
+        scored: list[tuple[float, int]] = []
+        for idx, (_, sentence) in enumerate(ledes):
+            toks = tokenize(sentence)
+            if not toks:
+                continue
+            value = sum(tf[t] for t in toks) / (len(toks) ** 0.7) + 3.0 * len(self.query.intersection(toks))
+            scored.append((value * (1.25 if idx == 0 else 1.0), idx))
+        keep = sorted(idx for _, idx in sorted(scored, reverse=True)[: SUMMARY_SENTENCES + 3])
         chosen: list[Candidate] = []
-        for sentence in extractive_summary(text, max_sentences=SUMMARY_SENTENCES + 3, query=" ".join(self.query)):
-            doc = owner.get(sentence)
-            if doc is None or any(c.doc is doc for c in chosen):
+        for idx in keep:
+            doc, sentence = ledes[idx]
+            if any(c.doc is doc for c in chosen):
                 continue
             if any(jaccard(tokenize(sentence), tokenize(c.sentence)) > 0.4 for c in chosen):
                 continue
@@ -1242,9 +1574,35 @@ class _OfflineBrief(SentencePicker):
                 break
         if not chosen:
             doc, sentence = ledes[0]
-            chosen = [Candidate(doc, 0, sentence, 0.0)]
-        body, _ = self.render(self.chronological(chosen))
+            chosen = [Candidate(doc, doc.sentences.index(sentence), sentence, 0.0)]
+        # A feed item's headline says what was reported and its one-line summary adds the detail; a lone
+        # study gets both what it did and what it found.
+        for cand in list(chosen):
+            if len(chosen) >= SUMMARY_SENTENCES:
+                break
+            if self.teaser_only(cand.doc) and cand.sentence in self.statements:
+                rest = [x for x in cand.doc.sentences[1:2] if usable(cand.doc, x, self.wrong)]
+            elif len(self.material) == 1 and self.is_study(cand.doc):
+                rest = [x for x in self.ledes(cand.doc) if x != cand.sentence]
+            else:
+                rest = []
+            if rest and not similar(rest[0], cand.sentence):
+                extra = Candidate(cand.doc, cand.doc.sentences.index(rest[0]), rest[0], 0.0)
+                chosen.insert(chosen.index(cand) + 1, extra)
+        ordered = sorted(chosen, key=lambda c: (c.doc.when or datetime.min, c.doc.cid, c.index))
+        self.summary_sentences = [c.sentence for c in ordered]
+        # An abstract's long sentence is cut to its main clause rather than truncated mid-phrase.
+        shown = [
+            replace(c, sentence=short_point(c.sentence, 280))
+            if self.is_study(c.doc) and len(c.sentence) > 300
+            else c
+            for c in ordered
+        ]
+        body, _ = self.render(shown)
         return body
+
+    def _repeats_summary(self, sentence: str) -> bool:
+        return any(sentence == x or similar(sentence, x) for x in self.summary_sentences)
 
     def claims(self) -> tuple[list[ClaimOut], list[DisagreementOut]]:
         selected: list[Candidate] = []
@@ -1310,16 +1668,19 @@ class _OfflineBrief(SentencePicker):
             ctype = ClaimType.OPINION
         elif perf:
             ctype = ClaimType.PERFORMANCE
-        elif is_forecast(sentence):
+        elif forecast_in(doc, sentence):
             ctype = ClaimType.FORECAST
             text = label_forecast(text)
-        elif is_interpretive(sentence):
+        elif is_interpretive(sentence) or (self.is_study(doc) and NORMATIVE.search(sentence)):
             ctype = ClaimType.INTERPRETATION
         else:
             ctype = ClaimType.FACT
 
         others = [d for d in self.docs if d.cid != doc.cid and not d.is_commentary]
         agreeing = [m for d in others if (m := agreeing_sentence(sentence, d, self.wrong)) is not None]
+        # Two different papers share a field's vocabulary ("students", "generative AI", "literacy"); one
+        # supports the other's statement only when it says nearly the same thing.
+        agreeing = [m for m in agreeing if not (self.is_study(doc) and self.is_study(m.doc)) or m.ratio >= 0.7]
         contra = [m for d in others if (m := contradicting_sentence(sentence, doc, d, self.wrong)) is not None]
         contra_ids = {m.doc.cid for m in contra}
         cids = [doc.cid] + [m.doc.cid for m in agreeing if m.doc.cid not in contra_ids][:2]
@@ -1406,25 +1767,64 @@ class _OfflineBrief(SentencePicker):
             ],
         )
 
+    def _fresh(self, predicate: Callable[[str], bool] | None = None) -> Callable[[str], bool]:
+        """``predicate`` restricted to sentences of readable length that the summary has not already used."""
+        return lambda x: (predicate is None or predicate(x)) and len(x) <= 300 and not self._repeats_summary(x)
+
+    def _basis_sentence(self) -> str:
+        what, ids = self.evidence_basis()
+        return cite(f"So far the evidence is {what}.", ids)
+
     def why_it_matters(self) -> str:
+        """Who is affected and which decisions the story bears on, per vertical.
+
+        Templates name the story's subject only when ``subject`` finds a proper name the coverage is
+        about; otherwise they read without one. Source sentences already used in the summary are not
+        repeated.
+        """
         v = self.ctx.vertical
-        subject = ", ".join(self.ctx.entities[:3]) or ", ".join(self.ctx.keywords[:3]) or "this story"
+        subject = self.subject()
         evals = [d for d in self.docs if d.is_evaluation]
+        records = [d for d in self.material if d.doc_type in _RECORD_DOCS]
         parts: list[str] = []
         if v == Vertical.EDUCATION:
-            parts.append(
-                f"Schools, teachers, and families weighing {subject} need to know what was actually measured, "
-                "and for whom."
-            )
-            best = self.pick(self.material, lambda s: bool(_POPULATION.search(s) and _OUTCOME.search(s)), 1, False)
-            best = best or self.pick(self.material, lambda s: bool(_POPULATION.search(s)), 1, False)
-            if best:
-                parts.append(self.render(best)[0])
-            if any(d.doc_type in _RESEARCH_DOCS for d in self.docs):
-                parts.append("Results from one group of students do not automatically generalize to others.")
+            studies = [d for d in self.material if d.doc_type in _RESEARCH_DOCS]
+            if studies:
+                what = "this study" if len(studies) == 1 else "these studies"
+                if any(not self.is_study(d) for d in studies):
+                    what = "this research"
+                parts.append(
+                    f"Schools, teachers, and families weighing {what} need to know what was actually measured, "
+                    "and for whom."
+                )
+                best = self.pick(
+                    self.material,
+                    self._fresh(lambda x: bool(_POPULATION.search(x) and _OUTCOME.search(x))),
+                    1,
+                    False,
+                )
+                best = best or self.pick(
+                    self.material, self._fresh(lambda x: bool(_POPULATION.search(x))), 1, False
+                )
+                if best:
+                    parts.append(self.render(best)[0])
+                parts.append(
+                    "Findings from one study population or setting do not automatically generalize to others."
+                )
+            else:
+                parts.append(
+                    "This bears on students, families, and educators in the schools and communities involved."
+                )
+                parts.append(self._basis_sentence())
+                best = self.pick(self.material, self._fresh(lambda x: bool(_POPULATION.search(x))), 1, False)
+                if best:
+                    parts.append(self.render(best)[0])
         elif v == Vertical.INDUSTRY:
-            parts.append(f"Developments at {subject} ripple through suppliers, customers, and workers.")
-            best = self.pick(self.material, lambda s: bool(_CONNECTION.search(s) or numbers_in(s)), 1, False)
+            where = f"involving {subject}" if subject else "like this"
+            parts.append(f"Developments {where} can ripple through suppliers, customers, and workers.")
+            best = self.pick(
+                self.material, self._fresh(lambda x: bool(_CONNECTION.search(x) or numbers_in(x))), 1, False
+            )
             if best:
                 parts.append(self.render(best)[0])
             parts.append("Knock-on effects described here are scenarios, not confirmed outcomes.")
@@ -1434,35 +1834,59 @@ class _OfflineBrief(SentencePicker):
                 for c in concepts_in_text(" ".join(d.text for d in self.docs), limit=2)
             ]
             what = " and ".join(concepts) if concepts else "the reported figures"
+            following = f" following {subject}" if subject else ""
             parts.append(
-                f"For investors, founders, and finance professionals following {subject}, the story shows how "
-                f"to read {what}."
+                f"For investors, founders, and finance professionals{following}, the story shows how to read {what}."
             )
-            best = self.pick(self.material, lambda s: bool(numbers_in(s)), 1, False)
+            best = self.pick(self.material, self._fresh(lambda x: bool(numbers_in(x))), 1, False)
             if best:
                 parts.append(self.render(best)[0])
             parts.append("This is news and education, not investment advice.")
         else:
             advisories = [d for d in self.docs if d.doc_type == DocType.ADVISORY]
-            if advisories:
-                parts.append(
-                    f"Organizations that run {subject} face an active security risk and may need to act now."
-                )
-                best = self.pick(advisories, None, 1, False)
+            security = advisories or [d for d in self.material if d.event_type == EventType.SECURITY_ADVISORY]
+            vendor = [d for d in self.docs if d.needs_attribution]
+            systems = f"affected {subject} systems" if subject else "affected software or hardware"
+            if security:
+                if advisories:
+                    parts.append(
+                        f"Organizations that run the {systems} face an active security risk and may need to act now."
+                    )
+                else:
+                    parts.append(
+                        f"Organizations that run the {systems} may face a security risk; no official advisory is in "
+                        "the evidence yet."
+                    )
+                best = self.pick(security, self._fresh(), 1, False)
                 if best:
                     parts.append(self.render(best)[0])
-            else:
+            elif vendor or evals:
                 parts.append(
-                    f"Claims about {subject} bear on developers, buyers, and institutions deciding whether to rely "
-                    "on it."
+                    f"Claims about {subject or 'the product'} bear on developers, buyers, and institutions deciding "
+                    "whether to rely on it."
                 )
-                vendor = [d for d in self.docs if d.needs_attribution]
-                best = self.pick(evals or vendor or self.material, None, 1, False)
+                # The evaluation's own finding is the point here, even when the summary also states it.
+                pool = [d for d in evals if not d.is_correction] or evals
+                best = self.pick(pool, None, 1, False) if pool else []
+                best = best or self.pick(vendor or self.material, self._fresh(), 1, False)
                 if best:
                     lead_in = "Independent evidence is now available: " if evals else ""
                     parts.append(lead_in + self.render(best)[0])
                 if vendor and not evals:
                     parts.append("No independent evaluation is in the evidence yet.")
+            else:
+                following = f" following {subject}" if subject else ""
+                what, ids = self.evidence_basis()
+                parts.append(
+                    cite(
+                        f"For developers, buyers, and institutions{following}, the evidence so far is {what}.", ids
+                    )
+                )
+                if not records:
+                    parts.append("No primary document or independent evaluation is in the evidence yet.")
+                best = self.pick(self.material, self._fresh(), 1, False)
+                if best:
+                    parts.append(self.render(best)[0])
         return " ".join(p for p in parts if p)
 
     def what_changed(self) -> str:
@@ -1480,22 +1904,119 @@ class _OfflineBrief(SentencePicker):
                 cite(f"First reported on {_date(first.occurred_at)} by {fdoc.publisher} ({fdoc.kind})", [fdoc.cid])
             ]
             later = [ev for ev in events if ev.article_id in by_article and ev is not first]
-            if later:
-                labels = list(dict.fromkeys(event_label(ev.event_type) for ev in later))
-                ids = [by_article[ev.article_id].cid for ev in later]
-                parts.append(cite(f"Since then the story has added: {', '.join(labels)}", ids))
-            else:
+            same = [ev for ev in later if ev.event_type == first.event_type]
+            other = [ev for ev in later if ev.event_type not in (first.event_type, EventType.OTHER)]
+            if other:
+                phrases = list(dict.fromkeys(event_phrase(ev.event_type) for ev in other))
+                ids = [by_article[ev.article_id].cid for ev in other]
+                parts.append(cite(f"Since then the story has added {_join_phrases(phrases)}", ids))
+            if same and all(by_article[ev.article_id].doc_type in _RESEARCH_DOCS for ev in [first, *same]):
+                n = len(same)
+                lead = {1: "A second study", 2: "Two more studies", 3: "Three more studies"}.get(
+                    n, f"{n} more studies"
+                )
+                verb = "was" if n == 1 else "were"
+                parts.append(
+                    cite(
+                        f"{lead} on the same topic {verb} published",
+                        [by_article[ev.article_id].cid for ev in same],
+                    )
+                )
+            elif same:
+                n = len(same)
+                lead = (
+                    "A further report" if n == 1 else f"{_COUNT_WORDS.get(n, str(n)).capitalize()} further reports"
+                )
+                parts.append(
+                    cite(f"{lead} of the same kind followed", [by_article[ev.article_id].cid for ev in same])
+                )
+            if not later:
                 parts.append("No later developments are in the evidence yet.")
-            text = " ".join(parts)
+            text = " ".join(x if x.endswith(".") else f"{x}." for x in parts)
         for doc in corrections:
             if doc.cid not in text:
                 text += " " + cite(f"A correction changed the record: {truncate(doc.lede, 240)}", [doc.cid])
         return normalize_space(text)
 
+    def coverage_notes(self) -> list[str]:
+        """What the evidence cannot show yet: a single source, abstracts only, or headlines and short summaries."""
+        notes: list[str] = []
+        material = [d for d in self.docs if not d.is_commentary]
+        if not material:
+            return notes
+        publishers = {d.publisher.lower() for d in material}
+        records = [d for d in material if d.doc_type in _RECORD_DOCS]
+        if len(publishers) == 1 and not records and not all(d.needs_attribution for d in material):
+            if all(d.doc_type in _RESEARCH_DOCS for d in material):
+                if len(material) == 1:
+                    notes.append(
+                        cite(
+                            "This is a single study; no replication or other study in the evidence tests its findings.",
+                            [material[0].cid],
+                        )
+                    )
+            else:
+                notes.append(
+                    cite(
+                        f"Only one source has reported this so far ({material[0].publisher}); no other outlet or "
+                        "primary document in the evidence confirms it.",
+                        [d.cid for d in material[:3]],
+                    )
+                )
+        abstracts = [
+            d
+            for d in material
+            if d.doc_type in _RESEARCH_DOCS and d.article is not None and not normalize_space(d.article.content)
+        ]
+        if len(abstracts) == 1:
+            notes.append(
+                cite(
+                    "Only the paper's abstract is available here; the full text was not reviewed.",
+                    [abstracts[0].cid],
+                )
+            )
+        elif abstracts:
+            notes.append(
+                cite(
+                    "Only the papers' abstracts are available here; the full texts were not reviewed.",
+                    [d.cid for d in abstracts[:4]],
+                )
+            )
+        teasers = [d for d in material if self.teaser_only(d)]
+        reporting = all(d.doc_type in (DocType.NEWS, DocType.BLOG, DocType.OPINION) for d in teasers)
+        if len(teasers) == 1:
+            what = "article" if reporting else "document"
+            notes.append(
+                cite(
+                    f"Only {possessive(teasers[0].publisher)} headline and a short summary are available here, not "
+                    f"the full {what}.",
+                    [teasers[0].cid],
+                )
+            )
+        elif teasers:
+            what = "articles" if reporting else "documents"
+            notes.append(
+                cite(
+                    f"For these sources only headlines and short summaries are available here, not the full {what}.",
+                    [d.cid for d in teasers[:4]],
+                )
+            )
+        return notes
+
+    def _is_statement(self, text: str) -> bool:
+        """``text`` is (or quotes) a headline statement added for a feed item, not a sentence of the source."""
+        return any(x.rstrip(".") in text for x in self.statements)
+
     def uncertainty(self) -> list[str]:
-        items = uncertainty_items(self.docs, self.wrong)
+        items = self.coverage_notes()
+        seen = {i.lower() for i in items}
+        items += [
+            i
+            for i in uncertainty_items(self.docs, self.wrong)
+            if i.lower() not in seen and not self._is_statement(i)
+        ]
         for doc in self.material:
-            perf = [s for s in doc.sentences if is_performance(s) and usable(doc, s, self.wrong)]
+            perf = [x for x in doc.sentences if is_performance(x) and usable(doc, x, self.wrong)]
             if perf and not performance_label(perf[0], doc.text):
                 items.append(
                     cite(
@@ -1577,17 +2098,27 @@ class _OfflineBrief(SentencePicker):
             items.append(cite("Updated advisories, patch adoption, and any new affected versions", ids))
         if self.ctx.vertical == Vertical.EDUCATION and any(d.doc_type in _RESEARCH_DOCS for d in docs):
             ids = [d.cid for d in docs if d.doc_type in _RESEARCH_DOCS][:1]
-            items.append(cite("Studies with other student populations and longer-term transfer measures", ids))
-        for cand in self.pick(self.material, lambda s: bool(_WATCH_CUES.search(s)), 2, False):
+            if re.search(r"\btransfer\b", text, _I):
+                items.append(cite("Studies with other student populations and longer-term transfer measures", ids))
+            else:
+                items.append(
+                    cite("Studies in other populations and settings that test whether these findings hold", ids)
+                )
+        watch_cue = lambda x: bool(_WATCH_CUES.search(x)) and x not in self.statements  # noqa: E731
+        for cand in self.pick(self.material, watch_cue, 2, False):
             if cand.doc.cid not in _cited(items):
                 items.append(self.render([cand])[0])
         if not items and self.material:
-            items.append(
-                cite(
-                    "Primary documents or further reporting that confirm or update these figures",
-                    [self.material[0].cid],
-                )
-            )
+            figures = any(_FIGURE.search(d.text) for d in self.material)
+            what = "these figures" if figures else "this account"
+            if all(d.doc_type in _RECORD_DOCS for d in self.material):
+                lead = "Later filings or official releases that update"
+                what = "this information"
+            elif len({d.publisher.lower() for d in self.material}) == 1:
+                lead = "Reporting from other outlets, or primary documents, that confirm or update"
+            else:
+                lead = "Primary documents or further reporting that confirm or update"
+            items.append(cite(f"{lead} {what}", [self.material[0].cid]))
         out: list[str] = []
         for item in items:
             item = item if item.endswith(".") else f"{item}."
@@ -1596,13 +2127,40 @@ class _OfflineBrief(SentencePicker):
         return out[:MAX_WATCH_NEXT]
 
     def key_points(self, claims: Sequence[ClaimOut]) -> list[str]:
-        points: list[str] = []
+        """Short takeaways: each claim cut to its main clause, distinct from each other and from the summary.
+
+        A point that would repeat a summary sentence word for word is used only when there is no other
+        point at all; one that stays too long to read as a takeaway even after trimming is used, in full,
+        only to reach two points.
+        """
         ordered = [c for c in claims if c.claim_type != ClaimType.OPINION] + [
             c for c in claims if c.claim_type == ClaimType.OPINION
         ]
-        for claim in ordered:
+        summary = [_plain(x) for x in self.summary_sentences]
+
+        def text_of(claim: ClaimOut, limit: int = KEY_POINT_CHARS) -> str:
             prefix = "Disputed: " if claim.support_status == SupportStatus.CONTESTED else ""
-            points.append(cite(prefix + truncate(claim.text, 320), claim.citation_ids))
+            return short_point(prefix + claim.text, limit)
+
+        def repeats(text: str) -> bool:  # the summary sentence itself, or it behind "X says: "
+            plain = _plain(text)
+            return not text.startswith("Disputed: ") and any(
+                plain == x or (x in plain and len(plain) - len(x) < 60) for x in summary
+            )
+
+        short = [c for c in ordered if not repeats(text_of(c)) and not text_of(c).endswith("…")]
+        long = [c for c in ordered if c not in short and not repeats(text_of(c, 320))]
+        repeated = [c for c in ordered if c not in short and c not in long]
+        points: list[str] = []
+        texts: list[str] = []
+        for claim in short + long + repeated:
+            if (claim in long and len(points) >= 2) or (claim in repeated and points):
+                break
+            text = text_of(claim) if claim in short else text_of(claim, 320)
+            if any(similar(text, t) for t in texts):
+                continue
+            texts.append(text)
+            points.append(cite(text, claim.citation_ids))
             if len(points) >= MAX_KEY_POINTS:
                 break
         return points
@@ -1668,7 +2226,13 @@ class _OfflineBrief(SentencePicker):
             if doc.is_correction:
                 evidence.append(cite(f"Correction: {truncate(doc.lede, 240)}", [doc.cid]))
         if not evidence:
-            evidence.append(self.render(self.pick(self.material, None, 2, False))[0])
+            what, ids = self.evidence_basis()
+            records = [d for d in self.material if d.doc_type in _RECORD_DOCS]
+            gap = "" if records else "; no primary document or independent evaluation is in it yet"
+            evidence.append(cite(f"The evidence so far is {what}{gap}.", ids))
+            extra = self.pick(self.material, self._fresh(), 1, False)
+            if extra:
+                evidence.append(self.render(extra)[0])
         return [self._what_happened(), tech, self._list_items(evidence), self._list_items(watch)]
 
     def _education(self, watch, uncertainty):
@@ -1680,12 +2244,16 @@ class _OfflineBrief(SentencePicker):
             False,
             by_rank=True,
         )
+        if not shows:
+            studies = [d for d in self.material if self.is_study(d)]
+            shows = self.pick(studies, lambda s: bool(_FINDING.search(s)), 2, False)
         return [who, self.render(shows), self._list_items(uncertainty[:4])]
 
     def _industry(self, watch, uncertainty):
         who: list[str] = []
-        if self.ctx.entities:
-            who.append(f"Named in the coverage: {', '.join(self.ctx.entities)}.")
+        names = self.names(4)
+        if names:
+            who.append(f"Named in the coverage: {', '.join(names)}.")
         conn_body, conn_ids = self.render(
             self.pick(
                 self.material,
@@ -1804,6 +2372,7 @@ class _OfflineBrief(SentencePicker):
 
     def build(self) -> BriefOut:
         lead = self.authority()
+        summary = self.summary()
         claims, disagreements = self.claims()
         uncertainty = self.uncertainty()
         watch = self.watch_next(claims)
@@ -1812,7 +2381,7 @@ class _OfflineBrief(SentencePicker):
         weak = all(d.needs_attribution or d.is_preprint for d in self.material)
         return BriefOut(
             headline=self.headline(lead),
-            summary=self.summary(),
+            summary=summary,
             why_it_matters=self.why_it_matters(),
             what_changed=self.what_changed(),
             key_points=self.key_points(claims),
