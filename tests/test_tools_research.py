@@ -6,6 +6,7 @@ through a patched HTTP layer, and the fetch tests use httpx.MockTransport.
 
 from __future__ import annotations
 
+import time
 from datetime import timedelta
 from pathlib import Path
 from typing import Any
@@ -467,3 +468,26 @@ def test_recent_material_filings_skips_routine_forms():
     assert [f["filed"] for f in filings] == sorted((f["filed"] for f in filings), reverse=True)
     assert skipped["4"] > 10 and "10-Q" not in skipped
     assert filings[0]["index_url"].startswith("https://www.sec.gov/Archives/edgar/data/1045810/")
+
+
+def test_arxiv_requests_are_spaced_and_a_429_is_retried_once(monkeypatch):
+    import newsren.agents.tools as tools
+    from newsren.config import Settings
+
+    calls: list[float] = []
+    statuses = iter([429, 200])
+
+    def fake_get(url, settings, **kwargs):
+        calls.append(time.monotonic())
+        return tools.HttpResponse(
+            url=url, status_code=next(statuses), content=b"", content_type="", truncated=False
+        )
+
+    monkeypatch.setattr(tools, "http_get", fake_get)
+    monkeypatch.setattr(tools, "ARXIV_MIN_INTERVAL", 0.2)
+    monkeypatch.setattr(tools, "ARXIV_RETRY_WAIT", 0.0)
+    monkeypatch.setattr(tools, "_arxiv_last_request", 0.0)
+    response = tools._arxiv_get("https://export.arxiv.org/api/query?x=1", Settings())
+    assert response.status_code == 200
+    assert len(calls) == 2
+    assert calls[1] - calls[0] >= 0.19  # the retry waited for the minimum interval

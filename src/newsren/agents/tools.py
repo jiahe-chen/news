@@ -38,6 +38,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import threading
 import time
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping
@@ -86,6 +87,9 @@ MAX_REDIRECTS = 5
 SEC_TICKER_CACHE_SECONDS = 24 * 3600
 
 ARXIV_API_URL = "https://export.arxiv.org/api/query"
+# arXiv's API terms ask for at least 3 seconds between requests; faster calls get HTTP 429.
+ARXIV_MIN_INTERVAL = 3.1
+ARXIV_RETRY_WAIT = 3.5
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 SEC_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
 SEC_ARCHIVES_URL = "https://www.sec.gov/Archives/edgar/data"
@@ -663,6 +667,26 @@ class HttpResponse:
             return self.content.decode(encoding, errors="replace")
         except LookupError:
             return self.content.decode("utf-8", errors="replace")
+
+
+_arxiv_lock = threading.Lock()
+_arxiv_last_request = 0.0
+
+
+def _arxiv_get(url: str, settings: Settings) -> HttpResponse:
+    """GET an arXiv API URL, spacing requests per arXiv's terms and retrying a 429 once."""
+    global _arxiv_last_request
+    with _arxiv_lock:
+        for attempt in range(2):
+            wait = ARXIV_MIN_INTERVAL - (time.monotonic() - _arxiv_last_request)
+            if wait > 0:
+                time.sleep(wait)
+            response = http_get(url, settings, accept="application/atom+xml")
+            _arxiv_last_request = time.monotonic()
+            if response.status_code != 429 or attempt == 1:
+                return response
+            time.sleep(ARXIV_RETRY_WAIT)
+    return response
 
 
 def http_get(
@@ -1458,9 +1482,11 @@ class ResearchToolbox:
     def _arxiv(self, params: dict[str, Any]) -> tuple[list[FetchedItem], str | None]:
         url = f"{ARXIV_API_URL}?{urlencode(params)}"
         try:
-            response = http_get(url, self.settings, accept="application/atom+xml")
+            response = _arxiv_get(url, self.settings)
         except RetrievalError as exc:
             return [], f"arXiv could not be reached: {exc}"
+        if response.status_code == 429:
+            return [], "arXiv is rate-limiting requests right now; rely on the archive and other sources."
         try:
             items = parse_arxiv(response.content)
         except FeedParseError as exc:

@@ -17,6 +17,15 @@ from newsren.models import Article, DocType, Source, TrustTier, User, Vertical, 
 from newsren.textutil import canonical_url, content_hash, simhash_hex
 
 
+@pytest.fixture(autouse=True)
+def _no_arxiv_throttle(monkeypatch):
+    """Tests replay saved arXiv responses; skip the real-world request spacing."""
+    import newsren.agents.tools as tools
+
+    monkeypatch.setattr(tools, "ARXIV_MIN_INTERVAL", 0.0)
+    monkeypatch.setattr(tools, "ARXIV_RETRY_WAIT", 0.0)
+
+
 @pytest.fixture()
 def settings(tmp_path) -> Iterator[Settings]:
     s = Settings(
