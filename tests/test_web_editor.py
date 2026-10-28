@@ -54,6 +54,19 @@ def _in_review(session, vertical: str | None = None) -> Brief:
     elif vertical == "other":
         query = query.where(Brief.vertical != "finance")
     brief = session.scalars(query).first()
+    if brief is None and vertical == "other":
+        # The demo editor signs off every non-finance draft without blocking issues;
+        # put one back in the queue for tests that need a non-finance draft.
+        brief = session.scalars(select(Brief).where(Brief.vertical != "finance").order_by(Brief.id)).first()
+        if brief is not None:
+            brief.status = BriefStatus.IN_REVIEW
+            brief.published_at = None
+            brief.reviewer_id = None
+            brief.reviewed_at = None
+            for action in session.scalars(select(EditorialAction).where(EditorialAction.brief_id == brief.id)):
+                if action.action == "approve":
+                    session.delete(action)
+            session.commit()
     assert brief is not None, "demo database should have briefs in review"
     return brief
 
