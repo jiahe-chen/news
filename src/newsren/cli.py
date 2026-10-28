@@ -63,13 +63,51 @@ def _load_sample_earnings(session) -> int:
     return 1
 
 
+def demo_signoff(session, editor) -> int:
+    """The demo editor signs off drafts so the front page has content.
+
+    Non-finance drafts are approved unless a check raised a blocker or a
+    warning (info-level flags such as "high-impact claims" are fine). Finance
+    drafts are approved only when every check passed, so flagged finance
+    stories (performance figures, earnings numbers) stay in the review queue
+    to show the human gate.
+    """
+    from newsren.editorial.workflow import approve, review_queue
+
+    published = 0
+    for brief in review_queue(session):
+        failed = [c for c in brief.check_results if not c.get("passed")]
+        serious = any(c.get("severity") in ("blocker", "warning") for c in failed)
+        if (brief.vertical == "finance" and failed) or serious:
+            continue
+        approve(session, brief, editor, notes="Demo sign-off: no blocking issues in automated checks.")
+        published += 1
+    return published
+
+
+def cmd_demo_signoff(args: argparse.Namespace) -> int:
+    """Approve demo drafts after `newsren demo` (e.g. Claude-written drafts with info-level flags)."""
+    from sqlalchemy import select
+
+    from newsren.models import User
+
+    init_db()
+    with session_scope() as session:
+        editor = session.scalars(select(User).where(User.email == DEMO_EDITOR[0])).first()
+        if editor is None:
+            print("Run `newsren demo` first (the demo editor account does not exist).", file=sys.stderr)
+            return 1
+        published = demo_signoff(session, editor)
+    print(f"Demo editor approved {published} draft(s). Refresh the front page.")
+    return 0
+
+
 def cmd_demo(args: argparse.Namespace) -> int:
     """Load fictional demo content, run the full workflow offline, and create demo accounts."""
     from sqlalchemy import select
 
     from newsren.agents.briefing import build_briefing, deliver_briefing
     from newsren.agents.monitor import run_monitoring
-    from newsren.editorial.workflow import approve, review_queue
     from newsren.models import Audience, Story
     from newsren.pipeline import run_pipeline
     from newsren.users.service import add_interest, create_follow, set_preferences
@@ -84,14 +122,7 @@ def cmd_demo(args: argparse.Namespace) -> int:
         reader = _ensure_user(session, *DEMO_READER, role="reader")
         published = 0
         if not args.keep_queue:
-            # Demo convenience: the demo editor signs off drafts whose automated
-            # checks all passed. Anything flagged (blockers, warnings, or
-            # high-impact claims such as performance figures or earnings
-            # numbers) stays in the review queue to show the human gate.
-            for brief in review_queue(session):
-                if all(c.get("passed") for c in brief.check_results):
-                    approve(session, brief, editor, notes="Demo sign-off: automated checks passed.")
-                    published += 1
+            published = demo_signoff(session, editor)
         if not reader.interests:
             set_preferences(session, reader, audience=Audience.STUDENT, email_opt_in=True)
             add_interest(session, reader, "topic", "AI models for learning mathematics")
@@ -253,6 +284,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--no-network", action="store_true", help="skip live ingestion")
     p.add_argument("--max-briefs", type=int, default=25)
     p.set_defaults(func=cmd_pipeline)
+
+    sub.add_parser("demo-signoff", help="demo editor approves drafts without blocking issues").set_defaults(
+        func=cmd_demo_signoff
+    )
 
     sub.add_parser("monitor", help="check every active follow for material developments").set_defaults(
         func=cmd_monitor
